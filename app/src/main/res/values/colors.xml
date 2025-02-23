@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dark_bac">#110F14</color>
+    <color name="dark_prim_col">#251D26</color>
+    <color name="dark_prim_col_var">#2C323E</color>
+    <color name="dark_sec_col">#5C527F</color>
+    <color name="light_bac">#F8FAFC</color>
+    <color name="light_prim_col">#D9EAFD</color>
+    <color name="light_prim_col_var">#BCCCDC</color>
+    <color name="light_sec_col">#9AA6B2</color>
+</resources>

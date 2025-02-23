@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.UniFlow" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="backgroundColor">@color/dark_bac</item>
+        <item name="colorPrimary">@color/dark_prim_col</item>
+        <item name="colorPrimaryVariant">@color/dark_prim_col_var </item>
+        <item name="colorSecondary">@color/dark_sec_col</item>
+    </style>
+</resources>

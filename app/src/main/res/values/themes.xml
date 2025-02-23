@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.UniFlow" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="backgroundColor">@color/light_bac</item>
+        <item name="colorPrimary">@color/light_prim_col</item>
+        <item name="colorPrimaryVariant">@color/light_prim_col_var </item>
+        <item name="colorSecondary">@color/light_sec_col</item>
+    </style>
+
+    <style name="Theme.UniFlow" parent="Base.Theme.UniFlow" />
+</resources>
