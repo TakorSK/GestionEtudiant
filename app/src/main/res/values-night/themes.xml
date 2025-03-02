@@ -7,5 +7,7 @@
         <item name="colorPrimary">@color/dark_prim_col</item>
         <item name="colorPrimaryVariant">@color/dark_prim_col_var </item>
         <item name="colorSecondary">@color/dark_sec_col</item>
+        <item name="colorSecondaryVariant"> @color/dark_sec_col</item>
+        <item name="android:textColorPrimary">@color/light_bac</item>">
     </style>
 </resources>

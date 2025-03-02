@@ -10,9 +10,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Club Fragment"
+        android:text="Club Page"
         android:textSize="30dp"
-        android:layout_centerInParent="true"
-        android:textColor="@color/dark_bac"/>
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

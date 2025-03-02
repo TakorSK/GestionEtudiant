@@ -4,23 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:background="@color/light_prim_col_var"
-    android:padding="17dp"
-    android:theme="@style/ThemeOverlay.AppCompat">
+    android:padding="25dp"
+    android:theme="@style/Base.Theme.UniFlow">
 
     <ImageButton
         android:id="@+id/profile_image"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
+        android:layout_width="120dp"
+        android:layout_height="match_parent"
         android:src="@drawable/nav_profile_pic"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="26dp"
         android:layout_marginTop="5dp"
         android:layout_gravity="center_vertical"
         android:scaleType="centerCrop"/>
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical">
 
@@ -35,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:text="Profile Name"
                 android:textStyle="bold"
-                android:textColor="@color/dark_bac"
                 android:textSize="25sp"
                 android:gravity="start"/>
 
@@ -44,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="LGLSI2"
-                android:textColor="@color/dark_bac"
                 android:textSize="18sp"
                 android:elegantTextHeight="true"
                 android:textStyle="italic" />
@@ -63,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:text="Online"
                 android:textStyle="bold"
-                android:textColor="@color/dark_bac"
                 android:textSize="18sp"
                 android:gravity="center_vertical"/>
 
