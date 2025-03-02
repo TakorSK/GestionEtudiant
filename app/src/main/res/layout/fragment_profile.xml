@@ -4,15 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ClubsFragment">
+    tools:context=".ProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Profile Fragment"
+        android:text="Profile Page"
         android:textSize="30dp"
-        android:layout_centerInParent="true"
-        android:textColor="@color/dark_bac"/>
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
