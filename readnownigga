@@ -1,0 +1,8 @@
+mister chat give me this he say it will make the dase work smothly i dont if it worth it or not !!!!!!!!!!!!!
+-- Create indexes for performance
+CREATE INDEX idx_student_section ON student(section_id);
+CREATE INDEX idx_student_uni ON student(uni_id);
+CREATE INDEX idx_student_club ON student(club_id);
+CREATE INDEX idx_section_uni ON section(uni_id);
+CREATE INDEX idx_club_uni ON club(uni_id);
+CREATE INDEX idx_timetable_section ON timetable(section_id);
