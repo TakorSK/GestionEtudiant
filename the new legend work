@@ -1,0 +1,80 @@
+-- University table
+CREATE TABLE Uni (
+    id INT(3) PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
+    location VARCHAR(50),
+    established_year YEAR,
+    website VARCHAR(100),
+    CONSTRAINT uni_id_range CHECK (id BETWEEN 1 AND 999),
+    CONSTRAINT valid_uni_name CHECK (
+        name REGEXP '^[[:alpha:] ]+$'
+        AND name NOT LIKE ' %' 
+        AND name NOT LIKE '% '
+        AND name NOT LIKE '%  %'
+    )
+);
+
+-- Club table
+CREATE TABLE club (
+    id INT(3) PRIMARY KEY,
+    name VARCHAR(30) NOT NULL,
+    description TEXT,
+    founded_date DATE,
+    uni_id INT(3),
+    CONSTRAINT club_id_range CHECK (id BETWEEN 1 AND 999),
+    CONSTRAINT valid_club_name CHECK (name REGEXP '^[A-Za-z0-9 ]+$'),
+    FOREIGN KEY (uni_id) REFERENCES Uni(id) ON DELETE CASCADE
+);
+
+-- Section table
+CREATE TABLE section (
+    id INT(5) PRIMARY KEY,
+    name VARCHAR(10) NOT NULL,
+    group_name VARCHAR(10) NOT NULL,
+    uni_id INT(3),
+    academic_year VARCHAR(9),
+    CONSTRAINT section_id_range CHECK (id BETWEEN 1 AND 99999),
+    FOREIGN KEY (uni_id) REFERENCES Uni(id) ON DELETE CASCADE,
+    CONSTRAINT unique_section_group UNIQUE (name, group_name, uni_id)
+);
+
+-- Student table
+CREATE TABLE student (
+    id INT(8) PRIMARY KEY,
+    section_id INT(5),
+    email VARCHAR(50) UNIQUE NOT NULL,
+    full_name VARCHAR(50) NOT NULL,
+    uni_id INT(3),
+    club_id INT(3),
+    is_online BOOLEAN DEFAULT FALSE,
+    registration_date DATE DEFAULT (CURRENT_DATE),
+    last_login TIMESTAMP,
+    CONSTRAINT student_id_range CHECK (id BETWEEN 1 AND 99999999),
+    CONSTRAINT valid_email CHECK (email LIKE '%@%.%'),
+    CONSTRAINT valid_full_name CHECK (
+        full_name REGEXP '^[A-Z][A-Za-z\'\-]+( [A-Z][A-Za-z\'\-]+)*$'
+        AND full_name NOT LIKE '%''%''%'
+        AND full_name NOT LIKE '%--%'
+        AND full_name = TRIM(full_name)
+    ),
+    FOREIGN KEY (section_id) REFERENCES section(id) ON DELETE SET NULL,
+    FOREIGN KEY (uni_id) REFERENCES Uni(id) ON DELETE CASCADE,
+    FOREIGN KEY (club_id) REFERENCES club(id) ON DELETE SET NULL
+);
+
+
+
+-- Timetable table
+CREATE TABLE timetable (
+    id INT(5) PRIMARY KEY,
+    section_id INT(5) NOT NULL,
+    day_of_week ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    subject VARCHAR(50) NOT NULL,
+    room VARCHAR(20),
+    professor VARCHAR(50), //or team leader or delete it i dont now negga choose what u like
+    CONSTRAINT timetable_id_range CHECK (id BETWEEN 1 AND 99999),
+    FOREIGN KEY (section_id) REFERENCES section(id) ON DELETE CASCADE,
+    CONSTRAINT valid_time CHECK (start_time < end_time)
+);
