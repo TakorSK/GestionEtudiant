@@ -32,6 +32,7 @@
             android:layout_height="50dp"
             android:hint="Password"
             android:id="@+id/login_password"
+            android:inputType="textPassword"
             android:layout_marginBottom="20dp"
             android:drawablePadding="20dp"/>
 
@@ -42,7 +43,6 @@
             android:text="Login"/>
     </LinearLayout>
 
-    <!-- Text Button for Sign Up at the Bottom -->
     <Button
         android:id="@+id/go_to_signup_button"
         android:layout_width="wrap_content"

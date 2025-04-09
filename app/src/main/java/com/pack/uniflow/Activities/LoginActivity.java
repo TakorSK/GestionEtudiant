@@ -14,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
 
     // SharedPreferences key for storing login status
-    public static final String PREFS_NAME = "MyPrefs";
+    public static final String PREFS_NAME = "UserPrefs"; // Make sure the name is consistent with SignupActivity
     public static final String IS_LOGGED_IN = "isLoggedIn";
 
     @Override
@@ -33,13 +33,11 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Handle login button click
-
         findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // THIS IS A MOCK LOGIN TEST PLEASE DELETE THIS LATER WHEN IMPLEMENTING THE DATABASE AND LINKING IT! ASK ME TO REMOVE IT
-                String email = emailEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
+                String email = emailEditText.getText().toString(); // Email or ID entered by user
+                String password = passwordEditText.getText().toString(); // Password entered by user
 
                 if (validateLogin(email, password)) {
                     // Store login status in SharedPreferences
@@ -55,13 +53,31 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Add OnClickListener for the Sign Up button
+        findViewById(R.id.go_to_signup_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to the SignUpActivity
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
+    // Validate login credentials
     private boolean validateLogin(String email, String password) {
-        // Mock validation (replace with actual validation logic)
-        return email.equals("test@example.com") && password.equals("password123");
+        // Retrieve user data from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String savedEmail = prefs.getString("EMAIL", "");  // Get saved email from signup
+        String savedId = prefs.getString("ID", "");  // Get saved ID from signup
+        String savedPassword = prefs.getString("PASSWORD", "");  // Get saved password from signup
+
+        // Check if entered email or ID matches the saved email/ID, and password matches the saved one
+        return (email.equals(savedEmail) || email.equals(savedId)) && password.equals(savedPassword);
     }
 
+    // Navigate to MainActivity
     private void navigateToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
