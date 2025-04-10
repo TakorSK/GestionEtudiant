@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
         )
 )
 public class Club {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
 

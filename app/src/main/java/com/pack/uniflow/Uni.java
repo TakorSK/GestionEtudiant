@@ -3,14 +3,11 @@ package com.pack.uniflow;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 @Entity(tableName = "uni")
 public class Uni {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
 

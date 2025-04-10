@@ -4,9 +4,6 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 @Entity(
         tableName = "timetable",
         foreignKeys = @ForeignKey(
@@ -17,7 +14,7 @@ import androidx.annotation.Nullable;
         )
 )
 public class Timetable {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
 

@@ -1,22 +1,25 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.pack.uniflow.DatabaseClient;
+import com.pack.uniflow.Activities.MainActivity;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText idEditText, nameEditText, firstnameEditText, ageEditText, telephoneEditText, passwordEditText, emailEditText;  // Added email field
-
-    // SharedPreferences key for storing signup details
-    public static final String PREFS_NAME = "UserPrefs";
+    private EditText idEditText, nameEditText, firstnameEditText, ageEditText, telephoneEditText, passwordEditText, emailEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,52 +39,87 @@ public class SignupActivity extends AppCompatActivity {
         findViewById(R.id.signup_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get input data
-                String id = idEditText.getText().toString();
-                String name = nameEditText.getText().toString();
-                String firstname = firstnameEditText.getText().toString();
-                String age = ageEditText.getText().toString();
-                String telephone = telephoneEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
-                String email = emailEditText.getText().toString();
-
-                // Validate and save data
-                if (validateInput(id, name, firstname, age, telephone, password, email)) {
-                    saveUserData(id, name, firstname, age, telephone, password, email);  // Pass email to save method
-                    Toast.makeText(SignupActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
-                    navigateToMainActivity();  // Navigate to MainActivity after successful sign up
-                } else {
-                    Toast.makeText(SignupActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                }
+                handleSignup();
             }
         });
     }
 
-    // Validate that none of the fields are empty (including email and password)
-    private boolean validateInput(String id, String name, String firstname, String age, String telephone, String password, String email) {
-        return !id.isEmpty() && !name.isEmpty() && !firstname.isEmpty() && !age.isEmpty() && !telephone.isEmpty() && !password.isEmpty() && !email.isEmpty();
+    private void handleSignup() {
+        // Get input data
+        String idStr = idEditText.getText().toString().trim();
+        String name = nameEditText.getText().toString().trim();
+        String firstname = firstnameEditText.getText().toString().trim();
+        String ageStr = ageEditText.getText().toString().trim();
+        String telephone = telephoneEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+        String email = emailEditText.getText().toString().trim();
+
+        // Validate and save data
+        if (validateInput(idStr, name, firstname, ageStr, telephone, password, email)) {
+            int id = Integer.parseInt(idStr);
+
+            // Insert into database in background
+            new Thread(() -> {
+                // Check if the email already exists
+                try{
+                Student existingStudent = DatabaseClient.getInstance(getApplicationContext())
+                        .getDatabase()
+                        .studentDao()
+                        .findByEmail(email);
+
+                if (existingStudent != null) {
+                    // Email already used
+                    runOnUiThread(() -> Toast.makeText(SignupActivity.this, "Email already registered!", Toast.LENGTH_SHORT).show());
+                } else {
+                    // Create new Student
+                    Student student = new Student();
+                    student.id = id;
+                    student.fullName = name + " " + firstname;
+                    student.email = email;
+                    student.isOnline = false;
+                    student.registrationDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                    student.lastLogin = null;
+                    student.uniId = 1; // default University id
+                    student.clubId = null; // No club assigned
+                    student.sectionId = null; // No section assigned
+
+                    // Insert the student
+                    DatabaseClient.getInstance(getApplicationContext())
+                            .getDatabase()
+                            .studentDao()
+                            .insert(student);
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(SignupActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                        navigateToMainActivity();
+                    });
+                }
+                }catch (Exception e) {
+                    Log.e("SIGNUP_ERROR", "Failed to insert student: " + e.getMessage());
+                    runOnUiThread(() -> Toast.makeText(
+                            SignupActivity.this,
+                            "Signup failed. Check logs.",
+                            Toast.LENGTH_LONG
+                    ).show());}
+            }).start();
+
+
+
+        } else {
+            Toast.makeText(SignupActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    // Save user data to SharedPreferences, PLEASE FOR THE LOVE OF GOD.. MAKE THE DATA BASE WORK! GOOD LUCK THIS IS USED TO SAVE TO THE LOCAL DEVICE **ONLY**! CALL ME IF YOU WANNA UNDERSTAND MORE
-    private void saveUserData(String id, String name, String firstname, String age, String telephone, String password, String email) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putString("ID", id);
-        editor.putString("NAME", name);
-        editor.putString("FIRSTNAME", firstname);
-        editor.putString("AGE", age);
-        editor.putString("TELEPHONE", telephone);
-        editor.putString("EMAIL", email);
-        editor.putString("PASSWORD", password);
-        editor.putBoolean("IS_LOGGED_IN", true);  // Mark user as logged in
-        editor.apply();
+    // Validate that none of the fields are empty
+    private boolean validateInput(String id, String name, String firstname, String age, String telephone, String password, String email) {
+        return !id.isEmpty() && !name.isEmpty() && !firstname.isEmpty() && !age.isEmpty()
+                && !telephone.isEmpty() && !password.isEmpty() && !email.isEmpty();
     }
 
     // Navigate to MainActivity after successful sign up
     private void navigateToMainActivity() {
         Intent intent = new Intent(SignupActivity.this, MainActivity.class);
         startActivity(intent);
-        finish();  // Close the SignupActivity so the user can't go back to it
+        finish();  // Close the SignupActivity so the user can't come back
     }
 }

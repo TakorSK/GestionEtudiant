@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
         indices = {@Index(value = {"name", "group_name", "uni_id"}, unique = true)}
 )
 public class Section {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
 

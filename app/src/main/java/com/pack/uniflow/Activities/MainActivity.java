@@ -1,7 +1,6 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -23,6 +22,8 @@ import com.pack.uniflow.Fragments.ScheduleFragment;
 import com.pack.uniflow.Fragments.ScoresFragment;
 import com.pack.uniflow.Fragments.SettingsFragment;
 import com.pack.uniflow.R;
+import com.pack.uniflow.DatabaseClient;
+import com.pack.uniflow.Student;
 
 import java.util.Objects;
 
@@ -47,17 +48,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Get reference to the profile name TextView in the navigation header
         profileNameTextView = navigationView.getHeaderView(0).findViewById(R.id.profile_name_text_view);  // Make sure this ID matches in your layout
 
-        // Retrieve the user's name from SharedPreferences
-        SharedPreferences prefs = getSharedPreferences(SignupActivity.PREFS_NAME, MODE_PRIVATE);
-        String userName = prefs.getString("NAME", "Guest");  // Default to "Guest" if no name is found
-
-        // Set the user's name in the profile name TextView
-        profileNameTextView.setText(userName);
-
         // Set up the ActionBarDrawerToggle for opening and closing the navigation drawer
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        profileNameTextView = navigationView.getHeaderView(0).findViewById(R.id.profile_name_text_view);
+
+        new Thread(() -> {
+            // Assuming only one student is logged in (you can improve this later)
+            Student loggedStudent = DatabaseClient.getInstance(getApplicationContext())
+                    .getDatabase()
+                    .studentDao()
+                    .getLatestStudent(); // <-- new query we'll add
+
+            runOnUiThread(() -> {
+                if (loggedStudent != null) {
+                    profileNameTextView.setText(loggedStudent.fullName);
+                } else {
+                    profileNameTextView.setText("Guest"); // default if no student found
+                }
+            });
+        }).start();
 
         // Check if this is the first time opening the app or if we need to restore fragments
         if (savedInstanceState == null) {
@@ -95,12 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (itemId == R.id.nav_profile) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
         } else if (itemId == R.id.nav_logout) {
-            // Clear the login state in SharedPreferences
-            SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean(LoginActivity.IS_LOGGED_IN, false);  // Set login state to false (logged out)
-            editor.apply();
-
             // Show a Toast message to confirm logout
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
 

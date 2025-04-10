@@ -16,8 +16,12 @@ ADAM SEYE:
 
 
  SOUFIANE:
+    -edited MainActivity.java and SignupActivity.java for the room database usage -Done
     -Test The Database
     -Linking the database to the app
+    TODO: -fix the signup XML and add university and club, club being optional and university being required.
+          -insert directly into database universities and clubs for testing
+          -fix the signupActivity after the change of the xml
 
 
 ALI:
