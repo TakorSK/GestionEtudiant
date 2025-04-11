@@ -24,8 +24,18 @@
             android:layout_height="50dp"
             android:hint="Email or Card ID"
             android:id="@+id/login_cid_gmail"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
+
+        <TextView
+            android:id="@+id/error_login_cid_gmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+            android:textSize="12sp"
+            android:gravity="start"
+            android:visibility="gone" />
 
         <EditText
             android:layout_width="match_parent"
@@ -33,14 +43,25 @@
             android:hint="Password"
             android:id="@+id/login_password"
             android:inputType="textPassword"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
+
+        <TextView
+            android:id="@+id/error_login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+            android:textSize="12sp"
+            android:gravity="start"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:id="@+id/login_button"
             android:text="Login"/>
+
     </LinearLayout>
 
     <Button

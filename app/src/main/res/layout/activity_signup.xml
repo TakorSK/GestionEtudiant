@@ -16,73 +16,161 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- ID Field -->
         <EditText
             android:id="@+id/signup_id"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="ID"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
 
+        <!-- Name Field -->
         <EditText
             android:id="@+id/signup_name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Name"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- First Name Field -->
         <EditText
             android:id="@+id/signup_firstname"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="First Name"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_firstname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Age Field -->
         <EditText
             android:id="@+id/signup_age"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Age"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Telephone Field -->
         <EditText
             android:id="@+id/signup_telephone"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Telephone Number"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_telephone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- University ID Field -->
         <EditText
             android:id="@+id/signup_university_id"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="University ID"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"/>
 
+        <TextView
+            android:id="@+id/error_signup_university_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Email Field -->
         <EditText
             android:id="@+id/signup_email"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Email"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"
             android:inputType="textEmailAddress"/>
 
+        <TextView
+            android:id="@+id/error_signup_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Password Field -->
         <EditText
             android:id="@+id/signup_password"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Password"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="5dp"
             android:drawablePadding="20dp"
             android:inputType="textPassword"/>
 
+        <TextView
+            android:id="@+id/error_signup_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Error message"
+            android:textColor="#FF5252"
+        android:textSize="12sp"
+        android:gravity="start"
+        android:visibility="gone" /> <!-- Initially hidden -->
+
+        <!-- Sign Up Button -->
         <Button
             android:id="@+id/signup_button"
             android:layout_width="250dp"
