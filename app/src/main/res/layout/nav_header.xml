@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,15 +8,16 @@
     android:padding="25dp"
     android:theme="@style/Base.Theme.UniFlow">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/profile_image"
         android:layout_width="120dp"
-        android:layout_height="match_parent"
-        android:src="@drawable/nav_profile_pic"
-        android:layout_marginEnd="26dp"
-        android:layout_marginTop="5dp"
+        android:layout_height="126dp"
         android:layout_gravity="center_vertical"
-        android:scaleType="centerCrop"/>
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="26dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/nav_profile_pic"
+        app:shapeAppearanceOverlay="@style/roundedImageView" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -40,10 +42,11 @@
                 android:gravity="start"/>
 
             <TextView
+                android:id="@+id/profile_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:text="LGLSI2"
+                android:text="Unknown"
                 android:textSize="18sp"
                 android:elegantTextHeight="true"
                 android:textStyle="italic" />

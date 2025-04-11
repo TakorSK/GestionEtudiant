@@ -24,6 +24,7 @@
             android:layout_marginBottom="20dp"
             android:drawablePadding="20dp"/>
 
+
         <EditText
             android:id="@+id/signup_name"
             android:layout_width="match_parent"
@@ -53,6 +54,14 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="Telephone Number"
+            android:layout_marginBottom="20dp"
+            android:drawablePadding="20dp"/>
+
+        <EditText
+            android:id="@+id/signup_university_id"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="University ID"
             android:layout_marginBottom="20dp"
             android:drawablePadding="20dp"/>
 

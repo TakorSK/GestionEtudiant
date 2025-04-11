@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawerLayout;
     private TextView profileNameTextView;  // TextView to display the profile name
+    private TextView profileGroupTextView; // TextView to display the profile group
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         profileNameTextView = navigationView.getHeaderView(0).findViewById(R.id.profile_name_text_view);
+        profileGroupTextView = navigationView.getHeaderView(0).findViewById(R.id.profile_group);
 
         new Thread(() -> {
             // Assuming only one student is logged in (you can improve this later)
@@ -65,8 +67,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             runOnUiThread(() -> {
                 if (loggedStudent != null) {
                     profileNameTextView.setText(loggedStudent.fullName);
+                    profileGroupTextView.setText(loggedStudent.sectionId);
                 } else {
                     profileNameTextView.setText("Guest"); // default if no student found
+                    profileGroupTextView.setText("Unknown");
                 }
             });
         }).start();

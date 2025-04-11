@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.ClubsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Title of the Page -->
     <TextView
+        android:id="@+id/club_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Club Page"
-        android:textSize="30dp"
-        android:layout_centerInParent="true"/>
+        android:textSize="30sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 
+    <!-- RecyclerView to display the list of clubs -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/clubs_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/club_page_title"
+        android:layout_marginTop="16dp" />
 </RelativeLayout>
