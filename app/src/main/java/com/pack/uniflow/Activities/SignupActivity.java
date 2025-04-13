@@ -4,28 +4,49 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pack.uniflow.DatabaseClient;
-import com.pack.uniflow.Activities.MainActivity;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
+import com.pack.uniflow.UniflowDB;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText idEditText, nameEditText, firstnameEditText, ageEditText, telephoneEditText, passwordEditText, emailEditText, universityIdEditText;
+    private EditText idEditText, nameEditText, firstnameEditText, ageEditText,
+            telephoneEditText, passwordEditText, emailEditText, universityIdEditText;
+
+    private TextView errorId, errorName, errorFirstname, errorAge,
+            errorTelephone, errorPassword, errorEmail, errorUniversityId;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        initializeViews();
+        findViewById(R.id.signup_button).setOnClickListener(v -> handleSignup());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
+    }
+
+    private void initializeViews() {
         idEditText = findViewById(R.id.signup_id);
         nameEditText = findViewById(R.id.signup_name);
         firstnameEditText = findViewById(R.id.signup_firstname);
@@ -35,15 +56,19 @@ public class SignupActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.signup_email);
         universityIdEditText = findViewById(R.id.signup_university_id);
 
-        findViewById(R.id.signup_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleSignup();
-            }
-        });
+        errorId = findViewById(R.id.error_signup_id);
+        errorName = findViewById(R.id.error_signup_name);
+        errorFirstname = findViewById(R.id.error_signup_firstname);
+        errorAge = findViewById(R.id.error_signup_age);
+        errorTelephone = findViewById(R.id.error_signup_telephone);
+        errorPassword = findViewById(R.id.error_signup_password);
+        errorEmail = findViewById(R.id.error_signup_email);
+        errorUniversityId = findViewById(R.id.error_signup_university_id);
     }
 
     private void handleSignup() {
+        resetErrorMessages();
+
         String idStr = idEditText.getText().toString().trim();
         String name = nameEditText.getText().toString().trim();
         String firstname = firstnameEditText.getText().toString().trim();
@@ -53,64 +78,153 @@ public class SignupActivity extends AppCompatActivity {
         String email = emailEditText.getText().toString().trim();
         String universityIdStr = universityIdEditText.getText().toString().trim();
 
-        if (validateInput(idStr, name, firstname, ageStr, telephone, password, email, universityIdStr)) {
-            int id = Integer.parseInt(idStr);
-            int universityId = Integer.parseInt(universityIdStr);
+        if (!validateInputs(idStr, name, firstname, ageStr, telephone, password, email, universityIdStr)) {
+            return;
+        }
 
-            new Thread(() -> {
-                try {
-                    Student existingStudent = DatabaseClient.getInstance(getApplicationContext())
-                            .getDatabase()
-                            .studentDao()
-                            .findByEmail(email);
+        int id = Integer.parseInt(idStr);
+        int age = Integer.parseInt(ageStr);
+        int universityId = Integer.parseInt(universityIdStr);
 
-                    if (existingStudent != null) {
-                        runOnUiThread(() -> Toast.makeText(SignupActivity.this, "Email already registered!", Toast.LENGTH_SHORT).show());
-                    } else {
-                        Student student = new Student();
-                        student.id = id;
-                        student.fullName = name + " " + firstname;
-                        student.email = email;
-                        student.isOnline = false;
-                        student.registrationDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                        student.lastLogin = null;
-                        student.uniId = universityId;
-                        student.clubId = null;
-                        student.sectionId = null;
+        executorService.execute(() -> processSignup(id, name, firstname, age, telephone, password, email, universityId));
+    }
 
-                        DatabaseClient.getInstance(getApplicationContext())
-                                .getDatabase()
-                                .studentDao()
-                                .insert(student);
+    private boolean validateInputs(String idStr, String name, String firstname, String ageStr,
+                                   String telephone, String password, String email, String universityIdStr) {
+        boolean isValid = true;
 
-                        runOnUiThread(() -> {
-                            Toast.makeText(SignupActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
-                            navigateToMainActivity();
-                        });
-                    }
-                } catch (Exception e) {
-                    Log.e("SIGNUP_ERROR", "Failed to insert student: " + e.getMessage());
-                    runOnUiThread(() -> Toast.makeText(
-                            SignupActivity.this,
-                            "Signup failed. Check logs.",
-                            Toast.LENGTH_LONG
-                    ).show());
-                }
-            }).start();
-        } else {
-            Toast.makeText(SignupActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        if (idStr.isEmpty()) {
+            showError(errorId, "ID is required");
+            isValid = false;
+        } else if (!idStr.matches("\\d+")) {
+            showError(errorId, "ID must be a number");
+            isValid = false;
+        }
+
+        if (name.isEmpty()) {
+            showError(errorName, "Name is required");
+            isValid = false;
+        }
+
+        if (firstname.isEmpty()) {
+            showError(errorFirstname, "First name is required");
+            isValid = false;
+        }
+
+        if (ageStr.isEmpty()) {
+            showError(errorAge, "Age is required");
+            isValid = false;
+        } else if (!ageStr.matches("\\d+")) {
+            showError(errorAge, "Age must be a number");
+            isValid = false;
+        }
+
+        if (telephone.isEmpty()) {
+            showError(errorTelephone, "Telephone is required");
+            isValid = false;
+        }
+
+        if (password.isEmpty()) {
+            showError(errorPassword, "Password is required");
+            isValid = false;
+        } else if (password.length() < 6) {
+            showError(errorPassword, "Password must be at least 6 characters");
+            isValid = false;
+        }
+
+        if (email.isEmpty()) {
+            showError(errorEmail, "Email is required");
+            isValid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showError(errorEmail, "Invalid email format");
+            isValid = false;
+        }
+
+        if (universityIdStr.isEmpty()) {
+            showError(errorUniversityId, "University ID is required");
+            isValid = false;
+        } else if (!universityIdStr.matches("\\d+")) {
+            showError(errorUniversityId, "University ID must be a number");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private void processSignup(int id, String name, String firstname, int age, String telephone,
+                               String password, String email, int universityId) {
+        try {
+            UniflowDB database = DatabaseClient.getInstance(getApplicationContext()).getDatabase();
+
+            // Check if university exists (assuming the method is now called getById)
+            Uni university = database.uniDao().getById(universityId);
+            if (university == null) {
+                runOnUiThread(() -> {
+                    showError(errorUniversityId, "Invalid University ID");
+                    Toast.makeText(SignupActivity.this,
+                            "The specified university doesn't exist",
+                            Toast.LENGTH_SHORT).show();
+                });
+                return;
+            }
+
+            // Check if email exists
+            if (database.studentDao().findByEmail(email) != null) {
+                runOnUiThread(() -> {
+                    showError(errorEmail, "Email already registered");
+                    Toast.makeText(SignupActivity.this,
+                            "This email is already registered",
+                            Toast.LENGTH_SHORT).show();
+                });
+                return;
+            }
+
+            // Create student with all required fields
+            Student student = new Student(
+                    id,
+                    email,
+                    name + " " + firstname,
+                    age,
+                    telephone,
+                    universityId,
+                    password
+            );
+
+            database.studentDao().insert(student);
+
+            runOnUiThread(() -> {
+                Toast.makeText(SignupActivity.this,
+                        "Registration successful!",
+                        Toast.LENGTH_SHORT).show();
+                navigateToMainActivity();
+            });
+
+        } catch (Exception e) {
+            Log.e("SIGNUP_ERROR", "Database error", e);
+            runOnUiThread(() ->
+                    Toast.makeText(SignupActivity.this,
+                            "Registration failed. Please try again.",
+                            Toast.LENGTH_LONG).show());
         }
     }
 
-    private boolean validateInput(String id, String name, String firstname, String age, String telephone, String password, String email, String universityId) {
-        return !id.isEmpty() && !name.isEmpty() && !firstname.isEmpty() && !age.isEmpty()
-                && !telephone.isEmpty() && !password.isEmpty() && !email.isEmpty()
-                && !universityId.isEmpty();
+    private void showError(TextView errorView, String message) {
+        errorView.setText(message);
+        errorView.setVisibility(View.VISIBLE);
+    }
+
+    private void resetErrorMessages() {
+        int[] errorViews = {R.id.error_signup_id, R.id.error_signup_name, R.id.error_signup_firstname,
+                R.id.error_signup_age, R.id.error_signup_telephone, R.id.error_signup_password,
+                R.id.error_signup_email, R.id.error_signup_university_id};
+
+        for (int viewId : errorViews) {
+            findViewById(viewId).setVisibility(View.GONE);
+        }
     }
 
     private void navigateToMainActivity() {
-        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface ClubDao {
 
     @Insert
-    void insert(Club club);
+    long insert(Club club);
 
     @Query("SELECT * FROM Club")
     List<Club> getAllClubs();

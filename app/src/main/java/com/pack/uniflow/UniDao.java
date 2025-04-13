@@ -9,8 +9,14 @@ import java.util.List;
 public interface UniDao {
 
     @Insert
-    void insert(Uni uni);
+    long insert(Uni uni);
 
     @Query("SELECT * FROM Uni")
     List<Uni> getAllUnis();
+    @Query("SELECT * FROM uni WHERE name = :name LIMIT 1")
+    Uni findByName(String name);
+    @Query("SELECT * FROM uni WHERE id = :id")
+    Uni getById(int id);
+
+
 }
