@@ -1,90 +1,104 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.UniflowDB;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-
-    // SharedPreferences key for storing login status
-    public static final String PREFS_NAME = "UserPrefs"; // Make sure the name is consistent with SignupActivity
-    public static final String IS_LOGGED_IN = "isLoggedIn";
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        initializeViews();
+        setupLoginButton();
+        setupSignupButton();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
+    }
+
+    private void initializeViews() {
         emailEditText = findViewById(R.id.login_cid_gmail);
         passwordEditText = findViewById(R.id.login_password);
+    }
 
-        // Check if the user is already logged in
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isLoggedIn = prefs.getBoolean(IS_LOGGED_IN, false);
-        if (isLoggedIn) {
-            navigateToMainActivity();  // Automatically go to MainActivity if already logged in
+    private void setupLoginButton() {
+        findViewById(R.id.login_button).setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(LoginActivity.this,
+                        "Email and password are required",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Debug bypass (remove in production)
+            if (email.equals("debug") && password.equals("debug")) {
+                navigateToMainActivity();
+                return;
+            }
+
+            executorService.execute(() -> processLogin(email, password));
+        });
+    }
+
+    private void setupSignupButton() {
+        findViewById(R.id.go_to_signup_button).setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+        });
+    }
+
+    private void processLogin(String email, String password) {
+        try {
+            UniflowDB database = DatabaseClient.getInstance(getApplicationContext()).getDatabase();
+            Student student = database.studentDao().findByEmail(email);
+
+            if (student != null && student.password.equals(password)) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this,
+                            "Login successful!",
+                            Toast.LENGTH_SHORT).show();
+                    navigateToMainActivity();
+                });
+            } else {
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this,
+                            "Invalid email or password",
+                            Toast.LENGTH_SHORT).show();
+                });
+            }
+        } catch (Exception e) {
+            runOnUiThread(() -> {
+                Toast.makeText(LoginActivity.this,
+                        "Login failed. Please try again.",
+                        Toast.LENGTH_SHORT).show();
+            });
+            e.printStackTrace();
         }
-
-        // Handle login button click
-        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailEditText.getText().toString(); // Email or ID entered by user
-                String password = passwordEditText.getText().toString(); // Password entered by user
-
-                if (validateLogin(email, password)) {
-                    // Store login status in SharedPreferences
-                    SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-                    editor.putBoolean(IS_LOGGED_IN, true);  // User is logged in
-                    editor.apply();
-
-                    // Navigate to MainActivity after successful login
-                    navigateToMainActivity();
-                    // For debugging purposes.
-                } else if (email.equals("debug") && password.equals("debug")) {
-                    navigateToMainActivity();
-
-                } else {
-                    // Show an error message if login fails
-                    Toast.makeText(LoginActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // Add OnClickListener for the Sign Up button
-        findViewById(R.id.go_to_signup_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to the SignUpActivity
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
-    // Validate login credentials
-    private boolean validateLogin(String email, String password) {
-        // Retrieve user data from SharedPreferences
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedEmail = prefs.getString("EMAIL", "");  // Get saved email from signup
-        String savedId = prefs.getString("ID", "");  // Get saved ID from signup
-        String savedPassword = prefs.getString("PASSWORD", "");  // Get saved password from signup
-
-        // Check if entered email or ID matches the saved email/ID, and password matches the saved one
-        return (email.equals(savedEmail) || email.equals(savedId)) && password.equals(savedPassword);
-    }
-
-    // Navigate to MainActivity
     private void navigateToMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish();  // Close LoginActivity so the user can't return to it
     }
 }

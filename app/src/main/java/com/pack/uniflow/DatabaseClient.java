@@ -23,8 +23,9 @@ public class DatabaseClient {
                 .addCallback(new RoomDatabase.Callback() {
                     @Override
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
                         Executors.newSingleThreadExecutor().execute(() -> {
-                            insertDefaultData(context);
+                            insertDefaultData(DatabaseClient.this.database);
                         });
                     }
                 })
@@ -46,49 +47,46 @@ public class DatabaseClient {
         return database;
     }
 
-    private void insertDefaultData(Context context) {
+    private void insertDefaultData(UniflowDB database) {
         try {
             // Insert Universities
-            Uni nationalUni = createUniversity("National University", "Main Campus", 1950, "www.nationaluni.edu");
+            Uni nationalUni = new Uni();
+            nationalUni.name = "National University";
+            nationalUni.location = "Main Campus";
+            nationalUni.establishedYear = 1950;
+            nationalUni.website = "www.nationaluni.edu";
             long uniId1 = database.uniDao().insert(nationalUni);
-            Log.d("DB_INSERT", "Inserted University ID: " + uniId1);
+            Log.d("DB_INSERT", "Inserted University with ID: " + uniId1);
 
-            Uni techUni = createUniversity("Tech Institute", "Tech Park", 1995, "www.techinstitute.edu");
+            Uni techUni = new Uni();
+            techUni.name = "Tech Institute";
+            techUni.location = "Tech Park";
+            techUni.establishedYear = 1995;
+            techUni.website = "www.techinstitute.edu";
             long uniId2 = database.uniDao().insert(techUni);
-            Log.d("DB_INSERT", "Inserted University ID: " + uniId2);
+            Log.d("DB_INSERT", "Inserted University with ID: " + uniId2);
 
             // Insert Clubs
-            insertClub((int)uniId1, "Chess Club", "For chess enthusiasts");
-            insertClub((int)uniId1, "Debate Society", "Public speaking");
-            insertClub((int)uniId2, "Coding Club", "Learn programming");
-            insertClub((int)uniId2, "Robotics Team", "Build robots");
+            insertClub(database, "Chess Club", "For chess enthusiasts", (int)uniId1);
+            insertClub(database, "Debate Society", "Public speaking", (int)uniId1);
+            insertClub(database, "Coding Club", "Learn programming", (int)uniId2);
+            insertClub(database, "Robotics Team", "Build robots", (int)uniId2);
 
         } catch (Exception e) {
             Log.e("DB_INIT", "Failed to insert default data", e);
         }
     }
 
-
-    private Uni createUniversity(String name, String location, int year, String website) {
-        Uni uni = new Uni();
-        uni.name = name;
-        uni.location = location;
-        uni.establishedYear = year;
-        uni.website = website;
-        return uni;
-    }
-
-    private void insertClub(int uniId, String name, String description) {
+    private void insertClub(UniflowDB database, String name, String description, int uniId) {
         try {
             Club club = new Club();
             club.name = name;
             club.description = description;
             club.uniId = uniId;
             long clubId = database.clubDao().insert(club);
-            Log.d("DB_INSERT", "Inserted Club ID: " + clubId);
+            Log.d("DB_INSERT", "Inserted Club: " + name + " with ID: " + clubId);
         } catch (Exception e) {
             Log.e("DB_INIT", "Failed to insert club: " + name, e);
         }
     }
-
 }
