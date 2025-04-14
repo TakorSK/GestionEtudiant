@@ -38,7 +38,7 @@
         android:layout_gravity="start"
         android:background="?attr/colorSurface"
         android:fitsSystemWindows="true"
-        android:maxWidth="300dp"
+        android:maxWidth="325dp"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>
