@@ -102,7 +102,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Age"
-                android:textColorHint="#aaa"
                 android:drawablePadding="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,7 +126,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Telephone Number"
-                android:textColorHint="#aaa"
                 android:drawablePadding="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -152,7 +150,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="University ID"
-                android:textColorHint="#aaa"
                 android:drawablePadding="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -177,7 +174,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Email"
-                android:textColorHint="#aaa"
                 android:inputType="textEmailAddress"
                 android:drawablePadding="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -203,7 +199,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Password"
-                android:textColorHint="#aaa"
                 android:inputType="textPassword"
                 android:drawablePadding="20dp" />
         </com.google.android.material.textfield.TextInputLayout>

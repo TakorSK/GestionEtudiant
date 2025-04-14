@@ -5,13 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.ClubsFragment">
 
-    <!-- Title of the Page -->
+    <!-- Club Page Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
-        tools:context=".Fragments.ClubsFragment">
+        android:padding="16dp">
 
         <!-- Title -->
         <TextView
@@ -28,9 +27,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/clubsRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
-
 
 </RelativeLayout>
