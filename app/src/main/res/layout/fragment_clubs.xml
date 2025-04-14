@@ -6,20 +6,31 @@
     tools:context=".Fragments.ClubsFragment">
 
     <!-- Title of the Page -->
-    <TextView
-        android:id="@+id/club_page_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Club Page"
-        android:textSize="30sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-
-    <!-- RecyclerView to display the list of clubs -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/clubs_recycler_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/club_page_title"
-        android:layout_marginTop="16dp" />
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".Fragments.ClubsFragment">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/club_page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:text="Clubs"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <!-- Scrollable Club List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/clubsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
 </RelativeLayout>
