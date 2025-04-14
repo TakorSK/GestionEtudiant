@@ -15,22 +15,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
+
+        <!-- Post Title -->
         <TextView
-            android:id="@+id/clubName"
+            android:id="@+id/postTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Club Name"
+            android:text="Title"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="?attr/colorOnSurface" />
 
+        <!-- Post Description -->
         <TextView
-            android:id="@+id/clubDescription"
+            android:id="@+id/postDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Club description goes here"
+            android:text="Post Stuff goes here!"
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?attr/colorOnSurface" />
+
+        <!-- ImageView for the post image (Initially invisible) -->
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
-

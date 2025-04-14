@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:padding="25dp"
-    android:theme="@style/Base.Theme.UniFlow">
-
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="120dp"
-        android:layout_height="126dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="26dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/nav_profile_pic"
-        app:shapeAppearanceOverlay="@style/roundedImageView" />
+    android:layout_marginTop="20dp"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="24dp"
+        android:background="?attr/colorSurface">
+
+        <FrameLayout
+            android:layout_width="120dp"
+            android:layout_height="126dp"
+            android:layout_marginEnd="24dp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/nav_profile_pic"
+                android:clipToOutline="true"
+                android:outlineProvider="background"
+                android:background="@drawable/circle_mask" />
+
+        </FrameLayout>
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
             android:gravity="center_vertical">
 
             <TextView
@@ -38,44 +47,42 @@
                 android:layout_height="wrap_content"
                 android:text="Guest"
                 android:textStyle="bold"
-                android:textSize="25sp"
-                android:gravity="start"/>
+                android:textSize="26sp"
+                android:textColor="?attr/colorOnSurface" />
 
             <TextView
                 android:id="@+id/profile_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="start"
                 android:text="Unknown"
-                android:textSize="18sp"
-                android:elegantTextHeight="true"
-                android:textStyle="italic" />
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:textColor="?attr/colorOnSurface" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginTop="20dp">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Online"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:gravity="center_vertical"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical">
 
-            <View
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginStart="3dp"
-                android:background="@drawable/online_circle_icon"
-                android:layout_gravity="center_vertical" /> <!-- Circle centered vertically -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Online"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/online_circle_icon"
+                    android:layout_gravity="center_vertical" />
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
-</LinearLayout>
+</androidx.cardview.widget.CardView>
