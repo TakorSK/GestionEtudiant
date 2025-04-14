@@ -32,13 +32,6 @@
                 android:outlineProvider="background"
                 android:background="@drawable/circle_mask" />
 
-            <ImageView
-                android:id="@+id/status_icon"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="4dp"
-                android:src="@drawable/online_circle_icon" />
         </FrameLayout>
 
         <!-- Info Section -->
