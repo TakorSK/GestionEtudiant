@@ -34,6 +34,7 @@ DONE:
     - edited the whole signup activity,uniflowDB and databaseclient after that -done
     - Test The Database -done
     - Insert directly into database universities and clubs for testing -done
+    - Added synchronization for the is_online and last_login columns in the database -done
 
 =======================================================================================
 
