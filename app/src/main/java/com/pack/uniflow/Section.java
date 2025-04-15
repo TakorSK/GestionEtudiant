@@ -6,7 +6,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 @Entity(
         tableName = "section",
         foreignKeys = @ForeignKey(

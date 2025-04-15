@@ -32,8 +32,6 @@ public class LoginActivity extends AppCompatActivity {
             navigateToMainActivity();  // Automatically go to MainActivity if already logged in
         }
 
-        //Block
-
         // Handle login button click
         findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {
             @Override
