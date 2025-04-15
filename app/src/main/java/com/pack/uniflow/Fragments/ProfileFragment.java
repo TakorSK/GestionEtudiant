@@ -17,12 +17,21 @@ public class ProfileFragment extends Fragment {
     private TextView profileNameTextView;
     private TextView profileUniTextView;
     private TextView profileSectionTextView;
+    private TextView edtBioTextView;  // Add this TextView for bio
     private boolean isOnline = true;
+
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals("bio")) {
+                updateBio();  // Refresh the bio when it's updated in SharedPreferences
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
@@ -30,6 +39,7 @@ public class ProfileFragment extends Fragment {
         profileNameTextView = view.findViewById(R.id.profile_Name);
         profileUniTextView = view.findViewById(R.id.profile_Uni);
         profileSectionTextView = view.findViewById(R.id.profile_Section);
+        edtBioTextView = view.findViewById(R.id.edt_bio);  // Initialize bio TextView
 
         // Set the Profile Image
         ImageView profileImageView = view.findViewById(R.id.profile_image);
@@ -54,7 +64,32 @@ public class ProfileFragment extends Fragment {
             statusIcon.setImageResource(R.drawable.offline_circle_icon);
         }
 
+        // Load bio from SharedPreferences when the fragment is created
+        updateBio();
+
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Register the listener to listen for preference changes
+        SharedPreferences prefs = getActivity().getSharedPreferences("UserPreferences", getContext().MODE_PRIVATE);
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // Unregister the listener when the fragment is no longer visible
+        SharedPreferences prefs = getActivity().getSharedPreferences("UserPreferences", getContext().MODE_PRIVATE);
+        prefs.unregisterOnSharedPreferenceChangeListener(prefListener);
+    }
+
+    private void updateBio() {
+        SharedPreferences prefs = getActivity().getSharedPreferences("UserPreferences", getContext().MODE_PRIVATE);
+        String bio = prefs.getString("bio", "");
+        edtBioTextView.setText(bio);  // Update the bio in the UI
     }
 
     private Uri getProfileImageUriFromPreferences() {

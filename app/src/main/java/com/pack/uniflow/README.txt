@@ -11,6 +11,7 @@ TODO:
 DONE:
     - Adding Settings; Lightmode/darkmode [Done]
     - Adding Settings; profile picture uploads [Done]
+    - Adding Settings; profile bio
     - Adding the Clubs display [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]

@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.pack.uniflow.R;
-import com.bumptech.glide.Glide; // Import Glide
+import com.bumptech.glide.Glide;
 
 public class ChangeProfileActivity extends AppCompatActivity {
 
@@ -39,7 +39,7 @@ public class ChangeProfileActivity extends AppCompatActivity {
         // Save button click listener
         btnSave.setOnClickListener(v -> {
             String bio = edtBio.getText().toString().trim();
-            // Save the bio and profile picture to your DB/server/etc.
+            // Save the bio and profile picture to SharedPreferences
             saveBioToPreferences(bio);  // Save bio to preferences
             Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
             finish(); // Close the activity
@@ -99,10 +99,11 @@ public class ChangeProfileActivity extends AppCompatActivity {
         Log.d("ChangeProfileActivity", "Profile image URI saved: " + imageUri.toString());
     }
 
+    // Save bio to SharedPreferences
     private void saveBioToPreferences(String bio) {
         SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("bio", bio);  // Save bio to SharedPreferences
+        editor.putString("bio", bio);
         editor.apply();
     }
 }
