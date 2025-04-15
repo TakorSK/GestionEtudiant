@@ -12,27 +12,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UniFlow"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Activities.ChangeProfileActivity"
+            android:exported="false" />
         <!-- SignupActivity definition -->
         <activity
             android:name=".Activities.SignupActivity"
             android:exported="true" /> <!-- Set exported to true if it's intended to be accessible externally -->
-
         <!-- LoginActivity definition -->
         <activity
             android:name=".Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- MainActivity definition -->
+        </activity> <!-- MainActivity definition -->
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true" />
-
     </application>
 
 </manifest>
