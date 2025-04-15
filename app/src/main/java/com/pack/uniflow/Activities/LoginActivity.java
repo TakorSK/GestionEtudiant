@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText emailEditText, passwordEditText;
+    private EditText loginIdEditText, passwordEditText;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
@@ -35,42 +35,55 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        emailEditText = findViewById(R.id.login_cid_gmail);
+        loginIdEditText = findViewById(R.id.login_cid_gmail); // Should contain either email or ID
         passwordEditText = findViewById(R.id.login_password);
     }
 
     private void setupLoginButton() {
         findViewById(R.id.login_button).setOnClickListener(v -> {
-            String email = emailEditText.getText().toString().trim();
+            String loginId = loginIdEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (loginId.isEmpty() || password.isEmpty()) {
                 Toast.makeText(LoginActivity.this,
-                        "Email and password are required",
+                        "ID/Email and password are required",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // Debug bypass (remove in production)
-            if (email.equals("debug") && password.equals("debug")) {
+            if (loginId.equals("debug") && password.equals("debug")) {
                 navigateToMainActivity();
                 return;
             }
 
-            executorService.execute(() -> processLogin(email, password));
+            executorService.execute(() -> processLogin(loginId, password));
         });
     }
 
     private void setupSignupButton() {
         findViewById(R.id.go_to_signup_button).setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+            finish(); // Optional: close login activity if you don't want it in back stack
         });
     }
 
-    private void processLogin(String email, String password) {
+    private void processLogin(String loginId, String password) {
         try {
             UniflowDB database = DatabaseClient.getInstance(getApplicationContext()).getDatabase();
-            Student student = database.studentDao().findByEmail(email);
+
+            // First try to find by email
+            Student student = database.studentDao().findByEmail(loginId);
+
+            // If not found by email, try to find by ID
+            if (student == null) {
+                try {
+                    int studentId = Integer.parseInt(loginId);
+                    student = database.studentDao().getStudentById(studentId);
+                } catch (NumberFormatException e) {
+                    // loginId is not a valid number
+                }
+            }
 
             if (student != null && student.password.equals(password)) {
                 runOnUiThread(() -> {
@@ -82,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 runOnUiThread(() -> {
                     Toast.makeText(LoginActivity.this,
-                            "Invalid email or password",
+                            "Invalid ID/Email or password",
                             Toast.LENGTH_SHORT).show();
                 });
             }
@@ -98,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void navigateToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        // Don't call finish() here - let the activity stay in stack if needed
     }
 }
