@@ -3,6 +3,8 @@ package com.pack.uniflow;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
+
 import java.util.List;
 @Dao
 public interface StudentDao {
@@ -17,4 +19,8 @@ public interface StudentDao {
     Student getLatestStudent();
     @Query("SELECT * FROM Student WHERE id = :id LIMIT 1")
     Student getStudentById(int id);
+    @Query("UPDATE student SET is_online = 0")
+    void setAllOffline();
+    @Update
+    void update(Student student);
 }

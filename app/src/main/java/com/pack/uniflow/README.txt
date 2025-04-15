@@ -23,14 +23,15 @@ DONE:
 
 ====================================== SOUFIANE =======================================
 TODO
-    - Test The Database (should be done soon, currently having problems with the database staying closed when launching the app, which makes it impossible to interact with)
     - Linking the database to the app
-    - Insert directly into database universities and clubs for testing
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
     - edited the database for compatibility with the xml form, we forgot to put the password in the database lmao -Done
     - edited the whole signup activity,uniflowDB and databaseclient after that -done
+    - Test The Database -done
+    - Insert directly into database universities and clubs for testing -done
+
 =======================================================================================
 
 
