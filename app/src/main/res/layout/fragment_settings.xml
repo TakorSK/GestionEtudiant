@@ -10,85 +10,82 @@
 
     <!-- Dark Mode Switch Row as Card -->
     <androidx.cardview.widget.CardView
-    android:id="@+id/card_dark_mode"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="24dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    android:padding="12dp"
-    android:background="@android:color/transparent">  <!-- Set background to transparent -->
-
-    <LinearLayout
+        android:id="@+id/card_dark_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        android:padding="12dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:paddingLeft="10dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dark Mode"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="?android:textColorPrimary" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <Switch
-            android:id="@+id/settings_switch_dark_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            android:padding="8dp"
-            android:thumbTint="?attr/colorPrimary"
-            android:trackTint="?android:attr/colorControlActivated" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:paddingLeft="10dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dark Mode"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?android:textColorPrimary" />
+
+            <Switch
+                android:id="@+id/settings_switch_dark_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:thumbTint="?attr/colorPrimary"
+                android:trackTint="?android:attr/colorControlActivated" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-        <!-- Change Profile Info Row as Card -->
+    <!-- Change Profile Info Row as Card -->
     <androidx.cardview.widget.CardView
-    android:id="@+id/card_change_profile"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/card_dark_mode"
-    android:layout_marginBottom="24dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    android:padding="12dp"
-    android:background="@android:color/transparent">  <!-- Set background to transparent -->
-
-    <LinearLayout
-        android:id="@+id/settings_btn_change_profile"
+        android:id="@+id/card_change_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical|center">
+        android:layout_below="@id/card_dark_mode"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        android:padding="12dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_edit"
-            android:layout_marginEnd="12dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/settings_btn_change_profile"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Change Profile Info"
-            android:textSize="16sp"
-            android:textColor="?android:textColorPrimary"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            android:maxLines="1" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical|center">
 
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change Profile Info"
+                android:textSize="16sp"
+                android:textColor="?android:textColorPrimary"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxLines="1" />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
