@@ -1,5 +1,7 @@
 package com.pack.uniflow.Fragments;
 
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,17 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
+import com.bumptech.glide.Glide; // Import Glide
 
 public class ProfileFragment extends Fragment {
 
     private TextView profileNameTextView;
     private TextView profileUniTextView;
     private TextView profileSectionTextView;
-
     private boolean isOnline = true;
 
     @Override
@@ -32,17 +31,23 @@ public class ProfileFragment extends Fragment {
         profileUniTextView = view.findViewById(R.id.profile_Uni);
         profileSectionTextView = view.findViewById(R.id.profile_Section);
 
-        // TODO: Replace the "loggedStudent" with the actual logged student from the database.
-        /* if (loggedStudent != null) {
-            profileNameTextView.setText("Name: " + loggedStudent.fullName);
-            profileUniTextView.setText("University: " + loggedStudent.UniName);
-            profileSectionTextView.setText("Section: " + loggedStudent.SectionId);
-        } */
+        // Set the Profile Image
+        ImageView profileImageView = view.findViewById(R.id.profile_image);
+        Uri imageUri = getProfileImageUriFromPreferences();
+
+        if (imageUri != null) {
+            // Using Glide to load the image
+            Glide.with(this)
+                    .load(imageUri)
+                    .placeholder(R.drawable.nav_profile_pic)  // Default image
+                    .into(profileImageView);
+        } else {
+            profileImageView.setImageResource(R.drawable.nav_profile_pic); // Default image
+        }
 
         // Initialize the ImageView for status
         ImageView statusIcon = view.findViewById(R.id.status_icon);
 
-        // TODO: Replace "isOnline" with the actual DB online indicator
         if (isOnline) {
             statusIcon.setImageResource(R.drawable.online_circle_icon);
         } else {
@@ -50,5 +55,19 @@ public class ProfileFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private Uri getProfileImageUriFromPreferences() {
+        SharedPreferences prefs = getActivity().getSharedPreferences("UserPreferences", getContext().MODE_PRIVATE);
+        String uriString = prefs.getString("profile_image_uri", null);
+
+        if (uriString != null) {
+            try {
+                return Uri.parse(uriString); // Convert the saved string URI to Uri object
+            } catch (Exception e) {
+                e.printStackTrace(); // Log the error if URI parsing fails
+            }
+        }
+        return null; // No image URI saved, return null
     }
 }

@@ -1,22 +1,22 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.pack.uniflow.R;
+import com.bumptech.glide.Glide; // Import Glide
 
 public class ChangeProfileActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-
     private ImageView ivProfilePicture;
     private EditText edtBio;
     private Button btnSave;
@@ -30,20 +30,40 @@ public class ChangeProfileActivity extends AppCompatActivity {
         edtBio = findViewById(R.id.edt_bio);
         btnSave = findViewById(R.id.btn_save);
 
-        // Profile picture click listener
-        ivProfilePicture.setOnClickListener(v -> {
-            openImagePicker();
-            Toast.makeText(this, "Select a profile picture", Toast.LENGTH_SHORT).show();
-        });
+        // Load the current profile picture and bio if available
+        loadProfileData();
 
-        // Save button
+        // Profile picture click listener
+        ivProfilePicture.setOnClickListener(v -> openImagePicker());
+
+        // Save button click listener
         btnSave.setOnClickListener(v -> {
             String bio = edtBio.getText().toString().trim();
-
-            // TODO: Save the bio and profile picture to your DB/server/etc.
+            // Save the bio and profile picture to your DB/server/etc.
+            saveBioToPreferences(bio);  // Save bio to preferences
             Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
             finish(); // Close the activity
         });
+    }
+
+    private void loadProfileData() {
+        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+
+        // Load profile picture URI from SharedPreferences
+        String imageUriString = prefs.getString("profile_image_uri", null);
+        if (imageUriString != null) {
+            Uri imageUri = Uri.parse(imageUriString);
+
+            // Load image using Glide
+            Glide.with(this)
+                    .load(imageUri)
+                    .placeholder(R.drawable.nav_profile_pic)  // Placeholder if the image is loading
+                    .into(ivProfilePicture);  // Set image to the ImageView
+        }
+
+        // Load bio (if saved)
+        String bio = prefs.getString("bio", "");
+        edtBio.setText(bio);
     }
 
     private void openImagePicker() {
@@ -58,8 +78,31 @@ public class ChangeProfileActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
-            ivProfilePicture.setImageURI(imageUri);
-            // Optionally store the URI or upload the image
+
+            // Load the selected image using Glide
+            Glide.with(this)
+                    .load(imageUri)
+                    .into(ivProfilePicture);
+
+            // Save the image URI to SharedPreferences
+            saveProfileImageUriToPreferences(imageUri);
         }
+    }
+
+    private void saveProfileImageUriToPreferences(Uri imageUri) {
+        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("profile_image_uri", imageUri.toString());
+        editor.apply();
+
+        // Log to confirm saving the URI
+        Log.d("ChangeProfileActivity", "Profile image URI saved: " + imageUri.toString());
+    }
+
+    private void saveBioToPreferences(String bio) {
+        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("bio", bio);  // Save bio to SharedPreferences
+        editor.apply();
     }
 }

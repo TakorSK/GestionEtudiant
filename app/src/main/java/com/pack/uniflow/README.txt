@@ -5,12 +5,12 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 TODO:
     - Adding the Scores display
     - Adding the Schedule display and logic
-    - Adding the Settings
-        -Lightmode/darkmode
-        -profile info  + profile picture uploads
     - Admin
+    - Adding Settings; profile info
 
 DONE:
+    - Adding Settings; Lightmode/darkmode [Done]
+    - Adding Settings; profile picture uploads [Done]
     - Adding the Clubs display [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]
