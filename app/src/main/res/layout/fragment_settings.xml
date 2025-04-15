@@ -19,7 +19,9 @@
         android:background="@drawable/bg_card_shadow"
         android:padding="16dp"
         android:elevation="6dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <TextView
             android:layout_width="0dp"
@@ -56,7 +58,9 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="24dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <ImageView
             android:layout_width="24dp"

@@ -6,15 +6,19 @@
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="6dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:padding="16dp"
         android:background="?attr/colorSurface"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false">
 
+        <!-- Club Name -->
         <TextView
             android:id="@+id/clubName"
             android:layout_width="wrap_content"
@@ -23,6 +27,7 @@
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="?attr/colorOnSurface" />
 
+        <!-- Club Description -->
         <TextView
             android:id="@+id/clubDescription"
             android:layout_width="wrap_content"
@@ -31,6 +36,6 @@
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?attr/colorOnSurface" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
-

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -40,10 +39,14 @@
                     android:src="@drawable/nav_profile_pic"
                     android:contentDescription="Profile Picture"
                     android:scaleType="centerCrop"
+                    android:layout_gravity="center"
                     android:background="@drawable/circle_mask"
                     android:clickable="true"
                     android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless" />
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:clipToOutline="true"
+                    android:outlineProvider="background" />
+
 
                 <!-- Upload label -->
                 <TextView
@@ -80,6 +83,9 @@
                     app:icon="@android:drawable/ic_menu_save"
                     app:iconGravity="textStart"
                     app:iconPadding="12dp"
+                    android:clipToOutline="true"
+                    android:layout_centerHorizontal="true"
+                    android:scaleType="centerCrop"
                     android:textColor="@android:color/white"
                     android:backgroundTint="?attr/colorPrimary" />
 

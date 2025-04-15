@@ -11,12 +11,13 @@ TODO:
 DONE:
     - Adding Settings; Lightmode/darkmode [Done]
     - Adding Settings; profile picture uploads [Done]
-    - Adding Settings; profile bio
+    - Adding Settings; profile bio [Done]
     - Adding the Clubs display [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]
     - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
     - Fix the signupActivity after the change of the xml [Done]
+    - fix the settings profile mask [Done]
     - Fix the signup XML and add university and club, club being optional and university being required. [Done]
     - Fix input fields not being a single line [Done]
 =======================================================================================

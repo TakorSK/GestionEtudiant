@@ -31,7 +31,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Profile Picture Area -->
                 <FrameLayout
@@ -110,7 +112,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <!-- Add content here -->
                 <TextView
