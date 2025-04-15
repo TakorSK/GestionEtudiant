@@ -5,18 +5,21 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 TODO:
     - Adding the Scores display
     - Adding the Schedule display and logic
-    - Adding the Settings
-        -Lightmode/darkmode
-        -profile info  + profile picture uploads
     - Admin
+    - Adding Settings; profile info
 
 DONE:
+    - Adding Settings; Lightmode/darkmode [Done]
+    - Adding Settings; profile picture uploads [Done]
+    - Adding Settings; profile bio [Done]
     - Adding the Clubs display [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]
-    - Fix the signupActivity after the change of the xml [Done]
-    - Fix the signup XML and add university and club, club being optional and university being required. [Done]
     - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
+    - Fix the signupActivity after the change of the xml [Done]
+    - fix the settings profile mask [Done]
+    - Fix the signup XML and add university and club, club being optional and university being required. [Done]
+    - Fix input fields not being a single line [Done]
 =======================================================================================
 
 
@@ -40,6 +43,7 @@ DONE:
 TODO
     - TESTING EACH FUNCTION.
     - Adding verification logic of each field input.
+    - adding verification to all table 
 
 DONE:
 

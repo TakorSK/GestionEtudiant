@@ -1,17 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.SettingsFragment">
+    tools:context=".Fragments.SettingsFragment"
+    android:background="?android:attr/windowBackground"
+    android:padding="16dp"
+    android:clipToPadding="false">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Dark Mode Switch Container with Drop Shadow -->
+    <LinearLayout
+        android:id="@+id/container_dark_mode"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings Page"
-        android:textSize="30dp"
-        android:layout_centerInParent="true"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/bg_card_shadow"
+        android:padding="16dp"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="10dp"
+            android:text="Dark Mode"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?android:textColorPrimary" />
+
+        <Switch
+            android:id="@+id/settings_switch_dark_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:padding="8dp"
+            android:thumbTint="?attr/colorPrimary"
+            android:trackTint="?android:attr/colorControlActivated" />
+    </LinearLayout>
+
+    <!-- Change Profile Info Container with Drop Shadow -->
+    <LinearLayout
+        android:id="@+id/settings_btn_change_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/container_dark_mode"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_card_shadow"
+        android:padding="16dp"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginBottom="24dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Profile Info"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?android:textColorPrimary"
+            android:ellipsize="end"
+            android:maxLines="1" />
+    </LinearLayout>
 
 </RelativeLayout>

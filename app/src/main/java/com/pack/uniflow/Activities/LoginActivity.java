@@ -10,9 +10,6 @@ import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.UniflowDB;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,7 +17,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText loginIdEditText, passwordEditText;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        loginIdEditText = findViewById(R.id.login_cid_gmail);
+        loginIdEditText = findViewById(R.id.login_cid_gmail); // Should contain either email or ID
         passwordEditText = findViewById(R.id.login_password);
     }
 
@@ -90,13 +86,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (student != null && student.password.equals(password)) {
-                // Update login status and timestamp
-                student.isOnline = true;
-                student.lastLogin = dateFormat.format(new Date());
-
-                // Update student in database
-                database.studentDao().update(student);
-
                 runOnUiThread(() -> {
                     Toast.makeText(LoginActivity.this,
                             "Login successful!",
@@ -124,5 +113,6 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        // Don't call finish() here - let the activity stay in stack if needed
     }
 }

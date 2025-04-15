@@ -45,11 +45,11 @@ public class HomeFragment extends Fragment {
     private List<Post> generateMockPosts() {
         List<Post> posts = new ArrayList<>();
 
-        posts.add(new Post("First Post", "Here's something cool I found today!", R.drawable.placeholder));
-        posts.add(new Post("Second Post", "This one has no image, just text.", 0));
-        posts.add(new Post("Event Update", "Join us for the club fair tomorrow! 🎉", R.drawable.placeholder));
-        posts.add(new Post("Announcement", "No classes this Friday due to maintenance.", 0));
-        posts.add(new Post("Photoshoot Day", "Captured some memories 📸", R.drawable.placeholder));
+        posts.add(new Post("First Debug Post!", "This is its Description + a Placeholder Image!", R.drawable.placeholder));
+        posts.add(new Post("Second Debug Post", "This one has no image, just text.", 0));
+        posts.add(new Post("Third Debug Post", "This is its Description + a Placeholder Image!", R.drawable.placeholder));
+        posts.add(new Post("First Debug Announcement", "This is its Description.", 0));
+        posts.add(new Post("Second Debug Announcement", "This is its Description + a Placeholder Image!", R.drawable.placeholder));
 
         return posts;
     }

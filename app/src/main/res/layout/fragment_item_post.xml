@@ -6,16 +6,18 @@
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="6dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:padding="16dp"
         android:background="?attr/colorSurface"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <!-- Post Title -->
         <TextView
@@ -34,7 +36,8 @@
             android:text="Post Stuff goes here!"
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            android:paddingBottom="10dp"/>
 
         <!-- ImageView for the post image (Initially invisible) -->
         <ImageView
