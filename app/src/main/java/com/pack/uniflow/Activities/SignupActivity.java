@@ -96,6 +96,7 @@ public class SignupActivity extends AppCompatActivity {
         if (idStr.isEmpty()) {
             showError(errorId, "ID is required");
             isValid = false;
+
         } else if (!idStr.matches("\\d+")) {
             showError(errorId, "ID must be a number");
             isValid = false;
@@ -114,6 +115,7 @@ public class SignupActivity extends AppCompatActivity {
         if (ageStr.isEmpty()) {
             showError(errorAge, "Age is required");
             isValid = false;
+
         } else if (!ageStr.matches("\\d+")) {
             showError(errorAge, "Age must be a number");
             isValid = false;
@@ -127,6 +129,7 @@ public class SignupActivity extends AppCompatActivity {
         if (password.isEmpty()) {
             showError(errorPassword, "Password is required");
             isValid = false;
+
         } else if (password.length() < 6) {
             showError(errorPassword, "Password must be at least 6 characters");
             isValid = false;
@@ -135,6 +138,7 @@ public class SignupActivity extends AppCompatActivity {
         if (email.isEmpty()) {
             showError(errorEmail, "Email is required");
             isValid = false;
+
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             showError(errorEmail, "Invalid email format");
             isValid = false;
@@ -143,6 +147,7 @@ public class SignupActivity extends AppCompatActivity {
         if (universityIdStr.isEmpty()) {
             showError(errorUniversityId, "University ID is required");
             isValid = false;
+
         } else if (!universityIdStr.matches("\\d+")) {
             showError(errorUniversityId, "University ID must be a number");
             isValid = false;

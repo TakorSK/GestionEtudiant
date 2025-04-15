@@ -8,9 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.Student;
+
 
 public class ProfileFragment extends Fragment {
 
@@ -33,14 +34,20 @@ public class ProfileFragment extends Fragment {
         profileSectionTextView = view.findViewById(R.id.profile_Section);
 
         // TODO: Replace the "loggedStudent" with the actual logged student from the database.
-        /* if (loggedStudent != null) {
+        /*Student loggedStudent = DatabaseClient.getInstance(getApplicationContext())
+                .getDatabase()
+                .studentDao()
+                .getLatestStudent();
+
+        if (loggedStudent != null) {
             profileNameTextView.setText("Name: " + loggedStudent.fullName);
             profileUniTextView.setText("University: " + loggedStudent.UniName);
             profileSectionTextView.setText("Section: " + loggedStudent.SectionId);
-        } */
+        }*/
 
         // Initialize the ImageView for status
         ImageView statusIcon = view.findViewById(R.id.status_icon);
+
 
         // TODO: Replace "isOnline" with the actual DB online indicator
         if (isOnline) {

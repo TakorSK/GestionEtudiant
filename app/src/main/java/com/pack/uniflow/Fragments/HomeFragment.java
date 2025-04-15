@@ -47,9 +47,9 @@ public class HomeFragment extends Fragment {
 
         posts.add(new Post("First Post", "Here's something cool I found today!", R.drawable.placeholder));
         posts.add(new Post("Second Post", "This one has no image, just text.", 0));
-        posts.add(new Post("Event Update", "Join us for the club fair tomorrow! 🎉", R.drawable.placeholder));
+        posts.add(new Post("Event Update", "Join us for the club fair tomorrow! ", R.drawable.placeholder));
         posts.add(new Post("Announcement", "No classes this Friday due to maintenance.", 0));
-        posts.add(new Post("Photoshoot Day", "Captured some memories 📸", R.drawable.placeholder));
+        posts.add(new Post("Photoshoot Day", "Captured some memories ", R.drawable.placeholder));
 
         return posts;
     }

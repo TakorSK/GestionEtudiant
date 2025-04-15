@@ -28,7 +28,9 @@
                 android:layout_height="50dp"
                 android:hint="ID"
                 android:textColorHint="#aaa"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -53,7 +55,9 @@
                 android:layout_height="50dp"
                 android:hint="Name"
                 android:textColorHint="#aaa"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -78,7 +82,9 @@
                 android:layout_height="50dp"
                 android:hint="First Name"
                 android:textColorHint="#aaa"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -102,7 +108,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Age"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -126,7 +134,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="Telephone Number"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -150,7 +160,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="University ID"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -175,7 +187,9 @@
                 android:layout_height="50dp"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -200,7 +214,9 @@
                 android:layout_height="50dp"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:drawablePadding="20dp" />
+                android:drawablePadding="20dp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView

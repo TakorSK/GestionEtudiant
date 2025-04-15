@@ -71,7 +71,7 @@
                         android:id="@+id/profile_Name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Debug"
+                        android:text="Null"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold" />
@@ -80,7 +80,7 @@
                         android:id="@+id/profile_Section"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Section: Debug"
+                        android:text="Section: Null"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="?attr/colorOnSurface" />
 
@@ -88,7 +88,7 @@
                         android:id="@+id/profile_Uni"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="University: Debug"
+                        android:text="University: Null"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="?attr/colorOnSurface" />
                 </LinearLayout>

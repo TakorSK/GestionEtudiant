@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         profileGroupTextView = navigationView.getHeaderView(0).findViewById(R.id.profile_group);
 
         new Thread(() -> {
-            // Assuming only one student is logged in (you can improve this later)
+            // Assuming only one student is logged in
             Student loggedStudent = DatabaseClient.getInstance(getApplicationContext())
                     .getDatabase()
                     .studentDao()
-                    .getLatestStudent(); // <-- new query we'll add
+                    .getLatestStudent();
 
             runOnUiThread(() -> {
                 if (loggedStudent != null) {
