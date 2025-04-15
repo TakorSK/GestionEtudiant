@@ -34,7 +34,8 @@
             android:text="Post Stuff goes here!"
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?attr/colorOnSurface"
+            android:paddingBottom="10dp"/>
 
         <!-- ImageView for the post image (Initially invisible) -->
         <ImageView
