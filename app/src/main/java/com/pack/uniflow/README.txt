@@ -40,6 +40,7 @@ DONE:
 TODO
     - TESTING EACH FUNCTION.
     - Adding verification logic of each field input.
+    - adding verification to all table 
 
 DONE:
 
