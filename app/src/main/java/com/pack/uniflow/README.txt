@@ -27,7 +27,7 @@ DONE:
 ====================================== SOUFIANE =======================================
 TODO
     - Linking the database to the app
-    - when you log in with an account  then log out and login with another account, the account logged in is the first one, going to fix that
+    - Editing Log out so the session is not kept after logging out
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
