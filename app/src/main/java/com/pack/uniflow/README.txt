@@ -29,6 +29,7 @@ TODO
     - Linking the database to the app
     - add bio column to student, club (and maybe uni?)
     -make and synchronize images to students, posts (maybe more)
+    -polish signups and logins inputs (better conditions to control the coherence of data put inside of the db)
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
     - edited the database for compatibility with the xml form, we forgot to put the password in the database lmao -Done
