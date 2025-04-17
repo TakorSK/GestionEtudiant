@@ -67,6 +67,9 @@ public class Student {
     @NonNull
     @ColumnInfo(name = "password")
     public String password;
+    @NonNull
+    @ColumnInfo(name = "Bio")
+    public String Bio;
 
     // Updated Constructor
     public Student(int id, @NonNull String email, @NonNull String fullName,
