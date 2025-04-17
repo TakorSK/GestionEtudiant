@@ -74,7 +74,7 @@ public class Student {
     // Updated Constructor
     public Student(int id, @NonNull String email, @NonNull String fullName,
                    int age, @NonNull String telephone, int uniId,
-                   @NonNull String password) {
+                   @NonNull String password,@NonNull String Bio) {
         this.id = id;
         this.email = email;
         this.fullName = fullName;
@@ -84,5 +84,6 @@ public class Student {
         this.password = password;
         this.registrationDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(new Date());
+        this.Bio=Bio;
     }
 }
