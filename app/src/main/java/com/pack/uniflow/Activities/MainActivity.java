@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Student student = DatabaseClient.getInstance(this)
                         .getDatabase()
                         .studentDao()
-                        .getLatestStudent();
+                        .getOnlineStudent();
 
                 if (student != null) {
                     Uni uni = DatabaseClient.getInstance(this)
@@ -111,8 +111,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void handleOnBackPressed() {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    // Optional: Add exit confirmation
                 }
             }
         });
@@ -129,7 +127,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.nav_schedule) fragment = new ScheduleFragment();
         else if (id == R.id.nav_scores) fragment = new ScoresFragment();
         else if (id == R.id.nav_settings) fragment = new SettingsFragment();
-        else if (id == R.id.nav_logout) handleLogout();
+        else if (id == R.id.nav_logout) {
+            handleLogout();
+            return true;
+        }
 
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
@@ -143,16 +144,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void handleLogout() {
         executorService.execute(() -> {
-            DatabaseClient.getInstance(this)
-                    .getDatabase()
-                    .studentDao()
-                    .setAllOffline();
+            try {
+                // Clear all session data
+                DatabaseClient.getInstance(this)
+                        .getDatabase()
+                        .studentDao()
+                        .setAllOffline();
 
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-            });
+                // Clear any cached student data
+                Student loggedStudent = DatabaseClient.getInstance(this)
+                        .getDatabase()
+                        .studentDao()
+                        .getLatestStudent();
+
+                if (loggedStudent != null) {
+                    loggedStudent.isOnline = false;
+                    DatabaseClient.getInstance(this)
+                            .getDatabase()
+                            .studentDao()
+                            .update(loggedStudent);
+                }
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+                    // Navigate to LoginActivity and clear back stack
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show();
+                });
+            }
         });
     }
 

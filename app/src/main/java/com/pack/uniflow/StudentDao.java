@@ -23,4 +23,6 @@ public interface StudentDao {
     void setAllOffline();
     @Update
     void update(Student student);
+    @Query("SELECT * FROM Student WHERE is_online = 1 LIMIT 1")
+    Student getOnlineStudent();
 }

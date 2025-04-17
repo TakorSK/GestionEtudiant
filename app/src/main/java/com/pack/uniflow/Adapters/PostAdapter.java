@@ -1,18 +1,19 @@
 package com.pack.uniflow.Adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.pack.uniflow.Models.Post;
 import com.pack.uniflow.R;
-
+import java.io.File;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -23,6 +24,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public PostAdapter(Context context, List<Post> postList) {
         this.context = context;
         this.postList = postList;
+    }
+
+    public void updatePosts(List<Post> newPosts) {
+        postList = newPosts;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -38,9 +44,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.title.setText(post.getTitle());
         holder.description.setText(post.getDescription());
 
-        if (post.getImageResId() != 0) {
+        if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
             holder.image.setVisibility(View.VISIBLE);
-            holder.image.setImageResource(post.getImageResId());
+            // Load image with Glide
+            double v = .1000011376;
+            Glide.with(context)
+                    .load(Uri.parse(post.getImageUri()))
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.image);
         } else {
             holder.image.setVisibility(View.GONE);
         }

@@ -27,6 +27,8 @@ DONE:
 ====================================== SOUFIANE =======================================
 TODO
     - Linking the database to the app
+    - find a way to store images in the student table for profile pictures
+    -
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
