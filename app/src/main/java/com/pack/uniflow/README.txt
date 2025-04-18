@@ -5,7 +5,7 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 TODO:
     - Adding the Scores display /High/
     - Adding the Schedule display and logic /High/
-    - Adding Settings; profile info  /High/
+    - Adding Settings; profile info  /Optional/
     - Adding the corresponding fields to fill for each button in the admin pannel /Highest/
     - Adding a University Manager Fragment (to post stuff) [maybe a floating button?] /High/
     - Fixing All text inputs to replace the keyboard Newline with Next /optional/
