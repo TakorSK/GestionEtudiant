@@ -1,11 +1,15 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -14,6 +18,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.Fragments.ClubsFragment;
@@ -23,14 +31,19 @@ import com.pack.uniflow.Fragments.ScheduleFragment;
 import com.pack.uniflow.Fragments.ScoresFragment;
 import com.pack.uniflow.Fragments.SettingsFragment;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Section;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
+
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private ImageView profileImageView;
     private TextView profileNameTextView, profileGroupTextView;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -39,33 +52,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeToolbar();
-        initializeNavigationDrawer();
+        initializeViews();
         loadStudentProfile();
         setupInitialFragment(savedInstanceState);
         setupBackButtonHandler();
     }
 
-    private void initializeToolbar() {
+    private void initializeViews() {
+        // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-    }
 
-    private void initializeNavigationDrawer() {
+        // Navigation drawer setup
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, findViewById(R.id.toolbar),
+                this, drawerLayout, toolbar,
                 R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Navigation header views
         View headerView = navigationView.getHeaderView(0);
+        profileImageView = headerView.findViewById(R.id.profile_image);
         profileNameTextView = headerView.findViewById(R.id.profile_name_text_view);
         profileGroupTextView = headerView.findViewById(R.id.profile_group);
+
+        // Configure ImageView properties
+        profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        profileImageView.setClipToOutline(true);
     }
 
     private void loadStudentProfile() {
@@ -82,18 +100,79 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             .uniDao()
                             .getById(student.uniId);
 
+                    Section section = student.sectionId != null ?
+                            DatabaseClient.getInstance(this)
+                                    .getDatabase()
+                                    .sectionDao()
+                                    .getById(student.sectionId) : null;
+
                     runOnUiThread(() -> {
-                        profileNameTextView.setText(student.fullName);
-                        profileGroupTextView.setText(uni != null ? uni.name : "Unknown University");
+                        // Update profile info
+                        profileNameTextView.setText(student.fullName != null ?
+                                student.fullName : "Unknown Name");
+                        profileGroupTextView.setText(buildProfileSubtitle(uni, section));
+
+                        // Load profile picture with enhanced handling
+                        loadProfilePictureWithFallback(student.profilePictureUri);
                     });
+                } else {
+                    showDefaultProfile();
                 }
             } catch (Exception e) {
-                runOnUiThread(() -> {
-                    profileNameTextView.setText("Error");
-                    profileGroupTextView.setText("Loading failed");
-                });
+                showErrorProfile();
+                Log.e("MainActivity", "Error loading profile", e);
             }
         });
+    }
+
+    private void loadProfilePictureWithFallback(String imageUri) {
+        if (imageUri != null && !imageUri.isEmpty()) {
+            try {
+                // Debug logging
+                Log.d("ProfileImage", "Attempting to load image from: " + imageUri);
+
+                // Handle both file paths and content URIs
+                if (imageUri.startsWith("content://") || imageUri.startsWith("file://")) {
+                    loadWithGlide(Uri.parse(imageUri));
+                } else {
+                    // Try as file path
+                    File imageFile = new File(imageUri);
+                    if (imageFile.exists()) {
+                        loadWithGlide(Uri.fromFile(imageFile));
+                    } else {
+                        // Try adding file:// prefix
+                        loadWithGlide(Uri.parse("file://" + imageUri));
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ProfileImage", "Error loading profile image", e);
+                profileImageView.setImageResource(R.drawable.nav_profile_pic);
+            }
+        } else {
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        }
+    }
+
+    private void loadWithGlide(Uri uri) {
+        Glide.with(this)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.nav_profile_pic)
+                .error(R.drawable.nav_profile_pic)
+                .circleCrop()
+                .into(profileImageView);
+    }
+
+    private String buildProfileSubtitle(Uni uni, Section section) {
+        StringBuilder subtitle = new StringBuilder();
+        if (section != null) {
+            subtitle.append(section.name);
+        }
+        if (uni != null) {
+            if (subtitle.length() > 0) subtitle.append(" - ");
+            subtitle.append(uni.name);
+        }
+        return subtitle.length() > 0 ? subtitle.toString() : "Unknown University";
     }
 
     private void setupInitialFragment(Bundle savedInstanceState) {
@@ -101,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
-            findViewById(R.id.nav_view).setSelected(true);
+            navigationView.setCheckedItem(R.id.nav_home);
         }
     }
 
@@ -111,30 +190,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void handleOnBackPressed() {
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    finish();
                 }
             }
         });
     }
 
+    private void showDefaultProfile() {
+        runOnUiThread(() -> {
+            profileNameTextView.setText("No student logged in");
+            profileGroupTextView.setText("N/A");
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        });
+    }
+
+    private void showErrorProfile() {
+        runOnUiThread(() -> {
+            profileNameTextView.setText("Error");
+            profileGroupTextView.setText("Loading failed");
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        });
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment fragment = null;
+        Fragment selectedFragment = null;
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) fragment = new HomeFragment();
-        else if (id == R.id.nav_profile) fragment = new ProfileFragment();
-        else if (id == R.id.nav_clubs) fragment = new ClubsFragment();
-        else if (id == R.id.nav_schedule) fragment = new ScheduleFragment();
-        else if (id == R.id.nav_scores) fragment = new ScoresFragment();
-        else if (id == R.id.nav_settings) fragment = new SettingsFragment();
-        else if (id == R.id.nav_logout) {
+        if (id == R.id.nav_home) {
+            selectedFragment = new HomeFragment();
+        } else if (id == R.id.nav_profile) {
+            selectedFragment = new ProfileFragment();
+        } else if (id == R.id.nav_clubs) {
+            selectedFragment = new ClubsFragment();
+        } else if (id == R.id.nav_schedule) {
+            selectedFragment = new ScheduleFragment();
+        } else if (id == R.id.nav_scores) {
+            selectedFragment = new ScoresFragment();
+        } else if (id == R.id.nav_settings) {
+            selectedFragment = new SettingsFragment();
+        } else if (id == R.id.nav_logout) {
             handleLogout();
             return true;
         }
 
-        if (fragment != null) {
+        if (selectedFragment != null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
+                    .replace(R.id.fragment_container, selectedFragment)
                     .commit();
         }
 
@@ -145,30 +248,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void handleLogout() {
         executorService.execute(() -> {
             try {
-                // Clear all session data
                 DatabaseClient.getInstance(this)
                         .getDatabase()
                         .studentDao()
                         .setAllOffline();
 
-                // Clear any cached student data
-                Student loggedStudent = DatabaseClient.getInstance(this)
-                        .getDatabase()
-                        .studentDao()
-                        .getLatestStudent();
-
-                if (loggedStudent != null) {
-                    loggedStudent.isOnline = false;
-                    DatabaseClient.getInstance(this)
-                            .getDatabase()
-                            .studentDao()
-                            .update(loggedStudent);
-                }
-
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-
-                    // Navigate to LoginActivity and clear back stack
                     Intent intent = new Intent(this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

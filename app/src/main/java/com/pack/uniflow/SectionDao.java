@@ -13,4 +13,6 @@ public interface SectionDao {
 
     @Query("SELECT * FROM Section")
     List<Section> getAllSections();
+    @Query("SELECT * FROM section WHERE id = :sectionId LIMIT 1")
+    Section getById(Integer sectionId);
 }

@@ -1,7 +1,6 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +8,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.pack.uniflow.R;
+
 import com.bumptech.glide.Glide;
+import com.pack.uniflow.DatabaseClient;
+import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChangeProfileActivity extends AppCompatActivity {
 
@@ -20,6 +26,8 @@ public class ChangeProfileActivity extends AppCompatActivity {
     private ImageView ivProfilePicture;
     private EditText edtBio;
     private Button btnSave;
+    private Uri selectedImageUri = null;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,40 +38,37 @@ public class ChangeProfileActivity extends AppCompatActivity {
         edtBio = findViewById(R.id.edt_bio);
         btnSave = findViewById(R.id.btn_save);
 
-        // Load the current profile picture and bio if available
         loadProfileData();
 
-        // Profile picture click listener
         ivProfilePicture.setOnClickListener(v -> openImagePicker());
 
-        // Save button click listener
-        btnSave.setOnClickListener(v -> {
-            String bio = edtBio.getText().toString().trim();
-            // Save the bio and profile picture to SharedPreferences
-            saveBioToPreferences(bio);  // Save bio to preferences
-            Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
-            finish(); // Close the activity
-        });
+        btnSave.setOnClickListener(v -> saveProfileChanges());
     }
 
     private void loadProfileData() {
-        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
+        executorService.execute(() -> {
+            try {
+                Student student = DatabaseClient.getInstance(getApplicationContext())
+                        .getDatabase()
+                        .studentDao()
+                        .getOnlineStudent();
 
-        // Load profile picture URI from SharedPreferences
-        String imageUriString = prefs.getString("profile_image_uri", null);
-        if (imageUriString != null) {
-            Uri imageUri = Uri.parse(imageUriString);
+                if (student != null) {
+                    runOnUiThread(() -> {
+                        edtBio.setText(student.Bio != null ? student.Bio : "");
 
-            // Load image using Glide
-            Glide.with(this)
-                    .load(imageUri)
-                    .placeholder(R.drawable.nav_profile_pic)  // Placeholder if the image is loading
-                    .into(ivProfilePicture);  // Set image to the ImageView
-        }
-
-        // Load bio (if saved)
-        String bio = prefs.getString("bio", "");
-        edtBio.setText(bio);
+                        if (student.profilePictureUri != null && !student.profilePictureUri.isEmpty()) {
+                            Glide.with(this)
+                                    .load(Uri.parse(student.profilePictureUri))
+                                    .placeholder(R.drawable.nav_profile_pic)
+                                    .into(ivProfilePicture);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void openImagePicker() {
@@ -77,33 +82,53 @@ public class ChangeProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri imageUri = data.getData();
+            selectedImageUri = data.getData();
 
-            // Load the selected image using Glide
             Glide.with(this)
-                    .load(imageUri)
+                    .load(selectedImageUri)
+                    .placeholder(R.drawable.nav_profile_pic)
                     .into(ivProfilePicture);
-
-            // Save the image URI to SharedPreferences
-            saveProfileImageUriToPreferences(imageUri);
         }
     }
 
-    private void saveProfileImageUriToPreferences(Uri imageUri) {
-        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("profile_image_uri", imageUri.toString());
-        editor.apply();
+    private void saveProfileChanges() {
+        String bio = edtBio.getText().toString().trim();
 
-        // Log to confirm saving the URI
-        Log.d("ChangeProfileActivity", "Profile image URI saved: " + imageUri.toString());
+        executorService.execute(() -> {
+            try {
+                Student student = DatabaseClient.getInstance(getApplicationContext())
+                        .getDatabase()
+                        .studentDao()
+                        .getOnlineStudent();
+
+                if (student != null) {
+                    student.Bio = bio;
+                    if (selectedImageUri != null) {
+                        student.profilePictureUri = selectedImageUri.toString();
+                    }
+
+                    DatabaseClient.getInstance(getApplicationContext())
+                            .getDatabase()
+                            .studentDao()
+                            .update(student);
+
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Profile Updated!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
-    // Save bio to SharedPreferences
-    private void saveBioToPreferences(String bio) {
-        SharedPreferences prefs = getSharedPreferences("UserPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("bio", bio);
-        editor.apply();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
     }
 }

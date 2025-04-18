@@ -67,14 +67,16 @@ public class Student {
     @NonNull
     @ColumnInfo(name = "password")
     public String password;
-    @NonNull
+
     @ColumnInfo(name = "Bio")
     public String Bio;
 
-    // Updated Constructor
+    @ColumnInfo(name = "profile_picture_uri")
+    public String profilePictureUri;
+
     public Student(int id, @NonNull String email, @NonNull String fullName,
                    int age, @NonNull String telephone, int uniId,
-                   @NonNull String password,@NonNull String Bio) {
+                   @NonNull String password) {
         this.id = id;
         this.email = email;
         this.fullName = fullName;
@@ -84,6 +86,6 @@ public class Student {
         this.password = password;
         this.registrationDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(new Date());
-        this.Bio=Bio;
+        this.profilePictureUri = "";
     }
 }

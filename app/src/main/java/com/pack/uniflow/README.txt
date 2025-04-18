@@ -27,8 +27,9 @@ DONE:
 ====================================== SOUFIANE =======================================
 TODO
     - Linking the database to the app
-    - add bio column to student, club (and maybe uni?)
+    - add club (and maybe uni?)
     -make and synchronize images to students, posts (maybe more)
+    -login applies a "logged in" status, after sign up, it tries to connect but doesn't apply the logged in status, have to change that
     -polish signups and logins inputs (better conditions to control the coherence of data put inside of the db)
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
@@ -37,6 +38,7 @@ DONE:
     - Test The Database -done
     - Insert directly into database universities and clubs for testing -done
     - Added synchronization for the is_online and last_login columns in the database -done
+    -synchronized profile(image and text) partially -done
 
 =======================================================================================
 
