@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.pack.uniflow.DatabaseClient;
+
+import com.pack.uniflow.Fragments.AdminFragment;
 import com.pack.uniflow.Fragments.ClubsFragment;
 import com.pack.uniflow.Fragments.HomeFragment;
 import com.pack.uniflow.Fragments.ProfileFragment;
@@ -220,16 +222,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_home) {
             selectedFragment = new HomeFragment();
+
+        } else if (id == R.id.nav_admin) {
+            selectedFragment = new AdminFragment();
+
         } else if (id == R.id.nav_profile) {
             selectedFragment = new ProfileFragment();
+
         } else if (id == R.id.nav_clubs) {
             selectedFragment = new ClubsFragment();
+
         } else if (id == R.id.nav_schedule) {
             selectedFragment = new ScheduleFragment();
+
         } else if (id == R.id.nav_scores) {
             selectedFragment = new ScoresFragment();
+
         } else if (id == R.id.nav_settings) {
             selectedFragment = new SettingsFragment();
+
         } else if (id == R.id.nav_logout) {
             handleLogout();
             return true;

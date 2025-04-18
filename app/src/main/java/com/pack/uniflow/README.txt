@@ -5,7 +5,7 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 TODO:
     - Adding the Scores display
     - Adding the Schedule display and logic
-    - Admin
+    - Admin Board
     - Adding Settings; profile info
 
 DONE:
@@ -26,11 +26,14 @@ DONE:
 
 ====================================== SOUFIANE =======================================
 TODO
+    - ADD a new column in the student called 'isAdmin' make it a boolean. (going to be used in the navigation menu. ADMIN option will display there for each account once it has that as true)
+    - Add club (and maybe uni?)
+    - Integrate the DB With the ADMIN menu (Affected stuff; AdminFragment, DummyStudent and DummyUniversities should be removed once you get the db working.)
     - Linking the database to the app
-    - add club (and maybe uni?)
-    -make and synchronize images to students, posts (maybe more)
-    -login applies a "logged in" status, after sign up, it tries to connect but doesn't apply the logged in status, have to change that
-    -polish signups and logins inputs (better conditions to control the coherence of data put inside of the db)
+    - make and synchronize images to students, posts (maybe more)
+    - login applies a "logged in" status, after sign up, it tries to connect but doesn't apply the logged in status, have to change that
+    - polish signups and logins inputs (better conditions to control the coherence of data put inside of the db)
+
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
     - edited the database for compatibility with the xml form, we forgot to put the password in the database lmao -Done

@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="Null"
                 android:textColor="?attr/colorOnSurface"
-                android:textSize="26sp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <TextView
