@@ -3,14 +3,17 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 
 ======================================== ADAM ========================================
 TODO:
-    - Adding the Scores display
-    - Adding the Schedule display and logic
-    - Adding Settings; profile info
-    - Fixing All text inputs to replace the keyboard Newline with Next
-    - Fixing UI drop shadows on the admin panel
+    - Adding the Scores display /High/
+    - Adding the Schedule display and logic /High/
+    - Adding Settings; profile info  /Optional/
+    - Adding the corresponding fields to fill for each button in the admin pannel /Highest/
+    - Adding a University Manager Fragment (to post stuff) [maybe a floating button?] /High/
+    - Fixing All text inputs to replace the keyboard Newline with Next /optional/
+    - Fixing UI drop shadows on the admin panel /High/
 
 DONE:
     - Adding Admin Board [Done]
+    - Adding Drawer [Done]
     - Adding Drop Shadows [Done]
     - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
     - Adding Settings; Lightmode/darkmode [Done]
