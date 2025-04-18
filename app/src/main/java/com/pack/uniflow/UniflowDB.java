@@ -4,7 +4,7 @@ import androidx.room.RoomDatabase;
 
 import com.pack.uniflow.Models.Post;
 
-@Database(entities = {Uni.class, Club.class, Section.class, Student.class, Timetable.class, Post.class}, version = 6, exportSchema = false)
+@Database(entities = {Uni.class, Club.class, Section.class, Student.class, Timetable.class, Post.class}, version = 7, exportSchema = false)
 
 public abstract class UniflowDB extends RoomDatabase {
     public abstract UniDao uniDao();

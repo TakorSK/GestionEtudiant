@@ -3,7 +3,7 @@ package com.pack.uniflow.Activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,13 +18,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.navigation.NavigationView;
 import com.pack.uniflow.DatabaseClient;
-
 import com.pack.uniflow.Fragments.AdminFragment;
 import com.pack.uniflow.Fragments.ClubsFragment;
 import com.pack.uniflow.Fragments.HomeFragment;
@@ -37,7 +34,6 @@ import com.pack.uniflow.Section;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView profileImageView;
     private TextView profileNameTextView, profileGroupTextView;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Student currentStudent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +58,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initializeViews() {
-        // Toolbar setup
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Navigation drawer setup
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -77,13 +72,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Navigation header views
+        updateNavigationHeaderViews();
+    }
+
+    private void updateNavigationHeaderViews() {
         View headerView = navigationView.getHeaderView(0);
         profileImageView = headerView.findViewById(R.id.profile_image);
         profileNameTextView = headerView.findViewById(R.id.profile_name_text_view);
         profileGroupTextView = headerView.findViewById(R.id.profile_group);
 
-        // Configure ImageView properties
         profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         profileImageView.setClipToOutline(true);
     }
@@ -91,63 +88,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void loadStudentProfile() {
         executorService.execute(() -> {
             try {
-                Student student = DatabaseClient.getInstance(this)
+                currentStudent = DatabaseClient.getInstance(this)
                         .getDatabase()
                         .studentDao()
                         .getOnlineStudent();
 
-                if (student != null) {
+                if (currentStudent != null) {
                     Uni uni = DatabaseClient.getInstance(this)
                             .getDatabase()
                             .uniDao()
-                            .getById(student.uniId);
+                            .getById(currentStudent.uniId);
 
-                    Section section = student.sectionId != null ?
+                    Section section = currentStudent.sectionId != null ?
                             DatabaseClient.getInstance(this)
                                     .getDatabase()
                                     .sectionDao()
-                                    .getById(student.sectionId) : null;
+                                    .getById(currentStudent.sectionId) : null;
 
                     runOnUiThread(() -> {
-                        // Update profile info
-                        profileNameTextView.setText(student.fullName != null ?
-                                student.fullName : "Unknown Name");
+                        profileNameTextView.setText(currentStudent.fullName != null ?
+                                currentStudent.fullName : "Unknown Name");
                         profileGroupTextView.setText(buildProfileSubtitle(uni, section));
-
-                        // Load profile picture with enhanced handling
-                        loadProfilePictureWithFallback(student.profilePictureUri);
+                        loadProfileImage(currentStudent.profilePictureUri);
+                        updateAdminMenuItemVisibility();
                     });
                 } else {
                     showDefaultProfile();
                 }
             } catch (Exception e) {
                 showErrorProfile();
-                Log.e("MainActivity", "Error loading profile", e);
             }
         });
     }
 
-    private void loadProfilePictureWithFallback(String imageUri) {
+    private void updateAdminMenuItemVisibility() {
+        Menu menu = navigationView.getMenu();
+        MenuItem adminItem = menu.findItem(R.id.nav_admin);
+
+        if (adminItem != null) {
+            adminItem.setVisible(currentStudent != null && currentStudent.isAdmin);
+        }
+    }
+
+    private void loadProfileImage(String imageUri) {
         if (imageUri != null && !imageUri.isEmpty()) {
             try {
-                // Debug logging
-                Log.d("ProfileImage", "Attempting to load image from: " + imageUri);
-
-                // Handle both file paths and content URIs
-                if (imageUri.startsWith("content://") || imageUri.startsWith("file://")) {
-                    loadWithGlide(Uri.parse(imageUri));
-                } else {
-                    // Try as file path
-                    File imageFile = new File(imageUri);
-                    if (imageFile.exists()) {
-                        loadWithGlide(Uri.fromFile(imageFile));
-                    } else {
-                        // Try adding file:// prefix
-                        loadWithGlide(Uri.parse("file://" + imageUri));
-                    }
-                }
+                Glide.with(this)
+                        .load(Uri.parse(imageUri))
+                        .placeholder(R.drawable.nav_profile_pic)
+                        .error(R.drawable.nav_profile_pic)
+                        .circleCrop()
+                        .into(profileImageView);
             } catch (Exception e) {
-                Log.e("ProfileImage", "Error loading profile image", e);
                 profileImageView.setImageResource(R.drawable.nav_profile_pic);
             }
         } else {
@@ -155,21 +147,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void loadWithGlide(Uri uri) {
-        Glide.with(this)
-                .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.nav_profile_pic)
-                .error(R.drawable.nav_profile_pic)
-                .circleCrop()
-                .into(profileImageView);
-    }
-
     private String buildProfileSubtitle(Uni uni, Section section) {
         StringBuilder subtitle = new StringBuilder();
-        if (section != null) {
-            subtitle.append(section.name);
-        }
+        if (section != null) subtitle.append(section.name);
         if (uni != null) {
             if (subtitle.length() > 0) subtitle.append(" - ");
             subtitle.append(uni.name);
@@ -222,25 +202,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_home) {
             selectedFragment = new HomeFragment();
-
         } else if (id == R.id.nav_admin) {
-            selectedFragment = new AdminFragment();
-
+            if (currentStudent != null && currentStudent.isAdmin) {
+                selectedFragment = new AdminFragment();
+            } else {
+                Toast.makeText(this, "Admin access denied", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         } else if (id == R.id.nav_profile) {
             selectedFragment = new ProfileFragment();
-
         } else if (id == R.id.nav_clubs) {
             selectedFragment = new ClubsFragment();
-
         } else if (id == R.id.nav_schedule) {
             selectedFragment = new ScheduleFragment();
-
         } else if (id == R.id.nav_scores) {
             selectedFragment = new ScoresFragment();
-
         } else if (id == R.id.nav_settings) {
             selectedFragment = new SettingsFragment();
-
         } else if (id == R.id.nav_logout) {
             handleLogout();
             return true;
@@ -272,9 +250,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finish();
                 });
             } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show());
             }
         });
     }

@@ -2,7 +2,6 @@ package com.pack.uniflow.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,16 +25,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         initializeViews();
         setupLoginButton();
         setupSignupButton();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
     }
 
     private void initializeViews() {
@@ -48,17 +40,11 @@ public class LoginActivity extends AppCompatActivity {
             String loginId = loginIdEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
-            if (loginId.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "ID/Email and password are required", Toast.LENGTH_SHORT).show();
-                return;
+            if (!loginId.isEmpty() && !password.isEmpty()) {
+                executorService.execute(() -> authenticateUser(loginId, password));
+            } else {
+                Toast.makeText(this, "Please enter credentials", Toast.LENGTH_SHORT).show();
             }
-
-            if (loginId.equals("debug") && password.equals("debug")) {
-                navigateToMainActivity();
-                return;
-            }
-
-            executorService.execute(() -> processLogin(loginId, password));
         });
     }
 
@@ -69,50 +55,50 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void processLogin(String loginId, String password) {
+    private void authenticateUser(String loginId, String password) {
         try {
-            UniflowDB database = DatabaseClient.getInstance(getApplicationContext()).getDatabase();
+            UniflowDB database = DatabaseClient.getInstance(this).getDatabase();
 
-            // First set all users offline (cleanup)
+            // Clear any existing sessions
             database.studentDao().setAllOffline();
 
+            // Find user by email or ID
             Student student = database.studentDao().findByEmail(loginId);
-
             if (student == null) {
                 try {
-                    int studentId = Integer.parseInt(loginId);
-                    student = database.studentDao().getStudentById(studentId);
-                } catch (NumberFormatException e) {
-                    // loginId is not a valid number
-                }
+                    student = database.studentDao().getStudentById(Integer.parseInt(loginId));
+                } catch (NumberFormatException ignored) {}
             }
 
             if (student != null && student.password.equals(password)) {
-                // Update login status and timestamp
+                // Update session
                 student.isOnline = true;
                 student.lastLogin = dateFormat.format(new Date());
                 database.studentDao().update(student);
 
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
-                    navigateToMainActivity();
+                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+                    startMainActivity();
                 });
             } else {
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show());
             }
         } catch (Exception e) {
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Login error", Toast.LENGTH_SHORT).show();
-            });
-            e.printStackTrace();
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Login error", Toast.LENGTH_SHORT).show());
         }
     }
 
-    private void navigateToMainActivity() {
+    private void startMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
     }
 }

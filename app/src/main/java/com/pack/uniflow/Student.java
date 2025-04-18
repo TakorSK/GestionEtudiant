@@ -57,7 +57,8 @@ public class Student {
 
     @ColumnInfo(name = "is_online")
     public boolean isOnline = false;
-
+    @ColumnInfo(name = "is_admin")
+    public boolean isAdmin = false;
     @ColumnInfo(name = "registration_date")
     public String registrationDate;
 
@@ -87,5 +88,6 @@ public class Student {
         this.registrationDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(new Date());
         this.profilePictureUri = "";
+        this.isAdmin = false;
     }
 }
