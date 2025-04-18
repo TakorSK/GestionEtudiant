@@ -5,24 +5,25 @@ AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFOR
 TODO:
     - Adding the Scores display
     - Adding the Schedule display and logic
-    - Fixing UI drop shadows on the admin panel
     - Adding Settings; profile info
+    - Fixing All text inputs to replace the keyboard Newline with Next
+    - Fixing UI drop shadows on the admin panel
 
 DONE:
     - Adding Admin Board [Done]
+    - Adding Drop Shadows [Done]
+    - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
     - Adding Settings; Lightmode/darkmode [Done]
     - Adding Settings; profile picture uploads [Done]
     - Adding Settings; profile bio [Done]
     - Adding the Clubs display [Done]
-    - Adding Drop Shadows [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]
-    - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
+    - Fixing input fields not being a single line [Done]
     - Fixing the signupActivity after the change of the xml [Done]
     - Fixing the settings profile mask [Done]
     - Fixing the UI text colors [Done]
     - Fixing the signup XML and add university and club, club being optional and university being required. [Done]
-    - Fixing input fields not being a single line [Done]
 
 =======================================================================================
 
