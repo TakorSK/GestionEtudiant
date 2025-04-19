@@ -11,18 +11,20 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pack.uniflow.Adapters.StudentAdapter;
-import com.pack.uniflow.DummyData.DummyUniversity;
+import com.pack.uniflow.Fragments.AdminFragment.UniversityWithStudents;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
 
 import java.util.List;
 
 public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.UniversityViewHolder> {
 
-    private List<DummyUniversity> universityList;
+    private final List<UniversityWithStudents> universityList;
+    private final Context context;
 
-    public UniversityAdapter(List<DummyUniversity> universityList) {
+    public UniversityAdapter(List<UniversityWithStudents> universityList, Context context) {
         this.universityList = universityList;
+        this.context = context;
     }
 
     public static class UniversityViewHolder extends RecyclerView.ViewHolder {
@@ -30,7 +32,6 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
         ImageView ivToggle;
         LinearLayout expandableLayout;
         RecyclerView studentRecyclerView;
-
         boolean isExpanded = false;
 
         public UniversityViewHolder(View itemView) {
@@ -41,21 +42,19 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
             studentRecyclerView = itemView.findViewById(R.id.studentRecyclerView);
         }
 
-        public void bind(DummyUniversity university, Context context) {
-            tvUniversityName.setText(university.getName());
+        public void bind(UniversityWithStudents universityWithStudents) {
+            tvUniversityName.setText(universityWithStudents.university.name);
             expandableLayout.setVisibility(View.GONE);
             ivToggle.setImageResource(R.drawable.ic_arrow_drop_down);
 
-            // Toggle expansion
             itemView.findViewById(R.id.universityHeader).setOnClickListener(v -> {
                 isExpanded = !isExpanded;
                 expandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
                 ivToggle.setImageResource(isExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
 
-                // Set up student list
                 if (isExpanded) {
-                    studentRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    studentRecyclerView.setAdapter(new StudentAdapter(university.getStudents()));
+                    studentRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+                    studentRecyclerView.setAdapter(new StudentAdapter(universityWithStudents.students));
                 }
             });
         }
@@ -63,13 +62,14 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
 
     @Override
     public UniversityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_uni, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.fragment_item_uni, parent, false);
         return new UniversityViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(UniversityViewHolder holder, int position) {
-        holder.bind(universityList.get(position), holder.itemView.getContext());
+        holder.bind(universityList.get(position));
     }
 
     @Override

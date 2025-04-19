@@ -1,5 +1,4 @@
 package com.pack.uniflow.Adapters;
- // replace with your actual package
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -11,22 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pack.uniflow.Adapters.PostAdapter;
-import com.pack.uniflow.DummyData.DummyStudent;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
 
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
 
-    private List<DummyStudent> studentList;
+    private final List<Student> studentList;
 
-    // Constructor
-    public StudentAdapter(List<DummyStudent> studentList) {
+    public StudentAdapter(List<Student> studentList) {
         this.studentList = studentList;
     }
 
-    // ViewHolder class
     public static class StudentViewHolder extends RecyclerView.ViewHolder {
         TextView studentName, studentStatus;
         ImageView studentAvatar;
@@ -38,19 +34,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             studentAvatar = itemView.findViewById(R.id.studentAvatar);
         }
 
-        public void bind(DummyStudent student) {
-            studentName.setText(student.getName());
-            studentStatus.setText(student.getStatus());
-
-            // Color based on online/offline
-            if (student.getStatus().equalsIgnoreCase("Online")) {
-                studentStatus.setTextColor(Color.parseColor("#4CAF50")); // Green
-            } else {
-                studentStatus.setTextColor(Color.parseColor("#F44336")); // Red
-            }
-
-            // Set a placeholder avatar for now
-            studentAvatar.setImageResource(R.drawable.nav_profile_pic); // <-- Make sure this exists!
+        public void bind(Student student) {
+            studentName.setText(student.fullName);
+            studentStatus.setText(student.isOnline ? "Online" : "Offline");
+            studentStatus.setTextColor(student.isOnline ?
+                    Color.parseColor("#4CAF50") : Color.parseColor("#F44336"));
+            studentAvatar.setImageResource(R.drawable.nav_profile_pic);
         }
     }
 
@@ -58,7 +47,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @Override
     public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item_student, parent, false); // <-- Make sure this layout exists!
+                .inflate(R.layout.fragment_item_student, parent, false);
         return new StudentViewHolder(view);
     }
 

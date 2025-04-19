@@ -17,6 +17,6 @@ public interface UniDao {
     Uni findByName(String name);
     @Query("SELECT * FROM uni WHERE id = :id")
     Uni getById(int id);
-
-
+    @Query("SELECT * FROM uni")
+    List<Uni> getAll();
 }

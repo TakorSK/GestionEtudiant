@@ -26,4 +26,6 @@ public interface StudentDao {
     void update(Student student);
     @Query("SELECT * FROM Student WHERE is_online = 1 LIMIT 1")
     Student getOnlineStudent();
+    @Query("SELECT * FROM Student WHERE uni_id = :uniId")
+    List<Student> getStudentsByUniId(int uniId);
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,16 +13,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pack.uniflow.Adapters.UniversityAdapter;
-import com.pack.uniflow.DummyData.DummyStudent;
-import com.pack.uniflow.DummyData.DummyUniversity;
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AdminFragment extends Fragment {
 
     private RecyclerView universitiesRecyclerView;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Nullable
     @Override
@@ -29,31 +34,55 @@ public class AdminFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin, container, false);
-
         universitiesRecyclerView = view.findViewById(R.id.universitiesRecyclerView);
         universitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Dummy student lists
-        List<DummyStudent> harvardStudents = Arrays.asList(
-                new DummyStudent("Alice Johnson", "Online"),
-                new DummyStudent("Bob Stone", "Offline"),
-                new DummyStudent("Claire Hill", "Online")
-        );
-
-        List<DummyStudent> stanfordStudents = Arrays.asList(
-                new DummyStudent("Dan Rogers", "Offline"),
-                new DummyStudent("Eva Green", "Online")
-        );
-
-        // Dummy universities
-        List<DummyUniversity> universityList = Arrays.asList(
-                new DummyUniversity("Harvard University", harvardStudents),
-                new DummyUniversity("Stanford University", stanfordStudents)
-        );
-
-        UniversityAdapter adapter = new UniversityAdapter(universityList);
-        universitiesRecyclerView.setAdapter(adapter);
-
+        loadDataFromDatabase();
         return view;
+    }
+
+    private void loadDataFromDatabase() {
+        executorService.execute(() -> {
+            try {
+                List<Uni> universities = DatabaseClient.getInstance(getContext())
+                        .getDatabase()
+                        .uniDao()
+                        .getAll();
+
+                List<UniversityWithStudents> universityList = new ArrayList<>();
+                for (Uni uni : universities) {
+                    List<Student> students = DatabaseClient.getInstance(getContext())
+                            .getDatabase()
+                            .studentDao()
+                            .getStudentsByUniId(uni.id);
+                    universityList.add(new UniversityWithStudents(uni, students));
+                }
+
+                requireActivity().runOnUiThread(() -> {
+                    UniversityAdapter adapter = new UniversityAdapter(universityList, getContext());
+                    universitiesRecyclerView.setAdapter(adapter);
+                });
+
+            } catch (Exception e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), "Error loading data", Toast.LENGTH_SHORT).show());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static class UniversityWithStudents {
+        public final Uni university;
+        public final List<Student> students;
+
+        public UniversityWithStudents(Uni university, List<Student> students) {
+            this.university = university;
+            this.students = students;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown();
     }
 }
