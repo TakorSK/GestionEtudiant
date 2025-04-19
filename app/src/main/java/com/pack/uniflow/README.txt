@@ -36,9 +36,6 @@ DONE:
 TODO
     - Add club (and maybe uni?)
     - Integrate the DB With the ADMIN menu (Affected stuff; AdminFragment, DummyStudent and DummyUniversities should be removed once you get the db working.)
-
-    - make and synchronize images to students, posts (maybe more)
-    - login applies a "logged in" status, after sign up, it tries to connect but doesn't apply the logged in status, have to change that
     - polish signups and logins inputs (better conditions to control the coherence of data put inside of the db)
 
 DONE:
@@ -53,6 +50,7 @@ DONE:
     - updated sign in to be online after a successful registration -done
     - implemented fully the synchronization with the database for profile -done
     -made it so only students with is_admin=true can access the admin panel -done
+    - make and synchronize images to students -done
 
 =======================================================================================
 
