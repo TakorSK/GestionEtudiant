@@ -1,12 +1,12 @@
 TO organize our work Please log what you do in this file.
-AS OF THE TIME I PUBLISHED IT, IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFORMANCE EVERYTHING SHOULD BE FUNCTIONAL. IF YOU ENCOUNTER AN ERROR PLEASE UPDATE YOUR STUDIO. IF IT PERSISTS PLEASE CONTACT ME.
+MAKE SURE TO WHENEVER YOU PUSH YOUR WORK IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFORMANCE AND MAKE SURE THAT EVERYTHING SHOULD BE FUNCTIONAL. IF YOU ENCOUNTER SOME KIND OF AN ERROR PLEASE UPDATE YOUR STUDIO. IF IT PERSISTS PLEASE CONTACT ME.
 
 ======================================== ADAM ========================================
 TODO:
     - Adding the Scores display /High/
     - Adding the Schedule display and logic /High/
     - Adding Settings; profile info  /Optional/
-    - Adding the corresponding fields to fill for each button in the admin pannel /Highest/
+    - Adding the corresponding fields to fill for each button in the admin panel /Highest/
     - Adding a University Manager Fragment (to post stuff) [maybe a floating button?] /High/
     - Fixing All text inputs to replace the keyboard Newline with Next /optional/
     - Fixing UI drop shadows on the admin panel /High/
@@ -44,11 +44,11 @@ DONE:
     - Test The Database -done
     - Insert directly into database universities and clubs for testing -done
     - Added synchronization for the is_online and last_login columns in the database -done
-    -synchronized profile(image and text) partially -done
+    - synchronized profile(image and text) partially -done
     - Linking the database to the app -done
     - updated sign in to be online after a successful registration -done
     - implemented fully the synchronization with the database for profile -done
-    -made it so only students with is_admin=true can access the admin panel -done
+    - made it so only students with is_admin=true can access the admin panel -done
     - make and synchronize images to students -done
     - polish signups and logins inputs (better conditions to control the coherence of data put inside of the db) -done
 
