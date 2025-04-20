@@ -13,8 +13,8 @@
         <TextView
             android:text="Add a New University"
             android:textSize="20sp"
-            android:textColor="?attr/colorBackgroundFloating"
             android:textStyle="bold"
+            android:textColor="?android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp" />
@@ -22,16 +22,18 @@
         <EditText
             android:id="@+id/etUniversityName"
             android:hint="University Name"
-            android:textColor="?attr/colorBackgroundFloating"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:imeOptions="actionNext"
-            android:layout_height="wrap_content" />
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint" />
 
         <EditText
             android:id="@+id/etLocation"
             android:hint="Location (optional)"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"
             android:layout_width="match_parent"
-            android:textColor="?attr/colorBackgroundFloating"
             android:imeOptions="actionNext"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
@@ -41,7 +43,8 @@
             android:hint="Established Year"
             android:inputType="number"
             android:imeOptions="actionNext"
-            android:textColor="?attr/colorBackgroundFloating"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
@@ -50,19 +53,31 @@
             android:id="@+id/etWebsite"
             android:hint="Website (optional)"
             android:inputType="textUri"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"
             android:layout_width="match_parent"
             android:imeOptions="actionNext"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorBackgroundFloating"
             android:layout_marginTop="12dp" />
 
         <EditText
             android:id="@+id/etAssociatedStudentIds"
             android:hint="Associated Student IDs (comma-separated)"
             android:inputType="text"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"
             android:layout_width="match_parent"
-            android:textColor="?attr/colorBackgroundFloating"
             android:imeOptions="actionNext"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+        <EditText
+            android:id="@+id/etUniversityPassword"
+            android:hint="University Password"
+            android:inputType="textPassword"
+            android:textColor="?android:textColorPrimary"
+            android:textColorHint="?android:textColorHint"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
 
@@ -72,7 +87,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="?android:textColorPrimary"
+            android:backgroundTint="?attr/colorPrimary" />
 
     </LinearLayout>
 </ScrollView>

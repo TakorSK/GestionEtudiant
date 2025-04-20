@@ -12,17 +12,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pack.uniflow.Adapters.PostAdapter;
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.Models.Post;
 import com.pack.uniflow.R;
+import com.pack.uniflow.UniflowDB;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private PostAdapter adapter;
-    private List<Post> postList;
+    private UniflowDB db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,23 +38,18 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.HomeRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        postList = generateMockPosts();
-        adapter = new PostAdapter(getContext(), postList);
+        adapter = new PostAdapter(getContext(), List.of()); // initialize with empty list
         recyclerView.setAdapter(adapter);
+
+        db = DatabaseClient.getInstance(requireContext()).getDatabase();
+
+        loadPostsFromDatabase();
     }
 
-    private List<Post> generateMockPosts() {
-        List<Post> posts = new ArrayList<>();
-
-        String placeholderUri = "android.resource://" + requireContext().getPackageName() + "/" + R.drawable.placeholder;
-
-        posts.add(new Post("First Debug Post!", "This is its Description + a Placeholder Image!", placeholderUri, 1));
-        posts.add(new Post("Second Debug Post", "This one has no image, just text.", null, 1));
-        posts.add(new Post("Third Debug Post", "This is its Description + a Placeholder Image!", placeholderUri, 2));
-        posts.add(new Post("First Debug Announcement", "This is its Description.", null, 2));
-        posts.add(new Post("Second Debug Announcement", "This is its Description + a Placeholder Image!", placeholderUri, 3));
-
-        return posts;
+    private void loadPostsFromDatabase() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Post> posts = db.postDao().getAllPosts(); // must be a suspend function or regular @Query
+            requireActivity().runOnUiThread(() -> adapter.updatePosts(posts));
+        });
     }
 }

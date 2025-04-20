@@ -46,14 +46,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView profileNameTextView, profileGroupTextView;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Student currentStudent;
+    private LoginActivity.LoginType loginType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get login type from intent
+        String loginTypeStr = getIntent().getStringExtra("LOGIN_TYPE");
+        loginType = loginTypeStr != null ?
+                LoginActivity.LoginType.valueOf(loginTypeStr) :
+                LoginActivity.LoginType.REGULAR_STUDENT;
+
         initializeViews();
-        loadStudentProfile();
+        setupProfileBasedOnLoginType();
         setupInitialFragment(savedInstanceState);
         setupBackButtonHandler();
     }
@@ -61,9 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initializeViews() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -76,6 +81,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         updateNavigationHeaderViews();
+    }
+
+    private void setupProfileBasedOnLoginType() {
+        switch (loginType) {
+            case DEBUG_ADMIN:
+                setupDebugAdminProfile();
+                break;
+            case UNIVERSITY_ADMIN:
+                setupUniversityProfile();
+                break;
+            default:
+                loadStudentProfile();
+                break;
+        }
+    }
+
+    private void setupDebugAdminProfile() {
+        runOnUiThread(() -> {
+            profileNameTextView.setText("Debug Admin");
+            profileGroupTextView.setText("Developer Mode");
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+
+            Menu menu = navigationView.getMenu();
+            menu.findItem(R.id.nav_admin).setVisible(true);
+            menu.findItem(R.id.nav_post).setVisible(true);
+        });
+    }
+
+    private void setupUniversityProfile() {
+        runOnUiThread(() -> {
+            profileNameTextView.setText("University Admin");
+            profileGroupTextView.setText("Administrator");
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+
+            Menu menu = navigationView.getMenu();
+            menu.findItem(R.id.nav_admin).setVisible(true);
+            menu.findItem(R.id.nav_post).setVisible(false);
+        });
     }
 
     private void updateNavigationHeaderViews() {
@@ -109,8 +152,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     .getById(currentStudent.sectionId) : null;
 
                     runOnUiThread(() -> {
-                        // Use fullName directly
-                        profileNameTextView.setText(currentStudent.fullName.isEmpty() ? "Unknown Name" : currentStudent.fullName);
+                        profileNameTextView.setText(
+                                currentStudent.fullName.isEmpty() ?
+                                        "Unknown Name" : currentStudent.fullName
+                        );
                         profileGroupTextView.setText(buildProfileSubtitle(uni, section));
                         loadProfileImage(currentStudent.profilePictureUri);
                         updateAdminMenuItemVisibility();
@@ -129,25 +174,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         MenuItem adminItem = menu.findItem(R.id.nav_admin);
 
         if (adminItem != null) {
-            adminItem.setVisible(currentStudent != null && currentStudent.isAdmin);
+            boolean shouldShowAdmin = currentStudent != null &&
+                    (currentStudent.isAdmin || loginType == LoginActivity.LoginType.DEBUG_ADMIN);
+            adminItem.setVisible(shouldShowAdmin);
         }
     }
 
     private void loadProfileImage(String imageUri) {
-        if (imageUri != null && !imageUri.isEmpty()) {
+        runOnUiThread(() -> {
             try {
-                Glide.with(this)
-                        .load(Uri.parse(imageUri))
-                        .placeholder(R.drawable.nav_profile_pic)
-                        .error(R.drawable.nav_profile_pic)
-                        .circleCrop()
-                        .into(profileImageView);
+                if (imageUri != null && !imageUri.isEmpty()) {
+                    Glide.with(this)
+                            .load(Uri.parse(imageUri))
+                            .placeholder(R.drawable.nav_profile_pic)
+                            .error(R.drawable.nav_profile_pic)
+                            .circleCrop()
+                            .into(profileImageView);
+                } else {
+                    profileImageView.setImageResource(R.drawable.nav_profile_pic);
+                }
             } catch (Exception e) {
                 profileImageView.setImageResource(R.drawable.nav_profile_pic);
             }
-        } else {
-            profileImageView.setImageResource(R.drawable.nav_profile_pic);
-        }
+        });
     }
 
     private String buildProfileSubtitle(Uni uni, Section section) {
@@ -206,28 +255,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             selectedFragment = new HomeFragment();
         } else if (id == R.id.nav_admin) {
-
-            //TODO: PLEASE REVERT THIS BACK
-            /*if (currentStudent != null && (currentStudent.isAdmin || currentStudent.fullName.equals("debug"))) {
+            if (hasAdminAccess()) {
                 selectedFragment = new AdminFragment();
             } else {
-                Toast.makeText(this, "Admin access denied", Toast.LENGTH_SHORT).show();
+                showAccessDenied();
                 return true;
-            }*/
-
-            //TODO: THEN REMOVE THIS LINE BELOW
-            selectedFragment = new AdminFragment();
-
+            }
         } else if (id == R.id.nav_post) {
-            selectedFragment = new CreatePostFragment();
+            if (loginType != LoginActivity.LoginType.UNIVERSITY_ADMIN) {
+                selectedFragment = new CreatePostFragment();
+            }
         } else if (id == R.id.nav_profile) {
-            selectedFragment = new ProfileFragment();
+            if (loginType != LoginActivity.LoginType.UNIVERSITY_ADMIN) {
+                selectedFragment = new ProfileFragment();
+            }
         } else if (id == R.id.nav_clubs) {
             selectedFragment = new ClubsFragment();
         } else if (id == R.id.nav_schedule) {
-            selectedFragment = new ScheduleFragment();
+            if (loginType != LoginActivity.LoginType.UNIVERSITY_ADMIN) {
+                selectedFragment = new ScheduleFragment();
+            }
         } else if (id == R.id.nav_scores) {
-            selectedFragment = new ScoresFragment();
+            if (loginType != LoginActivity.LoginType.UNIVERSITY_ADMIN) {
+                selectedFragment = new ScoresFragment();
+            }
         } else if (id == R.id.nav_settings) {
             selectedFragment = new SettingsFragment();
         } else if (id == R.id.nav_logout) {
@@ -236,32 +287,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (selectedFragment != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, selectedFragment)
-                    .commit();
+            try {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            } catch (Exception e) {
+                Toast.makeText(this, "Error loading content", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            showAccessDenied();
+            return true;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private boolean hasAdminAccess() {
+        return loginType == LoginActivity.LoginType.DEBUG_ADMIN ||
+                loginType == LoginActivity.LoginType.UNIVERSITY_ADMIN ||
+                (currentStudent != null && currentStudent.isAdmin);
+    }
+
+    private void showAccessDenied() {
+        Toast.makeText(this, "Access denied", Toast.LENGTH_SHORT).show();
+    }
+
     private void handleLogout() {
         executorService.execute(() -> {
             try {
-                DatabaseClient.getInstance(this)
-                        .getDatabase()
-                        .studentDao()
-                        .setAllOffline();
+                if (loginType == LoginActivity.LoginType.REGULAR_STUDENT ||
+                        loginType == LoginActivity.LoginType.STUDENT_ADMIN) {
+                    DatabaseClient.getInstance(this)
+                            .getDatabase()
+                            .studentDao()
+                            .setAllOffline();
+                }
 
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+                    startActivity(new Intent(this, LoginActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                     finish();
                 });
             } catch (Exception e) {
-                runOnUiThread(() -> Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -272,3 +343,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         executorService.shutdown();
     }
 }
+

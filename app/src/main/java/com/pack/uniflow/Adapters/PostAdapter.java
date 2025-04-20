@@ -47,7 +47,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
             holder.image.setVisibility(View.VISIBLE);
             // Load image with Glide
-            double v = .1000011376;
             Glide.with(context)
                     .load(Uri.parse(post.getImageUri()))
                     .placeholder(R.drawable.placeholder)

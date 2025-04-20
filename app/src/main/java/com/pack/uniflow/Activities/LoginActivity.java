@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.UniflowDB;
+import com.pack.uniflow.StudentDao;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -17,6 +21,7 @@ import java.util.concurrent.Executors;
 
 public class LoginActivity extends AppCompatActivity {
 
+    Student currentstudent;
     private EditText loginIdEditText, passwordEditText;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -40,11 +45,12 @@ public class LoginActivity extends AppCompatActivity {
             String loginId = loginIdEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
 
-            if (!loginId.isEmpty() && !password.isEmpty()) {
-                executorService.execute(() -> authenticateUser(loginId, password));
-            } else {
+            if (loginId.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter credentials", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            executorService.execute(() -> authenticateUser(loginId, password));
         });
     }
 
@@ -56,39 +62,52 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(String loginId, String password) {
-        // Check if the login credentials are for the "debug" account
-        if ("debug".equals(loginId) && "debug".equals(password)) {
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Login successful (Debug mode)", Toast.LENGTH_SHORT).show();
-                startMainActivity();
-            });
-            return;
-        }
-
-        // If not "debug", proceed with the regular authentication logic
         try {
             UniflowDB database = DatabaseClient.getInstance(this).getDatabase();
 
-            // Clear any existing sessions
-            database.studentDao().setAllOffline();
+            // 1. Check for debug admin login (special case)
+            if ("debug".equals(loginId) && "debug".equals(password)) {
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Developer admin login", Toast.LENGTH_SHORT).show();
+                    startMainActivity(LoginType.DEBUG_ADMIN);
+                });
+                return;
+            }
 
-            // Find user by email or ID
-            Student student = database.studentDao().findByEmail(loginId);
-            if (student == null) {
+            // 2. Check for university admin login
+            try {
+                int universityId = Integer.parseInt(loginId);
+                String uniPassword = database.uniDao().getUniPasswordById(universityId);
+
+                if (uniPassword != null && uniPassword.equals(password)) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "University admin login", Toast.LENGTH_SHORT).show();
+                        startMainActivity(LoginType.UNIVERSITY_ADMIN);
+                    });
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                // Not a university ID, proceed to student login
+            }
+
+            // 3. Regular student login
+            database.studentDao().setAllOffline(); // Clear existing sessions
+
+            currentstudent = database.studentDao().findByEmail(loginId);
+            if (currentstudent == null) {
                 try {
-                    student = database.studentDao().getStudentById(Integer.parseInt(loginId));
+                    currentstudent = database.studentDao().getStudentById(Integer.parseInt(loginId));
                 } catch (NumberFormatException ignored) {}
             }
 
-            if (student != null && student.password.equals(password)) {
-                // Update session
-                student.isOnline = true;
-                student.lastLogin = dateFormat.format(new Date());
-                database.studentDao().update(student);
+            if (currentstudent != null && currentstudent.password.equals(password)) {
+                currentstudent.isOnline = true;
+                currentstudent.lastLogin = dateFormat.format(new Date());
+                database.studentDao().update(currentstudent);
 
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                    startMainActivity();
+                    Toast.makeText(this, "Student login successful", Toast.LENGTH_SHORT).show();
+                    startMainActivity(currentstudent.isAdmin ? LoginType.STUDENT_ADMIN : LoginType.REGULAR_STUDENT);
                 });
             } else {
                 runOnUiThread(() ->
@@ -96,12 +115,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             runOnUiThread(() ->
-                    Toast.makeText(this, "Login error", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, "Login error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
 
-    private void startMainActivity() {
+    private void startMainActivity(LoginType loginType) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("LOGIN_TYPE", loginType.name());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
@@ -110,5 +130,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         executorService.shutdown();
+    }
+    public enum LoginType {
+        DEBUG_ADMIN,       // Special debug account
+        UNIVERSITY_ADMIN,  // University administrator
+        STUDENT_ADMIN,     // Student with admin privileges
+        REGULAR_STUDENT    // Normal student
     }
 }
