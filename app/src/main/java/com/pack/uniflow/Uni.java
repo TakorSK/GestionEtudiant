@@ -1,18 +1,15 @@
 package com.pack.uniflow;
 
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(tableName = "uni")
 public class Uni {
-
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     public int id;
@@ -31,30 +28,38 @@ public class Uni {
     public String website;
 
     @ColumnInfo(name = "associated_student_ids")
-    public String associatedStudentIds; // e.g., "1,2,5,10"
+    public String associatedStudentIds;
 
-    @ColumnInfo(name = "UniPassword")
-    public String UniPassword;
-    // ---------------------
-    // Helper Methods
-    // ---------------------
+    @ColumnInfo(name = "uni_password")
+    public String uniPassword;
 
     public List<Integer> getAssociatedStudentIdList() {
-        if (associatedStudentIds == null || associatedStudentIds.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Integer> list = new ArrayList<>();
-        for (String s : associatedStudentIds.split(",")) {
-            try {
-                list.add(Integer.parseInt(s.trim()));
-            } catch (NumberFormatException ignored) {
+        List<Integer> ids = new ArrayList<>();
+        if (!TextUtils.isEmpty(associatedStudentIds)) {
+            for (String id : associatedStudentIds.split(",")) {
+                try {
+                    ids.add(Integer.parseInt(id.trim()));
+                } catch (NumberFormatException e) {
+                    // Skip invalid entries
+                }
             }
         }
-        return list;
+        return ids;
     }
 
+    public boolean containsStudentId(int studentId) {
+        return getAssociatedStudentIdList().contains(studentId);
+    }
+
+    public void addStudentId(int studentId) {
+        List<Integer> ids = getAssociatedStudentIdList();
+        if (!ids.contains(studentId)) {
+            ids.add(studentId);
+            associatedStudentIds = TextUtils.join(",", ids);
+        }
+    }
     public void setAssociatedStudentIdList(List<Integer> ids) {
         this.associatedStudentIds = TextUtils.join(",", ids);
     }
+
 }

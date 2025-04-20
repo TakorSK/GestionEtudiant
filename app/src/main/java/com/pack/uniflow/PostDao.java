@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface PostDao {
     @Insert
-    void insert(Post post);
+    long insert(Post post);
 
     @Query("SELECT * FROM posts ORDER BY created_at DESC")
     List<Post> getAllPosts();
