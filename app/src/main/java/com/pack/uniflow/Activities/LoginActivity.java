@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
             if ("debug".equals(loginId) && "debug".equals(password)) {
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Developer admin login", Toast.LENGTH_SHORT).show();
-                    startMainActivity(LoginType.DEBUG_ADMIN);
+                    startMainActivity(LoginType.DEBUG_ADMIN, -1); // -1 for debug admin
                 });
                 return;
             }
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (uniPassword != null && uniPassword.equals(password)) {
                     runOnUiThread(() -> {
                         Toast.makeText(this, "University admin login", Toast.LENGTH_SHORT).show();
-                        startMainActivity(LoginType.UNIVERSITY_ADMIN);
+                        startMainActivity(LoginType.UNIVERSITY_ADMIN, universityId);
                     });
                     return;
                 }
@@ -107,7 +107,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Student login successful", Toast.LENGTH_SHORT).show();
-                    startMainActivity(currentstudent.isAdmin ? LoginType.STUDENT_ADMIN : LoginType.REGULAR_STUDENT);
+                    startMainActivity(
+                            currentstudent.isAdmin ? LoginType.STUDENT_ADMIN : LoginType.REGULAR_STUDENT,
+                            currentstudent.uniId // Pass university ID for students too
+                    );
                 });
             } else {
                 runOnUiThread(() ->
@@ -119,9 +122,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void startMainActivity(LoginType loginType) {
+    private void startMainActivity(LoginType loginType, int universityId) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("LOGIN_TYPE", loginType.name());
+        intent.putExtra("UNIVERSITY_ID", universityId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

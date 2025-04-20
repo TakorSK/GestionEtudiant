@@ -35,4 +35,6 @@ public class Section {
 
     @ColumnInfo(name = "academic_year")
     public String academicYear;
+    @ColumnInfo(name = "associated_student_ids")
+    public String associatedStudentIds;
 }

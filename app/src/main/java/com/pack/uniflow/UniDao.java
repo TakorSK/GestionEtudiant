@@ -24,4 +24,6 @@ public interface UniDao {
     String getUniPasswordById(int id);
     @Query("Select * from uni where id = :id")
     Uni getUniversityById(int id);
+    @Query("SELECT id FROM uni WHERE name = :name LIMIT 1")
+    int getIdByName(String name);
 }
