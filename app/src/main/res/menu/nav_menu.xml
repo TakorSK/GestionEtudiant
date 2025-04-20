@@ -13,6 +13,11 @@
             android:title="@string/admin"/>
 
         <item
+            android:id="@+id/nav_post"
+            android:icon="@drawable/nav_admin"
+            android:title="@string/posting"/>
+
+        <item
             android:id="@+id/nav_home"
             android:icon="@drawable/nav_home"
             android:title="@string/home"/>

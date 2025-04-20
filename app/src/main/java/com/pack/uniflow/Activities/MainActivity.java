@@ -24,6 +24,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.Fragments.AdminFragment;
 import com.pack.uniflow.Fragments.ClubsFragment;
+import com.pack.uniflow.Fragments.CreatePostFragment;
 import com.pack.uniflow.Fragments.HomeFragment;
 import com.pack.uniflow.Fragments.ProfileFragment;
 import com.pack.uniflow.Fragments.ScheduleFragment;
@@ -205,14 +206,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_home) {
             selectedFragment = new HomeFragment();
         } else if (id == R.id.nav_admin) {
+
+            //TODO: PLEASE REVERT THIS BACK
             /*if (currentStudent != null && (currentStudent.isAdmin || currentStudent.fullName.equals("debug"))) {
                 selectedFragment = new AdminFragment();
             } else {
                 Toast.makeText(this, "Admin access denied", Toast.LENGTH_SHORT).show();
                 return true;
             }*/
+
+            //TODO: THEN REMOVE THIS LINE BELOW
             selectedFragment = new AdminFragment();
 
+        } else if (id == R.id.nav_post) {
+            selectedFragment = new CreatePostFragment();
         } else if (id == R.id.nav_profile) {
             selectedFragment = new ProfileFragment();
         } else if (id == R.id.nav_clubs) {

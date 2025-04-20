@@ -10,82 +10,67 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.pack.uniflow.Database.AppDatabase;
-import com.pack.uniflow.Models.Post;
 import com.pack.uniflow.R;
+import com.pack.uniflow.DatabaseClient;
+import com.pack.uniflow.Models.Post;
+import com.pack.uniflow.UniflowDB;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CreatePostFragment extends Fragment {
 
-    private EditText editTitle, editDescription;
-    private ImageView imageViewPostImage;
+    private EditText editPostTitle, editPostDescription;
     private Button buttonSubmitPost;
-    private Uri selectedImageUri;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    public CreatePostFragment() {
-        // Required empty public constructor
-    }
+    private ImageView selectedImagePreview; // If you're showing the image preview
+    private Uri selectedImageUri; // If you're handling image picking
+    private UniflowDB db;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_post, container, false);
 
-        // Initialize views
-        editTitle = view.findViewById(R.id.editTitle);
-        editDescription = view.findViewById(R.id.editDescription);
-        imageViewPostImage = view.findViewById(R.id.imageViewPostImage);
+        // Initialize the views
+        editPostTitle = view.findViewById(R.id.editPostTitle);
+        editPostDescription = view.findViewById(R.id.editPostDescription);
         buttonSubmitPost = view.findViewById(R.id.buttonSubmitPost);
+        selectedImagePreview = view.findViewById(R.id.selectedImagePreview);
 
-        buttonSubmitPost.setOnClickListener(v -> submitPost());
+        // Get the Room DB instance from DatabaseClient
+        db = DatabaseClient.getInstance(requireContext()).getDatabase();
 
-        // Image click to open image picker (optional)
-        imageViewPostImage.setOnClickListener(v -> openImagePicker());
+        // Handle submit button click
+        buttonSubmitPost.setOnClickListener(v -> {
+            String title = editPostTitle.getText().toString().trim();
+            String description = editPostDescription.getText().toString().trim();
+            String imageUri = (selectedImageUri != null) ? selectedImageUri.toString() : null;
+
+            // If the title is empty, show an error
+            if (title.isEmpty()) {
+                editPostTitle.setError("Title is required");
+                return;
+            }
+
+            // Create a new Post object
+            Post post = new Post(title, description, imageUri, 1); // Replace 1 with actual author ID
+
+            // Insert the post in a background thread
+            Executors.newSingleThreadExecutor().execute(() -> {
+                db.postDao().insert(post); // Insert the post
+
+                // Update the UI on the main thread
+                requireActivity().runOnUiThread(() -> {
+                    Toast.makeText(requireContext(), "Post created!", Toast.LENGTH_SHORT).show();
+
+                    // Optionally reset fields or navigate away after posting
+                    editPostTitle.setText("");
+                    editPostDescription.setText("");
+                });
+            });
+        });
 
         return view;
-    }
-
-    // This method simulates image picking from gallery
-    private void openImagePicker() {
-        // In a real scenario, you'd trigger an intent here to pick an image
-        // For this example, we'll skip that step.
-    }
-
-    private void submitPost() {
-        String title = editTitle.getText().toString().trim();
-        String description = editDescription.getText().toString().trim();
-
-        if (title.isEmpty() || description.isEmpty()) {
-            Toast.makeText(getContext(), "Title and Description are required", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String imageUri = selectedImageUri != null ? selectedImageUri.toString() : null;
-
-        Post newPost = new Post(title, description, imageUri, 1); // Assuming '1' as authorId
-
-        executorService.execute(() -> {
-            try {
-                // Get the instance of the database and insert the post
-                long postId = AppDatabase.getInstance(getContext()).postDao().insert(newPost);
-
-                getActivity().runOnUiThread(() -> {
-                    if (postId != -1) {
-                        Toast.makeText(getContext(), "Post Created Successfully!", Toast.LENGTH_SHORT).show();
-                        getActivity().onBackPressed(); // Navigate back or close the fragment
-                    } else {
-                        Toast.makeText(getContext(), "Error Creating Post", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } catch (Exception e) {
-                getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 }

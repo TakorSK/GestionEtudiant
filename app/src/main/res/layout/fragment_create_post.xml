@@ -1,65 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:scrollbars="vertical">
 
-    <!-- Title EditText -->
+    <!-- Title at the top -->
+    <TextView
+        android:id="@+id/createPostTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create a Post"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Title input field (no line under it) -->
     <EditText
-        android:id="@+id/editTitle"
+        android:id="@+id/editPostTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Post Title"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"
+        android:inputType="textCapSentences|text"
+        android:textColor="?attr/colorOnSurface"
+        android:imeOptions="actionNext"
+        android:background="@android:color/transparent" />
 
-    <!-- Description EditText -->
+    <!-- Gray Line Separator -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#B0B0B0"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Description input field (no line under it) -->
     <EditText
-        android:id="@+id/editDescription"
+        android:id="@+id/editPostDescription"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Post Description"
+        android:layout_height="200dp"
+        android:hint="Write your post here..."
         android:textSize="16sp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="16dp"
+        android:gravity="top|start"
+        android:textColor="?attr/colorOnSurface"
+        android:inputType="textMultiLine|textCapSentences"
+        android:background="@android:color/transparent" />
 
-    <!-- Buttons for selecting image and posting -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <!-- Hidden Image Picker (Button to launch the image picker) -->
+    <Button
+        android:id="@+id/buttonAddImage"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="left">
+        android:textColor="?attr/colorOnSurface"
+        android:text="Add Image"
+        android:layout_marginBottom="16dp" />
 
-        <!-- Button to pick image (with plus icon) -->
-
-        <!-- Button to post (with normal look) -->
-        <Button
-            android:id="@+id/buttonPickImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:drawableLeft="@android:drawable/ic_input_add"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"/>
-
-        <Button
-            android:id="@+id/buttonSubmitPost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Post"
-            android:paddingVertical="8dp"
-            android:paddingHorizontal="24dp"
-            android:minHeight="48dp"
-            android:layout_marginTop="8dp"/>
-
-    </LinearLayout>
-
-    <!-- ImageView for the post image (Initially invisible) -->
+    <!-- Hidden image preview (to show image after selection) -->
     <ImageView
-        android:id="@+id/imageViewPostImage"
+        android:id="@+id/selectedImagePreview"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:visibility="gone"
-        android:layout_marginTop="16dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Post Image" />
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop" />
+
+    <!-- Button to submit the post -->
+    <Button
+        android:id="@+id/buttonSubmitPost"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post" />
+
 </LinearLayout>

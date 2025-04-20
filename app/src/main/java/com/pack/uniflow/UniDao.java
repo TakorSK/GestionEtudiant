@@ -21,5 +21,5 @@ public interface UniDao {
     List<Uni> getAll();
 
     @Query("SELECT UniPassword FROM uni WHERE id = :id")
-    Uni getUniPasswordById(int id);
+    String getUniPasswordById(int id);
 }
