@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,10 +35,30 @@ public class AdminFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin, container, false);
+
         universitiesRecyclerView = view.findViewById(R.id.universitiesRecyclerView);
         universitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Button btnAddUniversity = view.findViewById(R.id.btnAddUniversity);
+        btnAddUniversity.setOnClickListener(v -> openAddUniversityFragment());
+
+        // New Button for Adding Club
+        Button btnAddClub = view.findViewById(R.id.btnAddClub);  // Assuming you have this button in the XML
+        btnAddClub.setOnClickListener(v -> openAddClubFragment());
+
         loadDataFromDatabase();
         return view;
+    }
+
+    private void openAddUniversityFragment() {
+        AddUniFragment addUniFragment = new AddUniFragment();
+        addUniFragment.show(getParentFragmentManager(), "AddUniFragment");
+    }
+
+    // Method to open AddClubFragment
+    private void openAddClubFragment() {
+        AddClubFragment addClubFragment = new AddClubFragment();
+        addClubFragment.show(getParentFragmentManager(), "AddClubFragment");
     }
 
     private void loadDataFromDatabase() {

@@ -32,7 +32,7 @@
             android:id="@+id/studentName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Alice Brown"
+            android:text="Null"
             android:textSize="16sp"
             android:textStyle="bold" />
 

@@ -19,4 +19,7 @@ public interface UniDao {
     Uni getById(int id);
     @Query("SELECT * FROM uni")
     List<Uni> getAll();
+
+    @Query("SELECT UniPassword FROM uni WHERE id = :id")
+    Uni getUniPasswordById(int id);
 }

@@ -33,6 +33,8 @@ public class Uni {
     @ColumnInfo(name = "associated_student_ids")
     public String associatedStudentIds; // e.g., "1,2,5,10"
 
+    @ColumnInfo(name = "UniPassword")
+    public String UniPassword;
     // ---------------------
     // Helper Methods
     // ---------------------

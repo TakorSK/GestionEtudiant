@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Title EditText -->
+    <EditText
+        android:id="@+id/editTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Post Title"
+        android:textSize="18sp" />
+
+    <!-- Description EditText -->
+    <EditText
+        android:id="@+id/editDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Post Description"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp" />
+
+    <!-- Buttons for selecting image and posting -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="left">
+
+        <!-- Button to pick image (with plus icon) -->
+
+        <!-- Button to post (with normal look) -->
+        <Button
+            android:id="@+id/buttonPickImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:drawableLeft="@android:drawable/ic_input_add"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+        <Button
+            android:id="@+id/buttonSubmitPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="24dp"
+            android:minHeight="48dp"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
+    <!-- ImageView for the post image (Initially invisible) -->
+    <ImageView
+        android:id="@+id/imageViewPostImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Post Image" />
+</LinearLayout>

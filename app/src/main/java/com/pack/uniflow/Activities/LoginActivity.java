@@ -56,6 +56,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(String loginId, String password) {
+        // Check if the login credentials are for the "debug" account
+        if ("debug".equals(loginId) && "debug".equals(password)) {
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Login successful (Debug mode)", Toast.LENGTH_SHORT).show();
+                startMainActivity();
+            });
+            return;
+        }
+
+        // If not "debug", proceed with the regular authentication logic
         try {
             UniflowDB database = DatabaseClient.getInstance(this).getDatabase();
 

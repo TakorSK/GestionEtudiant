@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog_rounded">
+
+    <TextView
+        android:text="Add a New Club"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Club Name -->
+    <EditText
+        android:id="@+id/etClubName"
+        android:hint="Club Name"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Club Description -->
+    <EditText
+        android:id="@+id/etDescription"
+        android:hint="Description"
+        android:textColor="?attr/colorBackgroundFloating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- University ID -->
+    <EditText
+        android:id="@+id/etUniversityId"
+        android:hint="University ID"
+        android:textColor="?attr/colorBackgroundFloating"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <!-- Submit Button -->
+    <Button
+        android:id="@+id/btnSubmitClub"
+        android:text="Submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="?attr/colorBackgroundFloating" />
+</LinearLayout>
