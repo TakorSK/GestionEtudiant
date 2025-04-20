@@ -7,13 +7,12 @@ TODO:
     - Adding the Schedule display and logic /High/
     - Adding Settings; profile info  /Optional/
     - Adding the corresponding fields to fill for each button in the admin panel /Highest/
-    - Adding a University Manager Fragment (to post stuff) [maybe a floating button?] /High/
-    - Fixing All text inputs to replace the keyboard Newline with Next /optional/
     - Fixing UI drop shadows on the admin panel /High/
 
 DONE:
     - Adding Admin Board [Done]
     - Adding Drawer [Done]
+    - Adding University Management Fragment for posts [Done]
     - Adding Drop Shadows [Done]
     - Adding error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
     - Adding Settings; Lightmode/darkmode [Done]
@@ -22,6 +21,7 @@ DONE:
     - Adding the Clubs display [Done]
     - Adding the posts xml and logic for db [Done]
     - Adding the Profile Activity and all of its functions [Done]
+    - Fixing All text inputs to replace the keyboard Newline with Next [Done]
     - Fixing input fields not being a single line [Done]
     - Fixing the signupActivity after the change of the xml [Done]
     - Fixing the settings profile mask [Done]
