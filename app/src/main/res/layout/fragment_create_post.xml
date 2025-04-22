@@ -17,7 +17,7 @@
         android:textColor="?attr/colorOnSurface"
         android:layout_marginBottom="20dp" />
 
-    <!-- Title input field (no line under it) -->
+    <!-- Title input field -->
     <EditText
         android:id="@+id/editPostTitle"
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
         android:background="#B0B0B0"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Description input field (no line under it) -->
+    <!-- Description input field -->
     <EditText
         android:id="@+id/editPostDescription"
         android:layout_width="match_parent"
@@ -50,7 +50,7 @@
         android:inputType="textMultiLine|textCapSentences"
         android:background="@android:color/transparent" />
 
-    <!-- Hidden Image Picker (Button to launch the image picker) -->
+    <!-- Image Button  -->
     <Button
         android:id="@+id/buttonAddImage"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
         android:text="Add Image"
         android:layout_marginBottom="16dp" />
 
-    <!-- Hidden image preview (to show image after selection) -->
+    <!-- Hidden image preview -->
     <ImageView
         android:id="@+id/selectedImagePreview"
         android:layout_width="match_parent"

@@ -13,7 +13,6 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <!-- Card-like container with elevation -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

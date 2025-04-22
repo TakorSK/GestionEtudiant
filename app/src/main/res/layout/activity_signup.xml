@@ -42,7 +42,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Name Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -70,7 +70,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- First Name Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -98,7 +98,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Age Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -125,7 +125,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Telephone Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -152,7 +152,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- University ID Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -179,7 +179,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Email Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -207,7 +207,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Password Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -235,7 +235,7 @@
             android:textColor="#FF5252"
             android:textSize="12sp"
             android:gravity="start"
-            android:visibility="gone" /> <!-- Initially hidden -->
+            android:visibility="gone" />
 
         <!-- Sign Up Button -->
         <Button

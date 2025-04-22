@@ -9,7 +9,7 @@
     android:padding="16dp"
     android:clipToPadding="false">
 
-    <!-- Dark Mode Switch Container with Drop Shadow -->
+    <!-- Dark Mode Switch Container -->
     <LinearLayout
         android:id="@+id/container_dark_mode"
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:trackTint="?android:attr/colorControlActivated" />
     </LinearLayout>
 
-    <!-- Change Profile Info Container with Drop Shadow -->
+    <!-- Profile Info Container -->
     <LinearLayout
         android:id="@+id/settings_btn_change_profile"
         android:layout_width="match_parent"
