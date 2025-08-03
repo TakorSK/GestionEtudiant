@@ -7,11 +7,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.pack.uniflow.DatabaseClient;
-import com.pack.uniflow.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-import com.pack.uniflow.UniflowDB;
+import com.pack.uniflow.R;
+import com.pack.uniflow.StudentDao;
+import com.pack.uniflow.UniDao;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -27,12 +32,17 @@ public class SignupActivity extends AppCompatActivity {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference studentsRef = database.getReference("students");
+    private final DatabaseReference unisRef = database.getReference("universities");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         initializeViews();
         setupSignupButton();
+
     }
 
     private void initializeViews() {
@@ -58,92 +68,149 @@ public class SignupActivity extends AppCompatActivity {
     private void setupSignupButton() {
         findViewById(R.id.signup_button).setOnClickListener(v -> {
             clearAllErrors();
-            String idStr = idEditText.getText().toString().trim();
+            String studentNumber = idEditText.getText().toString().trim();
             String name = nameEditText.getText().toString().trim();
             String firstname = firstnameEditText.getText().toString().trim();
             String ageStr = ageEditText.getText().toString().trim();
             String telephone = telephoneEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
             String email = emailEditText.getText().toString().trim();
-            String universityIdStr = universityIdEditText.getText().toString().trim();
+            String universityCode = universityIdEditText.getText().toString().trim();
 
-            if (validateInputs(idStr, name, firstname, ageStr, telephone, password, email, universityIdStr)) {
+            if (validateInputs(studentNumber, name, firstname, ageStr, telephone, password, email, universityCode)) {
                 findViewById(R.id.signup_button).setEnabled(false);
                 executorService.execute(() -> processRegistration(
-                        idStr, name, firstname, ageStr, telephone, password, email, universityIdStr
+                        studentNumber, name, firstname, ageStr, telephone, password, email, universityCode
                 ));
             }
         });
     }
 
-    private void processRegistration(String idStr, String name, String firstname, String ageStr,
-                                     String telephone, String password, String email, String universityIdStr) {
+    private void processRegistration(String studentId, String name, String firstname, String ageStr,
+                                     String telephone, String password, String email, String universityId) {
         try {
-            int id = Integer.parseInt(idStr);
-            int age = Integer.parseInt(ageStr);
-            int universityId = Integer.parseInt(universityIdStr);
+            final int age = Integer.parseInt(ageStr); // Made final
+            final String fullName = name + " " + firstname; // Made final
 
-            UniflowDB database = DatabaseClient.getInstance(this).getDatabase();
-            Uni university = database.uniDao().getUniversityById(universityId);
+            // 1. Check university exists
+            unisRef.child(universityId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final Uni university = dataSnapshot.getValue(Uni.class); // Made final
+                    if (university == null) {
+                        showErrorOnUI(errorUniversityId, "University not found");
+                        return;
+                    }
 
-            if (university == null) {
-                showErrorOnUI(errorUniversityId, "University not found");
-                return;
-            }
+                    // 2. Check student ID is authorized
+                    if (!university.getAssociatedStudentIds().contains(studentId)) {
+                        showErrorOnUI(errorId, "ID not authorized for this university");
+                        return;
+                    }
 
-            if (!university.getAssociatedStudentIdList().contains(id)) {
-                showErrorOnUI(errorId, "ID not authorized for this university");
-                return;
-            }
+                    // 3. Check if student ID already exists
+                    studentsRef.orderByKey().equalTo(studentId)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        showErrorOnUI(errorId, "ID already registered");
+                                        return;
+                                    }
 
-            if (database.studentDao().getStudentById(id) != null) {
-                showErrorOnUI(errorId, "ID already registered");
-                return;
-            }
+                                    // 4. Check if email already exists
+                                    studentsRef.orderByChild("email").equalTo(email)
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
+                                                        showErrorOnUI(errorEmail, "Email already registered");
+                                                        return;
+                                                    }
 
-            if (database.studentDao().findByEmail(email) != null) {
-                showErrorOnUI(errorEmail, "Email already registered");
-                return;
-            }
+                                                    // 5. Create and save new student
+                                                    Student student = new Student(
+                                                            email,
+                                                            fullName, // Using final variable
+                                                            age,     // Using final variable
+                                                            telephone,
+                                                            universityId,
+                                                            password
+                                                    );
+                                                    student.setId(studentId);
+                                                    student.setOnline(true);
+                                                    student.setLastLogin(dateFormat.format(new Date()));
 
-            Student student = new Student(id, email, name + " " + firstname,
-                    age, telephone, universityId, password);
-            student.isOnline = true;
-            student.lastLogin = dateFormat.format(new Date());
+                                                    studentsRef.child(studentId).setValue(student)
+                                                            .addOnSuccessListener(aVoid -> {
+                                                                runOnUiThread(() -> {
+                                                                    Toast.makeText(SignupActivity.this,
+                                                                            "Registration successful!", Toast.LENGTH_SHORT).show();
+                                                                    startActivity(new Intent(SignupActivity.this, MainActivity.class)
+                                                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                                                                    finish();
+                                                                });
+                                                            })
+                                                            .addOnFailureListener(e -> {
+                                                                runOnUiThread(() -> {
+                                                                    Toast.makeText(SignupActivity.this,
+                                                                            "Registration error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                                    findViewById(R.id.signup_button).setEnabled(true);
+                                                                });
+                                                            });
+                                                }
 
-            database.studentDao().setAllOffline();
-            database.studentDao().insert(student);
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+                                                    runOnUiThread(() -> showDatabaseError(databaseError));
+                                                }
+                                            });
+                                }
 
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, MainActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                finish();
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    runOnUiThread(() -> showDatabaseError(databaseError));
+                                }
+                            });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    runOnUiThread(() -> showDatabaseError(databaseError));
+                }
             });
-
         } catch (NumberFormatException e) {
-            showErrorOnUI(errorUniversityId, "Invalid university ID");
+            showErrorOnUI(errorAge, "Invalid age");
         } catch (Exception e) {
             runOnUiThread(() -> {
-                Toast.makeText(this, "Registration error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(SignupActivity.this,
+                        "Registration error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 findViewById(R.id.signup_button).setEnabled(true);
             });
         }
     }
 
-    private boolean validateInputs(String idStr, String name, String firstname, String ageStr,
-                                   String telephone, String password, String email, String universityIdStr) {
+    private void showDatabaseError(DatabaseError databaseError) {
+        Toast.makeText(SignupActivity.this,
+                "Database error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+        findViewById(R.id.signup_button).setEnabled(true);
+    }
+
+
+
+    private boolean validateInputs(String studentNumber, String name, String firstname, String ageStr,
+                                   String telephone, String password, String email, String universityCode) {
         boolean isValid = true;
 
-        // ID Validation (8 digits)
-        if (idStr.length() != 8 || !idStr.matches("\\d+")) {
+        // Student Number Validation (8 digits)
+        if (studentNumber.length() != 8 || !studentNumber.matches("\\d+")) {
             showError(errorId, "ID must be 8 digits");
             isValid = false;
         }
 
-        // University ID Validation
-        if (universityIdStr.isEmpty() || !universityIdStr.matches("\\d+")) {
-            showError(errorUniversityId, "Enter valid university ID");
+        // University Code Validation
+        if (universityCode.isEmpty() || !universityCode.matches("\\d+")) {
+            showError(errorUniversityId, "Enter valid university code");
             isValid = false;
         }
 
@@ -225,6 +292,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onDestroy();
         executorService.shutdown();
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

@@ -18,9 +18,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.pack.uniflow.DatabaseClient;
-import com.pack.uniflow.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Student;
+import com.pack.uniflow.R;
 
 import java.io.File;
 import java.io.InputStream;
@@ -28,8 +32,6 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ChangeProfileActivity extends AppCompatActivity {
 
@@ -40,7 +42,11 @@ public class ChangeProfileActivity extends AppCompatActivity {
     private EditText edtBio;
     private Button btnSave;
     private Uri selectedImageUri;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference studentsRef = database.getReference("students");
+    private Student currentStudent;
+    private String currentStudentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,27 +64,27 @@ public class ChangeProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileData() {
-        executorService.execute(() -> {
-            try {
-                Student student = DatabaseClient.getInstance(this)
-                        .getDatabase()
-                        .studentDao()
-                        .getOnlineStudent();
-
-                runOnUiThread(() -> {
-                    if (student != null) {
-                        edtBio.setText(student.Bio != null ? student.Bio : "");
-
-                        if (student.profilePictureUri != null && !student.profilePictureUri.isEmpty()) {
-                            loadImageWithGlide(Uri.parse(student.profilePictureUri), ivProfilePicture);
+        studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot studentSnap : snapshot.getChildren()) {
+                            currentStudent = studentSnap.getValue(Student.class);
+                            currentStudentId = studentSnap.getKey();
+                            if (currentStudent != null) {
+                                edtBio.setText(currentStudent.getBio() != null ? currentStudent.getBio() : "");
+                                if (currentStudent.getProfilePictureUri() != null && !currentStudent.getProfilePictureUri().isEmpty()) {
+                                    loadImageWithGlide(Uri.parse(currentStudent.getProfilePictureUri()), ivProfilePicture);
+                                }
+                            }
                         }
                     }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(ChangeProfileActivity.this, "Error loading profile", Toast.LENGTH_SHORT).show();
+                    }
                 });
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Error loading profile", Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 
     private void checkPermissionsAndOpenImagePicker() {
@@ -125,40 +131,27 @@ public class ChangeProfileActivity extends AppCompatActivity {
     }
 
     private void saveProfileChanges() {
+        if (currentStudent == null || currentStudentId == null) {
+            Toast.makeText(this, "No online student found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String bio = edtBio.getText().toString().trim();
+        currentStudent.setBio(bio);
 
-        executorService.execute(() -> {
-            try {
-                Student student = DatabaseClient.getInstance(this)
-                        .getDatabase()
-                        .studentDao()
-                        .getOnlineStudent();
+        if (selectedImageUri != null) {
+            String savedImagePath = saveImageToInternalStorage(selectedImageUri);
+            currentStudent.setProfilePictureUri(savedImagePath);
+        }
 
-                if (student != null) {
-                    student.Bio = bio;
-
-                    if (selectedImageUri != null) {
-                        // Save image to internal storage and get new URI
-                        String savedImagePath = saveImageToInternalStorage(selectedImageUri);
-                        student.profilePictureUri = savedImagePath;
-                    }
-
-                    DatabaseClient.getInstance(this)
-                            .getDatabase()
-                            .studentDao()
-                            .update(student);
-
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Profile updated", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    });
-                }
-            } catch (Exception e) {
-                runOnUiThread(() ->
+        studentsRef.child(currentStudentId).setValue(currentStudent)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Profile updated", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                })
+                .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 
     private String saveImageToInternalStorage(Uri imageUri) {
@@ -190,11 +183,5 @@ public class ChangeProfileActivity extends AppCompatActivity {
                 .error(R.drawable.nav_profile_pic)
                 .circleCrop()
                 .into(imageView);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
     }
 }

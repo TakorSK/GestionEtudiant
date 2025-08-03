@@ -1,15 +1,22 @@
 package com.pack.uniflow.Fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.ClubAdapter;
 import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
@@ -17,44 +24,43 @@ import com.pack.uniflow.R;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class ClubsFragment extends Fragment {
 
+    private RecyclerView recyclerView;
+    private ClubAdapter adapter;
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference clubsRef = database.getReference("clubs");
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_clubs, container, false);
 
-        RecyclerView recyclerView = view.findViewById(R.id.clubsRecyclerView);
+        recyclerView = view.findViewById(R.id.clubsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //if
-        List<Club> dummyClubs = new ArrayList<>();
-
-        Club chess = new Club();
-        chess.name = "Chess Club";
-        chess.description = "For chess lovers";
-        chess.uniId = 1;
-
-        Club coding = new Club();
-        coding.name = "Coding Club";
-        coding.description = "We write bugs professionally.";
-        coding.uniId = 1;
-
-        Club art = new Club();
-        art.name = "Art Society";
-        art.description = "Express yourself in color!";
-        art.uniId = 1;
-
-        dummyClubs.add(chess);
-        dummyClubs.add(coding);
-        dummyClubs.add(art);
-
-        ClubAdapter adapter = new ClubAdapter(dummyClubs);
+        adapter = new ClubAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
+        loadClubsFromFirebase();
         return view;
     }
 
+    private void loadClubsFromFirebase() {
+        clubsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Club> clubs = new ArrayList<>();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Club club = snap.getValue(Club.class);
+                    if (club != null) clubs.add(club);
+                }
+                adapter.updateClubs(clubs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load clubs", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

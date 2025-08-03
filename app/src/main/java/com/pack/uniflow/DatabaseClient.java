@@ -2,34 +2,23 @@ package com.pack.uniflow;
 
 import android.content.Context;
 import android.util.Log;
-import androidx.annotation.NonNull;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
-import java.util.concurrent.Executors;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatabaseClient {
     private static DatabaseClient instance;
-    private UniflowDB database;
+    private DatabaseReference databaseRef;
     private static final Object LOCK = new Object();
 
     private DatabaseClient(Context context) {
-        database = Room.databaseBuilder(
-                        context.getApplicationContext(),
-                        UniflowDB.class,
-                        "UniflowDatabase"
-                )
-                .fallbackToDestructiveMigration()
-                .addCallback(new RoomDatabase.Callback() {
-                    @Override
-                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                        super.onCreate(db);
-                        Executors.newSingleThreadExecutor().execute(() -> {
-                            insertDefaultData(DatabaseClient.this.database);
-                        });
-                    }
-                })
-                .build();
+        // Enable disk persistence
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        databaseRef = FirebaseDatabase.getInstance().getReference();
+
+        // Insert default data
+        insertDefaultData();
     }
 
     public static synchronized DatabaseClient getInstance(Context context) {
@@ -43,50 +32,57 @@ public class DatabaseClient {
         return instance;
     }
 
-    public UniflowDB getDatabase() {
-        return database;
+    public DatabaseReference getDatabaseRef() {
+        return databaseRef;
     }
 
-    private void insertDefaultData(UniflowDB database) {
-        try {
-            // Insert Universities
-            Uni nationalUni = new Uni();
-            nationalUni.name = "National University";
-            nationalUni.location = "Main Campus";
-            nationalUni.establishedYear = 1950;
-            nationalUni.website = "www.nationaluni.edu";
-            long uniId1 = database.uniDao().insert(nationalUni);
-            Log.d("DB_INSERT", "Inserted University with ID: " + uniId1);
+    private void insertDefaultData() {
+        // Create universities
+        String nationalUniId = databaseRef.child("universities").push().getKey();
+        String techUniId = databaseRef.child("universities").push().getKey();
 
-            Uni techUni = new Uni();
-            techUni.name = "Tech Institute";
-            techUni.location = "Tech Park";
-            techUni.establishedYear = 1995;
-            techUni.website = "www.techinstitute.edu";
-            long uniId2 = database.uniDao().insert(techUni);
-            Log.d("DB_INSERT", "Inserted University with ID: " + uniId2);
+        Map<String, Object> nationalUni = new HashMap<>();
+        nationalUni.put("name", "National University");
+        nationalUni.put("location", "Main Campus");
+        nationalUni.put("establishedYear", 1950);
+        nationalUni.put("website", "www.nationaluni.edu");
 
-            // Insert Clubs
-            insertClub(database, "Chess Club", "For chess enthusiasts", (int)uniId1);
-            insertClub(database, "Debate Society", "Public speaking", (int)uniId1);
-            insertClub(database, "Coding Club", "Learn programming", (int)uniId2);
-            insertClub(database, "Robotics Team", "Build robots", (int)uniId2);
+        Map<String, Object> techUni = new HashMap<>();
+        techUni.put("name", "Tech Institute");
+        techUni.put("location", "Tech Park");
+        techUni.put("establishedYear", 1995);
+        techUni.put("website", "www.techinstitute.edu");
 
-        } catch (Exception e) {
-            Log.e("DB_INIT", "Failed to insert default data", e);
-        }
+        // Write universities
+        databaseRef.child("universities").child(nationalUniId).setValue(nationalUni)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FB_INSERT", "Inserted National University");
+                    // Insert clubs for this university
+                    insertClub("Chess Club", "For chess enthusiasts", nationalUniId);
+                    insertClub("Debate Society", "Public speaking", nationalUniId);
+                });
+
+        databaseRef.child("universities").child(techUniId).setValue(techUni)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("FB_INSERT", "Inserted Tech Institute");
+                    // Insert clubs for this university
+                    insertClub("Coding Club", "Learn programming", techUniId);
+                    insertClub("Robotics Team", "Build robots", techUniId);
+                });
     }
 
-    private void insertClub(UniflowDB database, String name, String description, int uniId) {
-        try {
-            Club club = new Club();
-            club.name = name;
-            club.description = description;
-            club.uniId = uniId;
-            long clubId = database.clubDao().insert(club);
-            Log.d("DB_INSERT", "Inserted Club: " + name + " with ID: " + clubId);
-        } catch (Exception e) {
-            Log.e("DB_INIT", "Failed to insert club: " + name, e);
-        }
+    private void insertClub(String name, String description, String uniId) {
+        String clubId = databaseRef.child("clubs").push().getKey();
+
+        Map<String, Object> club = new HashMap<>();
+        club.put("name", name);
+        club.put("description", description);
+        club.put("uniId", uniId);
+
+        databaseRef.child("clubs").child(clubId).setValue(club)
+                .addOnSuccessListener(aVoid ->
+                        Log.d("FB_INSERT", "Inserted Club: " + name))
+                .addOnFailureListener(e ->
+                        Log.e("FB_INIT", "Failed to insert club: " + name, e));
     }
 }

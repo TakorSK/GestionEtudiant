@@ -1,16 +1,42 @@
 package com.pack.uniflow;
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
 
-import com.pack.uniflow.Models.Post;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-@Database(entities = {Uni.class, Club.class, Section.class, Student.class, Timetable.class, Post.class}, version = 10, exportSchema = false)
+public class UniflowDB {
+    private static UniflowDB instance;
+    private final DatabaseReference databaseRef;
 
-public abstract class UniflowDB extends RoomDatabase {
-    public abstract UniDao uniDao();
-    public abstract ClubDao clubDao();
-    public abstract SectionDao sectionDao();
-    public abstract StudentDao studentDao();
-    public abstract TimetableDao timetableDao();
-    public abstract PostDao postDao();
+    // Database paths
+    public final DatabaseReference universitiesRef;
+    public final DatabaseReference clubsRef;
+    public final DatabaseReference sectionsRef;
+    public final DatabaseReference studentsRef;
+    public final DatabaseReference timetablesRef;
+    public final DatabaseReference postsRef;
+
+    private UniflowDB() {
+        // Enable disk persistence
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        databaseRef = FirebaseDatabase.getInstance().getReference();
+
+        // Initialize all references
+        universitiesRef = databaseRef.child("universities");
+        clubsRef = databaseRef.child("clubs");
+        sectionsRef = databaseRef.child("sections");
+        studentsRef = databaseRef.child("students");
+        timetablesRef = databaseRef.child("timetables");
+        postsRef = databaseRef.child("posts");
+    }
+
+    public static synchronized UniflowDB getInstance() {
+        if (instance == null) {
+            instance = new UniflowDB();
+        }
+        return instance;
+    }
+
+    public DatabaseReference getDatabaseRef() {
+        return databaseRef;
+    }
 }

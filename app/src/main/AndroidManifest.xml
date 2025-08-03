@@ -52,7 +52,11 @@
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true"
-            android:launchMode="singleTop" />
+            android:configChanges="uiMode"
+             />
+        <activity android:name=".Activities.UniflowApp"
+            android:exported="false"
+            android:launchMode="singleTop"/>
 
     </application>
 

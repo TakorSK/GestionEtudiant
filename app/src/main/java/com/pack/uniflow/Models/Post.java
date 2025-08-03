@@ -1,75 +1,101 @@
 package com.pack.uniflow.Models;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
 import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-@Entity(tableName = "posts") // Ensure table name is correct
 public class Post {
-
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") // Maps field 'id' to column 'id'
-    private int id;
-
-    @NonNull
-    @ColumnInfo(name = "title") // Maps field 'title' to column 'title'
+    private String id; // Changed from int to String for Firebase
     private String title;
-
-    @ColumnInfo(name = "description") // Maps field 'description' to column 'description'
     private String description;
-
-    @ColumnInfo(name = "image_uri") // Maps field 'imageUri' to column 'image_uri'
     private String imageUri;
-
-    // Use camelCase field name, map to snake_case column name
-    @ColumnInfo(name = "author_id") // Maps field 'authorId' to column 'author_id'
-    private int authorId;
-
-    // Use camelCase field name, map to snake_case column name
-    // Sticking with String based on your constructor
-    @ColumnInfo(name = "created_at") // Maps field 'createdAt' to column 'created_at'
+    private String authorId; // Changed from int to String (Firebase typically uses String IDs)
     private String createdAt;
+    private String authorName; // Recommended for denormalization
+    private String authorProfileImage; // Recommended for denormalization
 
-    // --- Removed Duplicate/Unused Fields ---
-    // public double content; // Removed - Unused?
-    // public int author_id; // Removed - Duplicate
-    // public long created_at; // Removed - Duplicate and type mismatch
+    // Required empty constructor for Firebase
+    public Post() {
+    }
 
-    // Constructors, getters and setters
-    public Post() {} // Keep default constructor for Room
-
-    // Constructor using the correct fields
-    public Post(@NonNull String title, String description, String imageUri, int authorId) {
+    // Constructor for creating new posts
+    public Post(@NonNull String title, String description, String imageUri, String authorId,
+                String authorName, String authorProfileImage) {
         this.title = title;
         this.description = description;
         this.imageUri = imageUri;
-        this.authorId = authorId; // Assign to the correct field
-        // Assign to the correct field
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.authorProfileImage = authorProfileImage;
         this.createdAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 .format(new Date());
     }
 
-    // Add all getters and setters for the private fields (Room requires them)
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    // Getters and setters (required for Firebase serialization)
+    public String getId() {
+        return id;
+    }
 
-    @NonNull public String getTitle() { return title; }
-    public void setTitle(@NonNull String title) { this.title = title; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    @NonNull
+    public String getTitle() {
+        return title;
+    }
 
-    public String getImageUri() { return imageUri; }
-    public void setImageUri(String imageUri) { this.imageUri = imageUri; }
+    public void setTitle(@NonNull String title) {
+        this.title = title;
+    }
 
-    public int getAuthorId() { return authorId; } // Getter for authorId
-    public void setAuthorId(int authorId) { this.authorId = authorId; } // Setter for authorId
+    public String getDescription() {
+        return description;
+    }
 
-    public String getCreatedAt() { return createdAt; } // Getter for createdAt
-    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; } // Setter for createdAt
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getAuthorProfileImage() {
+        return authorProfileImage;
+    }
+
+    public void setAuthorProfileImage(String authorProfileImage) {
+        this.authorProfileImage = authorProfileImage;
+    }
 }

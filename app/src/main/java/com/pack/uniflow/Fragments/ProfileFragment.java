@@ -2,21 +2,26 @@ package com.pack.uniflow.Fragments;
 
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
-import com.pack.uniflow.DatabaseClient;
-import com.pack.uniflow.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Section;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.pack.uniflow.R;
 
 public class ProfileFragment extends Fragment {
 
@@ -25,11 +30,15 @@ public class ProfileFragment extends Fragment {
     private TextView profileSectionTextView;
     private TextView edtBioTextView;
     private ImageView profileImageView, statusIcon;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference studentsRef = database.getReference("students");
+    private final DatabaseReference unisRef = database.getReference("universities");
+    private final DatabaseReference sectionsRef = database.getReference("sections");
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         profileNameTextView = view.findViewById(R.id.profile_Name);
@@ -39,83 +48,97 @@ public class ProfileFragment extends Fragment {
         profileImageView = view.findViewById(R.id.profile_image);
         statusIcon = view.findViewById(R.id.status_icon);
 
-        loadStudentProfile();
-
+        loadOnlineStudent();
         return view;
     }
 
-    private void loadStudentProfile() {
-        executorService.execute(() -> {
-            try {
-                Student student = DatabaseClient.getInstance(getContext())
-                        .getDatabase()
-                        .studentDao()
-                        .getOnlineStudent();
-
-                Uni uni = null;
-                Section section = null;
-
-                if (student != null) {
-                    if (student.uniId != 0) {
-                        uni = DatabaseClient.getInstance(getContext())
-                                .getDatabase()
-                                .uniDao()
-                                .getById(student.uniId);
-                    }
-                    if (student.sectionId != null) {
-                        section = DatabaseClient.getInstance(getContext())
-                                .getDatabase()
-                                .sectionDao()
-                                .getById(student.sectionId);
-                    }
-
-                    Uni finalUni = uni;
-                    Section finalSection = section;
-
-                    requireActivity().runOnUiThread(() -> {
-                        profileNameTextView.setText(student.fullName != null ? student.fullName : "Unknown");
-                        profileUniTextView.setText(finalUni != null ? finalUni.name : "Unknown University");
-                        profileSectionTextView.setText(finalSection != null ? finalSection.name : "Unknown Section");
-                        edtBioTextView.setText(student.Bio != null ? student.Bio : "No bio available");
-
-                        if (student.profilePictureUri != null && !student.profilePictureUri.isEmpty()) {
-                            Glide.with(requireContext())
-                                    .load(Uri.parse(student.profilePictureUri))
-                                    .placeholder(R.drawable.nav_profile_pic)
-                                    .into(profileImageView);
+    private void loadOnlineStudent() {
+        studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot snap : snapshot.getChildren()) {
+                                Student student = snap.getValue(Student.class);
+                                if (student == null) continue;
+                                student.setId(snap.getKey());
+                                bindStudentData(student);
+                                break;
+                            }
                         } else {
-                            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+                            displayOfflineState("Not logged in");
                         }
+                    }
 
-                        statusIcon.setImageResource(student.isOnline ? R.drawable.online_circle_icon : R.drawable.offline_circle_icon);
-                    });
-                } else {
-                    requireActivity().runOnUiThread(() -> {
-                        profileNameTextView.setText("Not logged in");
-                        profileUniTextView.setText("N/A");
-                        profileSectionTextView.setText("N/A");
-                        edtBioTextView.setText("N/A");
-                        profileImageView.setImageResource(R.drawable.nav_profile_pic);
-                        statusIcon.setImageResource(R.drawable.offline_circle_icon);
-                    });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(() -> {
-                    profileNameTextView.setText("Error loading data");
-                    profileUniTextView.setText("Error");
-                    profileSectionTextView.setText("Error");
-                    edtBioTextView.setText("Error");
-                    profileImageView.setImageResource(R.drawable.nav_profile_pic);
-                    statusIcon.setImageResource(R.drawable.offline_circle_icon);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        displayOfflineState("Error loading profile");
+                    }
                 });
+    }
+
+    private void bindStudentData(Student student) {
+        profileNameTextView.setText(student.getFullName() != null ? student.getFullName() : "Unknown");
+        edtBioTextView.setText(student.getBio() != null ? student.getBio() : "No bio available");
+        statusIcon.setImageResource(student.isOnline() ? R.drawable.online_circle_icon : R.drawable.offline_circle_icon);
+
+        if (student.getProfilePictureUri() != null && !student.getProfilePictureUri().isEmpty()) {
+            Glide.with(requireContext())
+                    .load(Uri.parse(student.getProfilePictureUri()))
+                    .placeholder(R.drawable.nav_profile_pic)
+                    .into(profileImageView);
+        } else {
+            profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        }
+
+        loadUniversityName(student.getUniId());
+        loadSectionName(student.getSectionId());
+    }
+
+    private void loadUniversityName(String uniId) {
+        if (uniId == null) {
+            profileUniTextView.setText("Unknown University");
+            return;
+        }
+        unisRef.child(uniId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Uni uni = snapshot.getValue(Uni.class);
+                profileUniTextView.setText(uni != null ? uni.getName() : "Unknown University");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                profileUniTextView.setText("Error");
             }
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
+    private void loadSectionName(String sectionId) {
+        if (sectionId == null) {
+            profileSectionTextView.setText("Unknown Section");
+            return;
+        }
+        sectionsRef.child(sectionId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Section section = snapshot.getValue(Section.class);
+                profileSectionTextView.setText(section != null ? section.getName() : "Unknown Section");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                profileSectionTextView.setText("Error");
+            }
+        });
+    }
+
+    private void displayOfflineState(String message) {
+        profileNameTextView.setText(message);
+        profileUniTextView.setText("N/A");
+        profileSectionTextView.setText("N/A");
+        edtBioTextView.setText("N/A");
+        profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        statusIcon.setImageResource(R.drawable.offline_circle_icon);
     }
 }

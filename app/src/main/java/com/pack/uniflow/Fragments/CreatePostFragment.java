@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +18,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.pack.uniflow.R;
-import com.pack.uniflow.DatabaseClient;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Models.Post;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-import com.pack.uniflow.UniflowDB;
+import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
-
-import java.util.concurrent.Executors;
 
 public class CreatePostFragment extends Fragment {
 
@@ -33,15 +35,20 @@ public class CreatePostFragment extends Fragment {
     private Button buttonSubmitPost, buttonAddImage;
     private ImageView selectedImagePreview;
     private Uri selectedImageUri;
-    private UniflowDB db;
-    private LoginType currentUserType;
+
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference postsRef    = database.getReference("posts");
+    private final DatabaseReference studentsRef = database.getReference("students");
+    private final DatabaseReference unisRef     = database.getReference("universities");
+
+    private LoginType currentUserType = LoginType.REGULAR_STUDENT;
     private Student currentStudent;
     private Uni currentUniversity;
-    private int currentUniversityId;
+    private String currentUniversityId;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                if (result.getResultCode() == requireActivity().RESULT_OK && result.getData() != null) {
                     selectedImageUri = result.getData().getData();
                     selectedImagePreview.setImageURI(selectedImageUri);
                     selectedImagePreview.setVisibility(View.VISIBLE);
@@ -49,64 +56,57 @@ public class CreatePostFragment extends Fragment {
             });
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_post, container, false);
-
-        // Initialize views
-        editPostTitle = view.findViewById(R.id.editPostTitle);
-        editPostDescription = view.findViewById(R.id.editPostDescription);
-        buttonSubmitPost = view.findViewById(R.id.buttonSubmitPost);
-        buttonAddImage = view.findViewById(R.id.buttonAddImage);
-        selectedImagePreview = view.findViewById(R.id.selectedImagePreview);
-
-        db = DatabaseClient.getInstance(requireContext()).getDatabase();
-
-        // Safely get arguments
-        Bundle args = getArguments();
-        if (args != null) {
-            try {
-                currentUserType = LoginType.valueOf(args.getString("LOGIN_TYPE", LoginType.REGULAR_STUDENT.name()));
-                currentUniversityId = args.getInt("UNIVERSITY_ID", -1);
-            } catch (Exception e) {
-                currentUserType = LoginType.REGULAR_STUDENT;
-                currentUniversityId = -1;
-            }
-        } else {
-            currentUserType = LoginType.REGULAR_STUDENT;
-            currentUniversityId = -1;
-        }
-
+        bindViews(view);
+        extractArguments();
         loadUserData();
-
-        buttonAddImage.setOnClickListener(v -> openImagePicker());
-        buttonSubmitPost.setOnClickListener(v -> submitPost());
-
+        setupListeners();
         return view;
     }
 
+    private void bindViews(View root) {
+        editPostTitle        = root.findViewById(R.id.editPostTitle);
+        editPostDescription  = root.findViewById(R.id.editPostDescription);
+        buttonSubmitPost     = root.findViewById(R.id.buttonSubmitPost);
+        buttonAddImage       = root.findViewById(R.id.buttonAddImage);
+        selectedImagePreview = root.findViewById(R.id.selectedImagePreview);
+    }
+
+    private void extractArguments() {
+        Bundle args = getArguments();
+        if (args == null) return;
+        try {
+            currentUserType     = LoginType.valueOf(args.getString("LOGIN_TYPE", LoginType.REGULAR_STUDENT.name()));
+            currentUniversityId = args.getString("UNIVERSITY_ID", null);
+        } catch (Exception ignored) {}
+    }
+
     private void loadUserData() {
-        if (currentUniversityId == -1) {
-            requireActivity().runOnUiThread(() ->
-                    Toast.makeText(requireContext(), "University ID is missing", Toast.LENGTH_SHORT).show()
-            );
+        if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
+            if (currentUniversityId != null)
+                unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new UniListener());
+        } else {
+            studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot snap : snapshot.getChildren()) {
+                                currentStudent = snap.getValue(Student.class);
+                                if (currentStudent == null) continue;
+                                currentStudent.setId(snap.getKey());
+                                currentUniversityId = currentStudent.getUniId();
+                                if (currentUniversityId != null)
+                                    unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new UniListener());
+                            }
+                        }
+                        @Override public void onCancelled(@NonNull DatabaseError error) { showToast("Error loading user"); }
+                    });
         }
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
-                    currentUniversity = db.uniDao().getById(currentUniversityId);
-                }
-                else if (currentUserType == LoginType.STUDENT_ADMIN ||
-                        currentUserType == LoginType.REGULAR_STUDENT) {
-                    currentStudent = db.studentDao().getOnlineStudent();
-                    if (currentStudent != null) {
-                        currentUniversity = db.uniDao().getById(currentStudent.uniId);
-                    }
-                }
-            } catch (Exception e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error loading user data", Toast.LENGTH_SHORT).show());
-            }
-        });
+    }
+
+    private void setupListeners() {
+        buttonAddImage.setOnClickListener(v -> openImagePicker());
+        buttonSubmitPost.setOnClickListener(v -> submitPost());
     }
 
     private void openImagePicker() {
@@ -116,93 +116,81 @@ public class CreatePostFragment extends Fragment {
     }
 
     private void submitPost() {
-        String title = editPostTitle.getText().toString().trim();
+        String title       = editPostTitle.getText().toString().trim();
         String description = editPostDescription.getText().toString().trim();
-        String imageUriString = (selectedImageUri != null) ? selectedImageUri.toString() : null;
+        if (TextUtils.isEmpty(title)) { editPostTitle.setError("Title is required"); return; }
 
-        if (title.isEmpty()) {
-            editPostTitle.setError("Title is required");
-            return;
-        }
+        if (currentUniversityId == null) { showToast("University not resolved yet"); return; }
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
-                // Format the post content with author information
-                String authorInfo = getAuthorInformation();
-                String fullDescription = description + "\n\n" + authorInfo;
+        String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+        String authorName     = getAuthorName();
+        String profileImage   = getAuthorProfileImage();
 
-                // Format the title based on user type
-                String formattedTitle = formatTitle(title);
+        Post post = new Post(
+                title,
+                description,
+                imageUriString,
+                getAuthorId(),
+                authorName,
+                profileImage
+        );
 
-                // Get appropriate author ID
-                int authorId = getAuthorId();
-
-                Post post = new Post(formattedTitle, fullDescription, imageUriString, authorId);
-                db.postDao().insert(post);
-
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(requireContext(), "Post created successfully!", Toast.LENGTH_SHORT).show();
-                    resetForm();
-                });
-            } catch (Exception e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Failed to create post", Toast.LENGTH_SHORT).show());
-            }
-        });
-    }
-
-    private String formatTitle(String title) {
-        switch (currentUserType) {
-            case DEBUG_ADMIN:
-                return "[DEBUG ADMIN] " + title;
-            case UNIVERSITY_ADMIN:
-                return "[UNIVERSITY] " + title;
-            case STUDENT_ADMIN:
-                return "[ADMIN] " + title;
-            default:
-                return title;
+        String newId = postsRef.push().getKey();
+        if (newId != null) {
+            post.setId(newId);
+            postsRef.child(newId).setValue(post)
+                    .addOnSuccessListener(unused -> {
+                        showToast("Post created successfully!");
+                        resetForm();
+                    })
+                    .addOnFailureListener(e -> showToast("Failed to create post"));
         }
     }
 
-    private String getAuthorInformation() {
+    private String getAuthorName() {
         switch (currentUserType) {
-            case DEBUG_ADMIN:
-                return "Posted by: ADMIN (System)";
-            case UNIVERSITY_ADMIN:
-                return "Posted by: " + (currentUniversity != null ? currentUniversity.name : "University") + " Administration";
-            case STUDENT_ADMIN:
-                return "Posted by: ADMIN (" + (currentStudent != null ? currentStudent.fullName : "Student") + ")";
-            default:
-                return "Posted by: " + (currentStudent != null ? currentStudent.fullName : "Student");
+            case DEBUG_ADMIN:      return "ADMIN (System)";
+            case UNIVERSITY_ADMIN: return currentUniversity != null ? currentUniversity.getName() + " Administration" : "University";
+            case STUDENT_ADMIN:    return currentStudent != null ? "ADMIN (" + currentStudent.getFullName() + ")" : "Student Admin";
+            default:               return currentStudent != null ? currentStudent.getFullName() : "Student";
         }
     }
 
-    private int getAuthorId() {
+    private String getAuthorId() {
         switch (currentUserType) {
-            case DEBUG_ADMIN:
-                return -1; // Special ID for debug admin
-            case UNIVERSITY_ADMIN:
-                return -currentUniversityId; // Negative university ID for university admins
-            default:
-                return currentStudent != null ? currentStudent.id : 0;
+            case DEBUG_ADMIN:      return "debug_admin";
+            case UNIVERSITY_ADMIN: return currentUniversityId != null ? "uni_" + currentUniversityId : "uni_unknown";
+            default:               return currentStudent != null && currentStudent.getId() != null ? currentStudent.getId() : "unknown";
         }
+    }
+
+    private String getAuthorProfileImage() {
+        if (currentUserType == LoginType.UNIVERSITY_ADMIN) return null;
+        return currentStudent != null ? currentStudent.getProfilePictureUri() : null;
     }
 
     private void resetForm() {
-        requireActivity().runOnUiThread(() -> {
-            editPostTitle.setText("");
-            editPostDescription.setText("");
-            selectedImagePreview.setVisibility(View.GONE);
-            selectedImageUri = null;
-        });
+        editPostTitle.setText("");
+        editPostDescription.setText("");
+        selectedImagePreview.setVisibility(View.GONE);
+        selectedImageUri = null;
     }
 
-    // Factory method to properly create the fragment with required arguments
-    public static CreatePostFragment newInstance(LoginType loginType, int universityId) {
+    private void showToast(String msg) { if (isAdded()) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show(); }
+
+    private class UniListener implements ValueEventListener {
+        @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+            currentUniversity = snapshot.getValue(Uni.class);
+            if (currentUniversity != null) currentUniversity.setId(Integer.parseInt(snapshot.getKey()));
+        }
+        @Override public void onCancelled(@NonNull DatabaseError error) { showToast("Error loading university"); }
+    }
+
+    public static CreatePostFragment newInstance(LoginType loginType, String universityId) {
         CreatePostFragment fragment = new CreatePostFragment();
         Bundle args = new Bundle();
         args.putString("LOGIN_TYPE", loginType != null ? loginType.name() : LoginType.REGULAR_STUDENT.name());
-        args.putInt("UNIVERSITY_ID", universityId);
+        args.putString("UNIVERSITY_ID", universityId);
         fragment.setArguments(args);
         return fragment;
     }

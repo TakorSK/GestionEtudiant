@@ -1,84 +1,34 @@
 package com.pack.uniflow;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
-import androidx.room.ForeignKey;
 import androidx.annotation.NonNull;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-@Entity(
-        tableName = "student",
-        foreignKeys = {
-                @ForeignKey(entity = Section.class,
-                        parentColumns = "id",
-                        childColumns = "section_id",
-                        onDelete = ForeignKey.SET_NULL),
-                @ForeignKey(entity = Uni.class,
-                        parentColumns = "id",
-                        childColumns = "uni_id",
-                        onDelete = ForeignKey.CASCADE),
-                @ForeignKey(entity = Club.class,
-                        parentColumns = "id",
-                        childColumns = "club_id",
-                        onDelete = ForeignKey.SET_NULL)
-        }
-)
 public class Student {
-    @PrimaryKey
-    @ColumnInfo(name = "id")
-    public int id;
+    private String id; // Changed from int to String
+    private String sectionId; // Changed from Integer to String
+    @NonNull private String email;
+    @NonNull private String fullName;
+    private int age;
+    private String telephone;
+    private String uniId; // Changed from int to String
+    private String clubId; // Changed from Integer to String
+    private boolean isOnline = false;
+    private boolean isAdmin = false;
+    private String registrationDate;
+    private String lastLogin;
+    @NonNull private String password;
+    private String bio; // Fixed capitalization
+    private String profilePictureUri;
 
-    @ColumnInfo(name = "section_id", index = true)
-    public Integer sectionId;
+    // Required empty constructor for Firebase
+    public Student() {
+    }
 
-    @NonNull
-    @ColumnInfo(name = "email")
-    public String email;
-
-    @NonNull
-    @ColumnInfo(name = "full_name")
-    public String fullName;
-
-    @ColumnInfo(name = "age")
-    public int age;
-
-    @ColumnInfo(name = "telephone")
-    public String telephone;
-
-    @ColumnInfo(name = "uni_id", index = true)
-    public int uniId;
-
-    @ColumnInfo(name = "club_id", index = true)
-    public Integer clubId;
-
-    @ColumnInfo(name = "is_online")
-    public boolean isOnline = false;
-    @ColumnInfo(name = "is_admin")
-    public boolean isAdmin = false;
-    @ColumnInfo(name = "registration_date")
-    public String registrationDate;
-
-    @ColumnInfo(name = "last_login")
-    public String lastLogin;
-
-    @NonNull
-    @ColumnInfo(name = "password")
-    public String password;
-
-    @ColumnInfo(name = "Bio")
-    public String Bio;
-
-    @ColumnInfo(name = "profile_picture_uri")
-    public String profilePictureUri;
-
-    public Student(int id, @NonNull String email, @NonNull String fullName,
-                   int age, @NonNull String telephone, int uniId,
+    public Student(@NonNull String email, @NonNull String fullName, int age,
+                   @NonNull String telephone, @NonNull String uniId,
                    @NonNull String password) {
-        this.id = id;
         this.email = email;
         this.fullName = fullName;
         this.age = age;
@@ -90,4 +40,50 @@ public class Student {
         this.profilePictureUri = "";
         this.isAdmin = false;
     }
+
+    // Getters and setters (required for Firebase)
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getSectionId() { return sectionId; }
+    public void setSectionId(String sectionId) { this.sectionId = sectionId; }
+
+    @NonNull public String getEmail() { return email; }
+    public void setEmail(@NonNull String email) { this.email = email; }
+
+    @NonNull public String getFullName() { return fullName; }
+    public void setFullName(@NonNull String fullName) { this.fullName = fullName; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public String getUniId() { return uniId; }
+    public void setUniId(String uniId) { this.uniId = uniId; }
+
+    public String getClubId() { return clubId; }
+    public void setClubId(String clubId) { this.clubId = clubId; }
+
+    public boolean isOnline() { return isOnline; }
+    public void setOnline(boolean online) { isOnline = online; }
+
+    public boolean isAdmin() { return isAdmin; }
+    public void setAdmin(boolean admin) { isAdmin = admin; }
+
+    public String getRegistrationDate() { return registrationDate; }
+    public void setRegistrationDate(String registrationDate) { this.registrationDate = registrationDate; }
+
+    public String getLastLogin() { return lastLogin; }
+    public void setLastLogin(String lastLogin) { this.lastLogin = lastLogin; }
+
+    @NonNull public String getPassword() { return password; }
+    public void setPassword(@NonNull String password) { this.password = password; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getProfilePictureUri() { return profilePictureUri; }
+    public void setProfilePictureUri(String profilePictureUri) { this.profilePictureUri = profilePictureUri; }
 }

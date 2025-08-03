@@ -1,8 +1,10 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,14 +22,25 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.pack.uniflow.DatabaseClient;
-import com.pack.uniflow.Fragments.*;
-import com.pack.uniflow.R;
-import com.pack.uniflow.Section;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.pack.uniflow.FirebaseConfig;
+import com.pack.uniflow.Fragments.AdminFragment;
+import com.pack.uniflow.Fragments.ClubsFragment;
+import com.pack.uniflow.Fragments.CreatePostFragment;
+import com.pack.uniflow.Fragments.HomeFragment;
+import com.pack.uniflow.Fragments.ProfileFragment;
+import com.pack.uniflow.Fragments.ScheduleFragment;
+import com.pack.uniflow.Fragments.SettingsFragment;
+import com.pack.uniflow.Fragments.ScoresFragment;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-import com.pack.uniflow.UniflowDB;
+import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
 import java.util.concurrent.ExecutorService;
@@ -40,88 +53,118 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ImageView profileImageView;
     private TextView profileNameTextView, profileGroupTextView;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     private Student currentStudent;
     private Uni currentUniversity;
     private LoginType loginType;
-    private int currentUniversityId = -1;
+    private String currentUniversityId;
+
+    // Firebase
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference studentsRef = database.getReference("students");
+    private final DatabaseReference unisRef     = database.getReference("universities");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Safely get login type and university ID
-        try {
-            String loginTypeStr = getIntent().getStringExtra("LOGIN_TYPE");
-            loginType = loginTypeStr != null ?
-                    LoginType.valueOf(loginTypeStr) :
-                    LoginType.REGULAR_STUDENT;
 
-            currentUniversityId = getIntent().getIntExtra("UNIVERSITY_ID", -1);
-        } catch (Exception e) {
-            loginType = LoginType.REGULAR_STUDENT;
-            currentUniversityId = -1;
-        }
+        try { database.setPersistenceEnabled(true); } catch (Exception ignored) {}
+
+        String loginTypeStr = getIntent().getStringExtra("LOGIN_TYPE");
+        loginType           = loginTypeStr != null ? LoginType.valueOf(loginTypeStr) : LoginType.REGULAR_STUDENT;
+        currentUniversityId = getIntent().getStringExtra("UNIVERSITY_ID");
 
         initializeViews();
         loadUserData();
-        setupInitialFragment(savedInstanceState);
+        setupInitialFragment();
         setupBackButtonHandler();
     }
 
+    // -------------------- UI -------------------------------------------------
     private void initializeViews() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout   = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar,
-                R.string.open_nav, R.string.close_nav);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        updateNavigationHeaderViews();
+        View header = navigationView.getHeaderView(0);
+        profileImageView     = header.findViewById(R.id.profile_image);
+        profileNameTextView  = header.findViewById(R.id.profile_name_text_view);
+        profileGroupTextView = header.findViewById(R.id.profile_group);
+        profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        profileImageView.setClipToOutline(true);
     }
 
+    // -------------------- Data ----------------------------------------------
     private void loadUserData() {
-        executorService.execute(() -> {
-            try {
-                UniflowDB db = DatabaseClient.getInstance(this).getDatabase();
+        if (loginType == LoginType.UNIVERSITY_ADMIN) {
+            loadUniversityAdminData();
+        } else if (loginType == LoginType.DEBUG_ADMIN) {
+            updateDebugAdminProfile();
+        } else {
+            loadStudentData();
+        }
+    }
 
-                if (loginType == LoginType.UNIVERSITY_ADMIN) {
-                    currentUniversity = db.uniDao().getById(currentUniversityId);
+    private void loadUniversityAdminData() {
+        if (currentUniversityId == null) { showErrorProfile(); return; }
+        unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currentUniversity = snapshot.getValue(Uni.class);
+                if (currentUniversity != null) {
+                    currentUniversity.setId(Integer.parseInt(snapshot.getKey()));
                     updateUniversityProfile();
-                }
-                else if (loginType == LoginType.DEBUG_ADMIN) {
-                    updateDebugAdminProfile();
-                }
-                else {
-                    currentStudent = db.studentDao().getOnlineStudent();
-                    if (currentStudent != null) {
-                        currentUniversity = db.uniDao().getById(currentStudent.uniId);
-                        currentUniversityId = currentStudent.uniId; // Update university ID from student
-                        updateStudentProfile();
-                    } else {
-                        showDefaultProfile();
-                    }
-                }
-            } catch (Exception e) {
-                runOnUiThread(this::showErrorProfile);
+                } else showErrorProfile();
             }
+            @Override public void onCancelled(@NonNull DatabaseError error) { showErrorProfile(); }
         });
     }
 
+    private void loadStudentData() {
+        studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists()) { showDefaultProfile(); return; }
+                        for (DataSnapshot snap : snapshot.getChildren()) {
+                            currentStudent = snap.getValue(Student.class);
+                            if (currentStudent == null) continue;
+                            currentStudent.setId(snap.getKey());
+                            currentUniversityId = currentStudent.getUniId();
+                            loadUniversityForStudent();
+                        }
+                    }
+                    @Override public void onCancelled(@NonNull DatabaseError error) { showErrorProfile(); }
+                });
+    }
+
+    private void loadUniversityForStudent() {
+        if (currentUniversityId == null) { showDefaultProfile(); return; }
+        unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currentUniversity = snapshot.getValue(Uni.class);
+                if (currentUniversity != null) { currentUniversity.setId(Integer.parseInt(snapshot.getKey())); updateStudentProfile(); }
+                else showDefaultProfile();
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { showErrorProfile(); }
+        });
+    }
+
+    // -------------------- Profile UI ----------------------------------------
     private void updateUniversityProfile() {
         runOnUiThread(() -> {
             profileNameTextView.setText("University Admin");
-            profileGroupTextView.setText(currentUniversity != null ?
-                    currentUniversity.name : "Administrator");
+            profileGroupTextView.setText(currentUniversity != null ? currentUniversity.getName() : "Administrator");
             profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(false, false);
+            updateMenuVisibility(false,true); // post visible
         });
     }
 
@@ -130,206 +173,113 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profileNameTextView.setText("Debug Admin");
             profileGroupTextView.setText("Developer Mode");
             profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(true, false);
+            updateMenuVisibility(true,false);
         });
     }
 
     private void updateStudentProfile() {
         runOnUiThread(() -> {
-            profileNameTextView.setText(currentStudent.fullName.isEmpty() ?
-                    "Unknown Name" : currentStudent.fullName);
-
-            String subtitle = currentUniversity != null ? currentUniversity.name : "Unknown University";
-            profileGroupTextView.setText(subtitle);
-
-            loadProfileImage(currentStudent.profilePictureUri);
-            updateMenuVisibility(
-                    currentStudent.isAdmin || loginType == LoginType.DEBUG_ADMIN,
-                    true
-            );
+            profileNameTextView.setText(currentStudent.getFullName().isEmpty()?"Unknown":currentStudent.getFullName());
+            profileGroupTextView.setText(currentUniversity!=null?currentUniversity.getName():"Unknown University");
+            loadProfileImage(currentStudent.getProfilePictureUri());
+            updateMenuVisibility(currentStudent.isAdmin()||loginType==LoginType.DEBUG_ADMIN,true);
         });
     }
 
     private void updateMenuVisibility(boolean showAdminItems, boolean showStudentItems) {
         Menu menu = navigationView.getMenu();
-        menu.setGroupVisible(R.id.group_common, true);
-        menu.setGroupVisible(R.id.group_admin, showAdminItems);
-        menu.setGroupVisible(R.id.group_student, showStudentItems);
-
-        if (loginType == LoginType.UNIVERSITY_ADMIN) {
-            menu.findItem(R.id.nav_post).setVisible(true);
-        }
+        menu.setGroupVisible(R.id.group_common,true);
+        menu.setGroupVisible(R.id.group_admin,showAdminItems);
+        menu.setGroupVisible(R.id.group_student,showStudentItems);
     }
 
-    private void updateNavigationHeaderViews() {
-        View headerView = navigationView.getHeaderView(0);
-        profileImageView = headerView.findViewById(R.id.profile_image);
-        profileNameTextView = headerView.findViewById(R.id.profile_name_text_view);
-        profileGroupTextView = headerView.findViewById(R.id.profile_group);
-        profileImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        profileImageView.setClipToOutline(true);
+    private void loadProfileImage(String uri) {
+        if (uri!=null && !uri.isEmpty()) {
+            Glide.with(this).load(Uri.parse(uri)).placeholder(R.drawable.nav_profile_pic).error(R.drawable.nav_profile_pic).circleCrop().into(profileImageView);
+        } else profileImageView.setImageResource(R.drawable.nav_profile_pic);
     }
 
-    private void loadProfileImage(String imageUri) {
-        try {
-            if (imageUri != null && !imageUri.isEmpty()) {
-                Glide.with(this)
-                        .load(Uri.parse(imageUri))
-                        .placeholder(R.drawable.nav_profile_pic)
-                        .error(R.drawable.nav_profile_pic)
-                        .circleCrop()
-                        .into(profileImageView);
-            } else {
-                profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            }
-        } catch (Exception e) {
-            profileImageView.setImageResource(R.drawable.nav_profile_pic);
-        }
+    // -------------------- Navigation ----------------------------------------
+    private void setupInitialFragment() {
+        navigateToFragment(HomeFragment.newInstance(loginType,currentUniversityId), R.id.nav_home);
     }
 
-    private void setupInitialFragment(Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            // Create HomeFragment with proper arguments
-            HomeFragment homeFragment = HomeFragment.newInstance(loginType, currentUniversityId);
-            navigateToFragment(homeFragment, R.id.nav_home);
-        }
+    private void navigateToFragment(Fragment f,int menuId) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
+        navigationView.setCheckedItem(menuId);
+        drawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    private void setupBackButtonHandler() {
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    finish();
-                }
-            }
-        });
-    }
-
-    private void showDefaultProfile() {
-        runOnUiThread(() -> {
-            profileNameTextView.setText("No student logged in");
-            profileGroupTextView.setText("N/A");
-            profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(false, false);
-        });
-    }
-
-    private void showErrorProfile() {
-        runOnUiThread(() -> {
-            profileNameTextView.setText("Error");
-            profileGroupTextView.setText("Loading failed");
-            profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(false, false);
-            Toast.makeText(this, "Error loading profile data", Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    @Override public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            fragment = HomeFragment.newInstance(loginType, currentUniversityId);
-        }
-        else if (id == R.id.nav_settings) {
+            fragment = HomeFragment.newInstance(loginType,currentUniversityId);
+        } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
-        }
-        else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_logout) {
             handleLogout();
             return true;
-        }
-        else if (id == R.id.nav_post && hasPostingAccess()) {
-            fragment = CreatePostFragment.newInstance(loginType, currentUniversityId);
-        }
-        else if (id == R.id.nav_admin && hasAdminAccess()) {
-            fragment = new AdminFragment();
-        }
-        else if (hasStudentAccess()) {
-            if (id == R.id.nav_profile) {
-                fragment = new ProfileFragment();
-            }
-            else if (id == R.id.nav_clubs) {
-                fragment = new ClubsFragment();
-            }
-            else if (id == R.id.nav_schedule) {
-                fragment = new ScheduleFragment();
-            }
-            else if (id == R.id.nav_scores) {
-                fragment = new ScoresFragment();
-            }
+        } else if (id == R.id.nav_post) {
+            if (hasPostingAccess()) fragment = CreatePostFragment.newInstance(loginType,currentUniversityId);
+        } else if (id == R.id.nav_admin) {
+            if (hasAdminAccess()) fragment = new AdminFragment();
+        } else if (id == R.id.nav_profile) {
+            if (hasStudentAccess()) fragment = new ProfileFragment();
+        } else if (id == R.id.nav_clubs) {
+            if (hasStudentAccess()) fragment = new ClubsFragment();
+        } else if (id == R.id.nav_schedule) {
+            if (hasStudentAccess()) fragment = new ScheduleFragment();
+        } else if (id == R.id.nav_scores) {
+            if (hasStudentAccess()) fragment = new ScoresFragment();
         }
 
-        if (fragment != null) {
-            navigateToFragment(fragment, id);
-        } else {
-            showAccessDenied();
-        }
-
+        if (fragment != null) navigateToFragment(fragment,id); else showAccessDenied();
         return true;
     }
 
-    private void navigateToFragment(Fragment fragment, int menuItemId) {
-        try {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            navigationView.setCheckedItem(menuItemId);
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } catch (Exception e) {
-            Toast.makeText(this, "Error loading content", Toast.LENGTH_SHORT).show();
+    // -------------------- Access Helpers ------------------------------------
+    private boolean hasAdminAccess()   { return loginType==LoginType.DEBUG_ADMIN || (currentStudent!=null && currentStudent.isAdmin()); }
+    private boolean hasPostingAccess() { return loginType==LoginType.UNIVERSITY_ADMIN || hasAdminAccess(); }
+    private boolean hasStudentAccess() { return loginType==LoginType.REGULAR_STUDENT || loginType==LoginType.STUDENT_ADMIN; }
+
+    private void showAccessDenied(){ Toast.makeText(this,"Access denied",Toast.LENGTH_SHORT).show(); }
+
+    // -------------------- Logout --------------------------------------------
+    private void handleLogout(){
+        if ((loginType==LoginType.REGULAR_STUDENT || loginType==LoginType.STUDENT_ADMIN) && currentStudent!=null && currentStudent.getId()!=null){
+            studentsRef.child(currentStudent.getId()).child("isOnline").setValue(false);
         }
+        Toast.makeText(this,"Logged out",Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
     }
 
-    private boolean hasAdminAccess() {
-        return loginType == LoginType.DEBUG_ADMIN ||
-                (currentStudent != null && currentStudent.isAdmin);
-    }
-
-    private boolean hasPostingAccess() {
-        return loginType == LoginType.UNIVERSITY_ADMIN ||
-                loginType == LoginType.DEBUG_ADMIN ||
-                (currentStudent != null && currentStudent.isAdmin);
-    }
-
-    private boolean hasStudentAccess() {
-        return loginType == LoginType.REGULAR_STUDENT ||
-                loginType == LoginType.STUDENT_ADMIN;
-    }
-
-    private void showAccessDenied() {
-        Toast.makeText(this, "Access denied", Toast.LENGTH_SHORT).show();
-    }
-
-    private void handleLogout() {
-        executorService.execute(() -> {
-            try {
-                UniflowDB db = DatabaseClient.getInstance(this).getDatabase();
-
-                if (loginType == LoginType.REGULAR_STUDENT ||
-                        loginType == LoginType.STUDENT_ADMIN) {
-                    db.studentDao().setAllOffline();
-                }
-
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, LoginActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                    finish();
-                });
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Logout failed", Toast.LENGTH_SHORT).show());
+    // -------------------- Back ----------------------------------------------
+    private void setupBackButtonHandler(){
+        getOnBackPressedDispatcher().addCallback(this,new OnBackPressedCallback(true){
+            @Override public void handleOnBackPressed(){
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START); else finish();
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
-    }
+    // -------------------- Error helpers -------------------------------------
+    private void showDefaultProfile(){ runOnUiThread(()->{
+        profileNameTextView.setText("No student logged in");
+        profileGroupTextView.setText("N/A");
+        profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        updateMenuVisibility(false,false);
+    }); }
+
+    private void showErrorProfile(){ runOnUiThread(()->{
+        profileNameTextView.setText("Error");
+        profileGroupTextView.setText("Loading failed");
+        profileImageView.setImageResource(R.drawable.nav_profile_pic);
+        updateMenuVisibility(false,false);
+        Toast.makeText(this,"Error loading profile",Toast.LENGTH_SHORT).show();
+    }); }
+
+    @Override protected void onDestroy(){ super.onDestroy(); executorService.shutdown(); }
 }

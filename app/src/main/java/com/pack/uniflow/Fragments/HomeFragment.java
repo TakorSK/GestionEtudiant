@@ -4,33 +4,37 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.PostAdapter;
-import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.Models.Post;
-import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
-import com.pack.uniflow.UniflowDB;
+import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private PostAdapter adapter;
-    private UniflowDB db;
     private LoginType currentUserType;
-    private int currentUniversityId = -1;
+    private String currentUniversityId = null;
     private boolean isAdmin = false;
+
+    // Firebase references
+    private final DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+    private final DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,7 +50,7 @@ public class HomeFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             currentUserType = LoginType.valueOf(args.getString("LOGIN_TYPE", LoginType.REGULAR_STUDENT.name()));
-            currentUniversityId = args.getInt("UNIVERSITY_ID", -1);
+            currentUniversityId = args.getString("UNIVERSITY_ID");
             isAdmin = currentUserType == LoginType.DEBUG_ADMIN ||
                     currentUserType == LoginType.STUDENT_ADMIN;
         }
@@ -56,68 +60,99 @@ public class HomeFragment extends Fragment {
         adapter = new PostAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        db = DatabaseClient.getInstance(requireContext()).getDatabase();
-        loadPostsFromDatabase();
+        loadPostsFromFirebase();
     }
 
-    private void loadPostsFromDatabase() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            List<Post> allPosts = db.postDao().getAllPosts();
-            List<Post> filteredPosts = filterPostsBasedOnUserType(allPosts);
+    private void loadPostsFromFirebase() {
+        postsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Post> allPosts = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    if (post != null) {
+                        post.setId(snapshot.getKey());
+                        allPosts.add(post);
+                    }
+                }
+                filterAndDisplayPosts(allPosts);
+            }
 
-            requireActivity().runOnUiThread(() -> adapter.updatePosts(filteredPosts));
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+            }
         });
     }
 
-    private List<Post> filterPostsBasedOnUserType(List<Post> allPosts) {
+    private void filterAndDisplayPosts(List<Post> allPosts) {
+        if (currentUserType == LoginType.DEBUG_ADMIN) {
+            // Debug admin sees all posts
+            adapter.updatePosts(allPosts);
+            return;
+        }
+
         List<Post> filteredPosts = new ArrayList<>();
-
         for (Post post : allPosts) {
-            // Debug admin can see all posts
-            if (currentUserType == LoginType.DEBUG_ADMIN) {
+            checkPostVisibility(post, filteredPosts);
+        }
+        adapter.updatePosts(filteredPosts);
+    }
+
+    private void checkPostVisibility(Post post, List<Post> filteredPosts) {
+        if (post.getAuthorId() == null) return;
+
+        // Check if this is an admin post (authorId starts with "admin_")
+        boolean isAdminPost = post.getAuthorId().startsWith("admin_");
+        boolean isFromCurrentUniversity = false;
+
+        if (isAdminPost) {
+            // For admin posts, check if it's for this university
+            if (post.getAuthorId().equals("admin_" + currentUniversityId)) {
+                isFromCurrentUniversity = true;
+            }
+        } else {
+            // For student posts, check the student's university
+            studentsRef.child(post.getAuthorId())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Student author = snapshot.getValue(Student.class);
+                            if (author != null && author.getUniId() != null &&
+                                    author.getUniId().equals(currentUniversityId)) {
+                                filteredPosts.add(post);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle error
+                        }
+                    });
+            return; // We'll add this post later in the callback
+        }
+
+        // Apply visibility rules
+        if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
+            // University admins see their posts and admin posts
+            if (isAdminPost || isFromCurrentUniversity) {
                 filteredPosts.add(post);
-                continue;
             }
-
-            boolean isAdminPost = post.getAuthorId() == -1 || post.getAuthorId() == -2;
-            boolean isFromCurrentUniversity = false;
-
-            // For university admin posts (authorId = -universityId)
-            if (post.getAuthorId() < 0) {
-                isFromCurrentUniversity = (-post.getAuthorId()) == currentUniversityId;
-            }
-            // For student posts (authorId > 0)
-            else {
-                // Need to check the student's university
-                Student postAuthor = db.studentDao().getStudentById(post.getAuthorId());
-                if (postAuthor != null) {
-                    isFromCurrentUniversity = postAuthor.uniId == currentUniversityId;
-                }
-            }
-
-            // Apply visibility rules
-            if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
-                // University admins see their posts and admin posts
-                if (isAdminPost || isFromCurrentUniversity) {
-                    filteredPosts.add(post);
-                }
-            }
-            else {
-                // Students see admin posts and their university's posts
-                if (isAdminPost || isFromCurrentUniversity) {
-                    filteredPosts.add(post);
-                }
+        } else {
+            // Students see admin posts and their university's posts
+            if (isAdminPost || isFromCurrentUniversity) {
+                filteredPosts.add(post);
             }
         }
-        return filteredPosts;
     }
 
     // Factory method to create fragment with arguments
-    public static HomeFragment newInstance(LoginType loginType, int universityId) {
+    public static HomeFragment newInstance(LoginType loginType, String universityId) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putString("LOGIN_TYPE", loginType.name());
-        args.putInt("UNIVERSITY_ID", universityId);
+        args.putString("UNIVERSITY_ID", universityId);
         fragment.setArguments(args);
         return fragment;
     }

@@ -1,40 +1,80 @@
 package com.pack.uniflow;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.annotation.NonNull;
 
-@Entity(
-        tableName = "section",
-        foreignKeys = @ForeignKey(
-                entity = Uni.class,
-                parentColumns = "id",
-                childColumns = "uni_id",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index(value = {"name", "group_name", "uni_id"}, unique = true)}
-)
+import java.util.List;
+
 public class Section {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    public int id;
+    private String id; // Changed from int to String for Firebase
+    @NonNull
+    private String name;
+    @NonNull
+    private String groupName;
+    private String uniId; // Changed from int to String
+    private String academicYear;
+    private List<String> associatedStudentIds; // Changed from String to List<String>
+
+    // Required empty constructor for Firebase
+    public Section() {
+    }
+
+    public Section(@NonNull String name, @NonNull String groupName, String uniId,
+                   String academicYear, List<String> associatedStudentIds) {
+        this.name = name;
+        this.groupName = groupName;
+        this.uniId = uniId;
+        this.academicYear = academicYear;
+        this.associatedStudentIds = associatedStudentIds;
+    }
+
+    // Getters and setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @NonNull
-    @ColumnInfo(name = "name")
-    public String name;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
 
     @NonNull
-    @ColumnInfo(name = "group_name")
-    public String groupName;
+    public String getGroupName() {
+        return groupName;
+    }
 
-    @ColumnInfo(name = "uni_id", index = true)
-    public int uniId;
+    public void setGroupName(@NonNull String groupName) {
+        this.groupName = groupName;
+    }
 
-    @ColumnInfo(name = "academic_year")
-    public String academicYear;
-    @ColumnInfo(name = "associated_student_ids")
-    public String associatedStudentIds;
+    public String getUniId() {
+        return uniId;
+    }
+
+    public void setUniId(String uniId) {
+        this.uniId = uniId;
+    }
+
+    public String getAcademicYear() {
+        return academicYear;
+    }
+
+    public void setAcademicYear(String academicYear) {
+        this.academicYear = academicYear;
+    }
+
+    public List<String> getAssociatedStudentIds() {
+        return associatedStudentIds;
+    }
+
+    public void setAssociatedStudentIds(List<String> associatedStudentIds) {
+        this.associatedStudentIds = associatedStudentIds;
+    }
 }

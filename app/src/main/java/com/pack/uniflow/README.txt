@@ -36,6 +36,8 @@ DONE:
 TODO
     - Add club (and maybe uni?)
     - Integrate the DB With the ADMIN menu (Affected stuff; AdminFragment, DummyStudent and DummyUniversities should be removed once you get the db working.)
+    - Make the connexion last even after closing the app, it doesn't disconnect you
+    - Fix the settings
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
@@ -51,6 +53,7 @@ DONE:
     - made it so only students with is_admin=true can access the admin panel -done
     - make and synchronize images to students -done
     - polish signups and logins inputs (better conditions to control the coherence of data put inside of the db) -done
+    - Change database to firebase
 
 =======================================================================================
 

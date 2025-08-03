@@ -1,33 +1,65 @@
 package com.pack.uniflow;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.ColumnInfo;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-@Entity(
-        tableName = "club",
-        foreignKeys = @ForeignKey(
-                entity = Uni.class,
-                parentColumns = "id",
-                childColumns = "uni_id",
-                onDelete = ForeignKey.CASCADE
-        )
-)
+
 public class Club {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    public int id;
+    private String id; // Changed from int to String for Firebase
+    @NonNull
+    private String name;
+    private String description;
+    private String uniId; // Changed from int to String
+    private String uniName; // Denormalized data for easier access
+
+    // Required empty constructor for Firebase
+    public Club() {
+    }
+
+    public Club(@NonNull String name, String description, String uniId, String uniName) {
+        this.name = name;
+        this.description = description;
+        this.uniId = uniId;
+        this.uniName = uniName;
+    }
+
+    // Getters and setters (required for Firebase serialization)
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @NonNull
-    @ColumnInfo(name = "name")
-    public String name;
+    public String getName() {
+        return name;
+    }
 
-    @ColumnInfo(name = "description")
-    public String description;
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
 
-    @ColumnInfo(name = "uni_id", index = true)
-    public int uniId;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUniId() {
+        return uniId;
+    }
+
+    public void setUniId(String uniId) {
+        this.uniId = uniId;
+    }
+
+    public String getUniName() {
+        return uniName;
+    }
+
+    public void setUniName(String uniName) {
+        this.uniName = uniName;
+    }
 }

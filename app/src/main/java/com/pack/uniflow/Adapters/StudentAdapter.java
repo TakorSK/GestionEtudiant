@@ -1,6 +1,7 @@
 package com.pack.uniflow.Adapters;
 
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pack.uniflow.R;
+import com.bumptech.glide.Glide;
 import com.pack.uniflow.Student;
+import com.pack.uniflow.R;
 
 import java.util.List;
 
@@ -35,11 +37,24 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         }
 
         public void bind(Student student) {
-            studentName.setText(student.fullName);
-            studentStatus.setText(student.isOnline ? "Online" : "Offline");
-            studentStatus.setTextColor(student.isOnline ?
+            studentName.setText(student.getFullName());
+
+            boolean isOnline = student.isOnline();
+            studentStatus.setText(isOnline ? "Online" : "Offline");
+            studentStatus.setTextColor(isOnline ?
                     Color.parseColor("#4CAF50") : Color.parseColor("#F44336"));
-            studentAvatar.setImageResource(R.drawable.nav_profile_pic);
+
+            String profileUri = student.getProfilePictureUri();
+            if (profileUri != null && !profileUri.isEmpty()) {
+                Glide.with(itemView.getContext())
+                        .load(Uri.parse(profileUri))
+                        .placeholder(R.drawable.nav_profile_pic)
+                        .error(R.drawable.nav_profile_pic)
+                        .circleCrop()
+                        .into(studentAvatar);
+            } else {
+                studentAvatar.setImageResource(R.drawable.nav_profile_pic);
+            }
         }
     }
 
@@ -58,6 +73,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
     @Override
     public int getItemCount() {
-        return studentList.size();
+        return studentList != null ? studentList.size() : 0;
     }
 }

@@ -2,64 +2,104 @@ package com.pack.uniflow;
 
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(tableName = "uni")
 public class Uni {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    public int id;
+    private int id; // Changed from int to String
+    @NonNull
+    private String name;
+    private String location;
+    private int establishedYear;
+    private String website;
+    private List<String> associatedStudentIds; // Changed from String to List<String>
+    private String uniPassword;
+
+    // Required empty constructor for Firebase
+    public Uni() {
+        associatedStudentIds = new ArrayList<>();
+    }
+
+    public Uni(@NonNull String name, String location, int establishedYear,
+               String website, String uniPassword) {
+        this.name = name;
+        this.location = location;
+        this.establishedYear = establishedYear;
+        this.website = website;
+        this.uniPassword = uniPassword;
+        this.associatedStudentIds = new ArrayList<>();
+    }
+
+    // Getters and setters (required for Firebase serialization)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @NonNull
-    @ColumnInfo(name = "name")
-    public String name;
+    public String getName() {
+        return name;
+    }
 
-    @ColumnInfo(name = "location")
-    public String location;
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
 
-    @ColumnInfo(name = "established_year")
-    public int establishedYear;
+    public String getLocation() {
+        return location;
+    }
 
-    @ColumnInfo(name = "website")
-    public String website;
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    @ColumnInfo(name = "associated_student_ids")
-    public String associatedStudentIds;
+    public int getEstablishedYear() {
+        return establishedYear;
+    }
 
-    @ColumnInfo(name = "uni_password")
-    public String uniPassword;
+    public void setEstablishedYear(int establishedYear) {
+        this.establishedYear = establishedYear;
+    }
 
-    public List<Integer> getAssociatedStudentIdList() {
-        List<Integer> ids = new ArrayList<>();
-        if (!TextUtils.isEmpty(associatedStudentIds)) {
-            for (String id : associatedStudentIds.split(",")) {
-                try {
-                    ids.add(Integer.parseInt(id.trim()));
-                } catch (NumberFormatException e) {
-                    // Skip invalid entries
-                }
-            }
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public List<String> getAssociatedStudentIds() {
+        return associatedStudentIds;
+    }
+
+    public void setAssociatedStudentIds(List<String> associatedStudentIds) {
+        this.associatedStudentIds = associatedStudentIds;
+    }
+
+    public String getUniPassword() {
+        return uniPassword;
+    }
+
+    public void setUniPassword(String uniPassword) {
+        this.uniPassword = uniPassword;
+    }
+
+    // Helper methods
+    public boolean containsStudentId(String studentId) {
+        return associatedStudentIds.contains(studentId);
+    }
+
+    public void addStudentId(String studentId) {
+        if (!associatedStudentIds.contains(studentId)) {
+            associatedStudentIds.add(studentId);
         }
-        return ids;
     }
 
-    public boolean containsStudentId(int studentId) {
-        return getAssociatedStudentIdList().contains(studentId);
+    public void removeStudentId(String studentId) {
+        associatedStudentIds.remove(studentId);
     }
-
-    public void addStudentId(int studentId) {
-        List<Integer> ids = getAssociatedStudentIdList();
-        if (!ids.contains(studentId)) {
-            ids.add(studentId);
-            associatedStudentIds = TextUtils.join(",", ids);
-        }
-    }
-    public void setAssociatedStudentIdList(List<Integer> ids) {
-        this.associatedStudentIds = TextUtils.join(",", ids);
-    }
-
 }

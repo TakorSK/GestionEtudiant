@@ -1,24 +1,99 @@
 package com.pack.uniflow;
 
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.Query;
-
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Models.Post;
 
+import java.util.ArrayList;
 import java.util.List;
-@Dao
-public interface PostDao {
-    @Insert
-    long insert(Post post);
 
-    @Query("SELECT * FROM posts ORDER BY created_at DESC")
-    List<Post> getAllPosts();
+public class PostDao {
 
-    @Query("SELECT * FROM posts WHERE author_id = :authorId ORDER BY created_at DESC")
-    List<Post> getPostsByAuthor(int authorId);
+    private final DatabaseReference postsRef;
 
-    @Delete
-    void delete(Post post);
+    public PostDao() {
+        postsRef = FirebaseDatabase.getInstance().getReference("posts");
+    }
+
+    // Equivalent to @Insert
+    public void insert(Post post, InsertCallback callback) {
+        String postId = postsRef.push().getKey();
+        post.setId(postId);
+        postsRef.child(postId).setValue(post)
+                .addOnSuccessListener(aVoid -> callback.onInserted(postId))
+                .addOnFailureListener(callback::onError);
+    }
+
+    // Equivalent to getAllPosts()
+    public void getAllPosts(LoadCallback callback) {
+        Query query = postsRef.orderByChild("createdAt");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Post> posts = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    posts.add(0, post); // Add to beginning to reverse order
+                }
+                callback.onLoaded(posts);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.toException());
+            }
+        });
+    }
+
+    // Equivalent to getPostsByAuthor()
+    public void getPostsByAuthor(String authorId, LoadCallback callback) {
+        Query query = postsRef.orderByChild("authorId_createdAt")
+                .startAt(authorId)
+                .endAt(authorId + "\uf8ff");
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Post> posts = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    if (post.getAuthorId().equals(authorId)) {
+                        posts.add(0, post); // Add to beginning to reverse order
+                    }
+                }
+                callback.onLoaded(posts);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.toException());
+            }
+        });
+    }
+
+    // Equivalent to @Delete
+    public void delete(Post post, DeleteCallback callback) {
+        postsRef.child(post.getId()).removeValue()
+                .addOnSuccessListener(aVoid -> callback.onDeleted())
+                .addOnFailureListener(callback::onError);
+    }
+
+    public interface InsertCallback {
+        void onInserted(String postId);
+        void onError(Exception e);
+    }
+
+    public interface LoadCallback {
+        void onLoaded(List<Post> posts);
+        void onError(Exception e);
+    }
+
+    public interface DeleteCallback {
+        void onDeleted();
+        void onError(Exception e);
+    }
 }

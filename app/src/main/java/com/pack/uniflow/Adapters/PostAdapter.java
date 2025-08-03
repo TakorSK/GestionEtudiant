@@ -7,18 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.pack.uniflow.Models.Post;
 import com.pack.uniflow.R;
-import java.io.File;
+
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private Context context;
+    private final Context context;
     private List<Post> postList;
 
     public PostAdapter(Context context, List<Post> postList) {
@@ -44,12 +45,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.title.setText(post.getTitle());
         holder.description.setText(post.getDescription());
 
-        if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
+        String imageUri = post.getImageUri();
+        if (imageUri != null && !imageUri.isEmpty()) {
             holder.image.setVisibility(View.VISIBLE);
-            // Load image with Glide
             Glide.with(context)
-                    .load(Uri.parse(post.getImageUri()))
+                    .load(Uri.parse(imageUri))
                     .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .centerCrop()
                     .into(holder.image);
         } else {
             holder.image.setVisibility(View.GONE);
@@ -58,10 +61,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        return postList != null ? postList.size() : 0;
     }
 
-    static class PostViewHolder extends RecyclerView.ViewHolder {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView title, description;
         ImageView image;
 

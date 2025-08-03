@@ -18,7 +18,7 @@ import com.pack.uniflow.Activities.ChangeProfileActivity;
 
 public class SettingsFragment extends Fragment {
 
-    private View btnChangeProfile; // Updated to View (LinearLayout)
+    private View btnChangeProfile;
     private Switch switchDarkMode;
 
     @Override
@@ -26,10 +26,9 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        btnChangeProfile = view.findViewById(R.id.settings_btn_change_profile); // Change Profile Row
+        btnChangeProfile = view.findViewById(R.id.settings_btn_change_profile);
         switchDarkMode = view.findViewById(R.id.settings_switch_dark_mode);
 
-        // Open ChangeProfileActivity
         btnChangeProfile.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), ChangeProfileActivity.class);
             startActivity(intent);
@@ -41,14 +40,18 @@ public class SettingsFragment extends Fragment {
         switchDarkMode.setChecked(darkModeOn);
 
         switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            AppCompatDelegate.setDefaultNightMode(
-                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
-            );
-
-            // Save user preference
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("dark_mode", isChecked);
             editor.apply();
+
+            // Corrected mode setting
+            AppCompatDelegate.setDefaultNightMode(
+                    isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
+            
+
+            // Optional: recreate activity to apply theme immediately
+            // requireActivity().recreate();
         });
 
         return view;

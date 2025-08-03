@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "819208876553",
+    "firebase_url": "https://uniflow-8563b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "uniflow-8563b",
+    "storage_bucket": "uniflow-8563b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819208876553:android:a5a3f2445eaf08166c3ed8",
+        "android_client_info": {
+          "package_name": "com.pack.uniflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJcU2xx1rnRKxRXVwenMGLWWdtrFfd48w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

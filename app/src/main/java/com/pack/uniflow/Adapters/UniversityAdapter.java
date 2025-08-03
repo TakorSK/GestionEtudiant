@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +44,9 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
         }
 
         public void bind(UniversityWithStudents universityWithStudents) {
-            tvUniversityName.setText(universityWithStudents.university.name);
+            if (universityWithStudents == null || universityWithStudents.university == null) return;
+
+            tvUniversityName.setText(universityWithStudents.university.getName());
             expandableLayout.setVisibility(View.GONE);
             ivToggle.setImageResource(R.drawable.ic_arrow_drop_down);
 
@@ -52,7 +55,7 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
                 expandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
                 ivToggle.setImageResource(isExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
 
-                if (isExpanded) {
+                if (isExpanded && universityWithStudents.students != null) {
                     studentRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
                     studentRecyclerView.setAdapter(new StudentAdapter(universityWithStudents.students));
                 }
@@ -60,20 +63,21 @@ public class UniversityAdapter extends RecyclerView.Adapter<UniversityAdapter.Un
         }
     }
 
+    @NonNull
     @Override
-    public UniversityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UniversityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_item_uni, parent, false);
         return new UniversityViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(UniversityViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UniversityViewHolder holder, int position) {
         holder.bind(universityList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return universityList.size();
+        return universityList != null ? universityList.size() : 0;
     }
 }

@@ -21,6 +21,11 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ClubViewHolder
         this.clubList = clubList;
     }
 
+    public void updateClubs(List<Club> newClubs) {
+        this.clubList = newClubs;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ClubViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,13 +36,13 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ClubViewHolder
     @Override
     public void onBindViewHolder(@NonNull ClubViewHolder holder, int position) {
         Club club = clubList.get(position);
-        holder.name.setText(club.name);
-        holder.description.setText(club.description);
+        holder.name.setText(club.getName());
+        holder.description.setText(club.getDescription());
     }
 
     @Override
     public int getItemCount() {
-        return clubList.size();
+        return clubList != null ? clubList.size() : 0;
     }
 
     public static class ClubViewHolder extends RecyclerView.ViewHolder {

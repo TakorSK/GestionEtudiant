@@ -1,22 +1,18 @@
-// Make sure this plugins block is at the VERY TOP of the file
-plugins {
-    // This alias applies the Android Application plugin, which defines implementation, etc.
-    alias(libs.plugins.android.application)
+// App-level build.gradle.kts
 
-    // If using Kotlin annotation processing for Room/Glide, add:
-    // id("kotlin-kapt") // Or use alias(libs.plugins.kotlin.kapt) if defined
-    // Or if using KSP:
-    // id("com.google.devtools.ksp") version "..." // Add KSP plugin if using it
+plugins {
+    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.pack.uniflow"
-    compileSdk = 35 // Consider using the latest stable SDK if 35 is alpha/beta
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.pack.uniflow"
         minSdk = 21
-        targetSdk = 35 // Consider using the latest stable SDK if 35 is alpha/beta
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -32,65 +28,36 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    // Add if using Kotlin
-    // kotlinOptions {
-    //    jvmTarget = "11"
-    // }
 }
 
-// The dependencies block uses the configurations defined by the plugin
 dependencies {
+    // AndroidX Core Libraries
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.activity:activity:1.7.2")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
-    // Core App Dependencies
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
+    // Firebase BoM (version-managed dependencies)
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-auth")
 
-    // Room Dependencies
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-    // kapt("androidx.room:room-compiler:$room_version") // Use if using kapt plugin
-    // ksp("androidx.room:room-compiler:$room_version") // Use if using ksp plugin
+    // Glide (Image Loader)
+    val glideVersion = "4.15.1"
+    implementation("com.github.bumptech.glide:glide:$glideVersion")
+    annotationProcessor("com.github.bumptech.glide:compiler:$glideVersion")
 
-    // Glide Dependencies
-    val glide_version = "4.15.1"
-    implementation("com.github.bumptech.glide:glide:$glide_version")
-    annotationProcessor("com.github.bumptech.glide:compiler:$glide_version")
-    // kapt("com.github.bumptech.glide:compiler:$glide_version") // Use if using kapt plugin
-    // ksp("com.github.bumptech.glide:compiler:$glide_version") // Use if using ksp plugin
-
-
-    // --- Testing Dependencies ---
-
-    // Local Unit Tests (JUnit)
-    testImplementation(libs.junit)
-
-    // Instrumented Tests (AndroidX Test, Espresso)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.espresso.intents)
-
-    // Espresso Contrib
-    val espresso_version = "3.5.1"
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espresso_version")
-
-    // Room Testing
-    androidTestImplementation("androidx.room:room-testing:$room_version")
-
-    // Test Runner and Rules
-    val test_runner_version = "1.5.2"
-    val test_rules_version = "1.5.0"
-    androidTestImplementation("androidx.test:runner:$test_runner_version")
-    androidTestImplementation("androidx.test:rules:$test_rules_version")
-
-    // Fragment Testing
-    val fragment_version = "1.6.2"
-    debugImplementation("androidx.fragment:fragment-testing:$fragment_version")
-
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 }
