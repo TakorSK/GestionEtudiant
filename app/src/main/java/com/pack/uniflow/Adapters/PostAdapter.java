@@ -44,6 +44,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
         holder.title.setText(post.getTitle());
         holder.description.setText(post.getDescription());
+        holder.authorName.setText(post.getAuthorName());
 
         String imageUri = post.getImageUri();
         if (imageUri != null && !imageUri.isEmpty()) {
@@ -65,7 +66,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView title, description;
+        TextView title, description, authorName;
         ImageView image;
 
         public PostViewHolder(@NonNull View itemView) {
@@ -73,6 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             title = itemView.findViewById(R.id.postTitle);
             description = itemView.findViewById(R.id.postDescription);
             image = itemView.findViewById(R.id.postImage);
+            authorName = itemView.findViewById(R.id.postAuthor);
         }
     }
 }

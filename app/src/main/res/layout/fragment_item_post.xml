@@ -46,6 +46,15 @@
             android:visibility="gone"
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder" />
+        <TextView
+            android:id="@+id/postAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author name goes here!"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingBottom="10dp"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

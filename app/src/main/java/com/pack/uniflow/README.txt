@@ -8,6 +8,7 @@ TODO:
     - Adding Settings; profile info  /Optional/
     - Adding the corresponding fields to fill for each button in the admin panel /Highest/
     - Fixing UI drop shadows on the admin panel /High/
+    - Add a "target" list in createpost fragment (just all or unis or admins)
 
 DONE:
     - Adding Admin Board [Done]

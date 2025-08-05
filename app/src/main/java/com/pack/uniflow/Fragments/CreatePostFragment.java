@@ -120,8 +120,6 @@ public class CreatePostFragment extends Fragment {
         String description = editPostDescription.getText().toString().trim();
         if (TextUtils.isEmpty(title)) { editPostTitle.setError("Title is required"); return; }
 
-        if (currentUniversityId == null) { showToast("University not resolved yet"); return; }
-
         String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
         String authorName     = getAuthorName();
         String profileImage   = getAuthorProfileImage();
