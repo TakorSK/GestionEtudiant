@@ -2,7 +2,9 @@ package com.pack.uniflow.Activities;
 
 import com.pack.uniflow.Activities.SignupActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.pack.uniflow.FirebaseConfig;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
 import com.pack.uniflow.R;
+import com.pack.uniflow.Student;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -72,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         // 1. Debug admin
         if ("debug".equals(loginId) && "debug".equals(password)) {
             Toast.makeText(this, "Developer admin login", Toast.LENGTH_SHORT).show();
-            startMainActivity(LoginType.DEBUG_ADMIN, null);
+            startMainActivity(LoginType.DEBUG_ADMIN, null,null);
             return;
         }
 
@@ -83,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                 Uni uni = snapshot.getValue(Uni.class);
                 if (uni != null && uni.getUniPassword() != null && uni.getUniPassword().equals(password)) {
                     Toast.makeText(LoginActivity.this, "University admin login", Toast.LENGTH_SHORT).show();
-                    startMainActivity(LoginType.UNIVERSITY_ADMIN, loginId);
+                    startMainActivity(LoginType.UNIVERSITY_ADMIN, loginId,null);
                 } else {
                     // 3. Try student login (by ID or email)
                     checkStudentLogin(loginId, password);
@@ -144,17 +147,20 @@ public class LoginActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Student login successful", Toast.LENGTH_SHORT).show();
             LoginType type = student.isAdmin() ? LoginType.STUDENT_ADMIN : LoginType.REGULAR_STUDENT;
-            startMainActivity(type, student.getUniId());
+            startMainActivity(type, student.getUniId(),student.getId());
         } else {
             Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void startMainActivity(LoginType loginType, String universityId) {
+    private void startMainActivity(LoginType loginType, String universityId, String studentId) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("STUDENT_ID", studentId);
         intent.putExtra("LOGIN_TYPE", loginType.name());
         intent.putExtra("UNIVERSITY_ID", universityId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putString("student_id", studentId).apply();
         startActivity(intent);
     }
 

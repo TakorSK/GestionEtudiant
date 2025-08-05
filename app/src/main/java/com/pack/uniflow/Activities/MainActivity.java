@@ -130,21 +130,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void loadStudentData() {
-        studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (!snapshot.exists()) { showDefaultProfile(); return; }
-                        for (DataSnapshot snap : snapshot.getChildren()) {
-                            currentStudent = snap.getValue(Student.class);
-                            if (currentStudent == null) continue;
-                            currentStudent.setId(snap.getKey());
-                            currentUniversityId = currentStudent.getUniId();
-                            loadUniversityForStudent();
-                        }
-                    }
-                    @Override public void onCancelled(@NonNull DatabaseError error) { showErrorProfile(); }
-                });
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String studentId = prefs.getString("student_id", null);
+
+        if (studentId == null) {
+            showErrorProfile();
+            return;
+        }
+
+        studentsRef.child(studentId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    showDefaultProfile();
+                    return;
+                }
+
+                currentStudent = snapshot.getValue(Student.class);
+                if (currentStudent == null) {
+                    showErrorProfile();
+                    return;
+                }
+
+                currentStudent.setId(snapshot.getKey());
+                currentUniversityId = currentStudent.getUniId();
+
+                loadUniversityForStudent();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                showErrorProfile();
+            }
+        });
     }
+
 
     private void loadUniversityForStudent() {
         if (currentUniversityId == null) { showDefaultProfile(); return; }
@@ -210,19 +230,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    @Override public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            fragment = HomeFragment.newInstance(loginType,currentUniversityId);
+            fragment = HomeFragment.newInstance(loginType, currentUniversityId);
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
         } else if (id == R.id.nav_logout) {
-            handleLogout();
+            setStudentOfflineAndLogout(); // <- replaced
             return true;
         } else if (id == R.id.nav_post) {
-            if (hasPostingAccess()) fragment = CreatePostFragment.newInstance(loginType,currentUniversityId);
+            if (hasPostingAccess()) fragment = CreatePostFragment.newInstance(loginType, currentUniversityId);
         } else if (id == R.id.nav_admin) {
             if (hasAdminAccess()) fragment = new AdminFragment();
         } else if (id == R.id.nav_profile) {
@@ -235,10 +256,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (hasStudentAccess()) fragment = new ScoresFragment();
         }
 
-        if (fragment != null) navigateToFragment(fragment,id); else showAccessDenied();
+        if (fragment != null) navigateToFragment(fragment, id);
+        else showAccessDenied();
+
         return true;
     }
-
     // -------------------- Access Helpers ------------------------------------
     private boolean hasAdminAccess()   { return loginType==LoginType.DEBUG_ADMIN || (currentStudent!=null && currentStudent.isAdmin()); }
     private boolean hasPostingAccess() { return loginType==LoginType.UNIVERSITY_ADMIN || hasAdminAccess(); }
@@ -282,4 +304,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }); }
 
     @Override protected void onDestroy(){ super.onDestroy(); executorService.shutdown(); }
+    private void setStudentOfflineAndLogout() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String studentId = prefs.getString("student_id", null);
+
+        if (studentId != null) {
+            DatabaseReference studentRef = FirebaseDatabase.getInstance()
+                    .getReference("students")
+                    .child(studentId);
+
+            studentRef.child("online").setValue(false) // or .setValue(0) if it's stored as int
+                    .addOnCompleteListener(task -> {
+                        clearSessionAndRedirect();
+                    });
+        } else {
+            clearSessionAndRedirect();
+        }
+    }
+    private void clearSessionAndRedirect() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.clear();
+        editor.apply();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+
 }
