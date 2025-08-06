@@ -9,7 +9,6 @@ TODO:
     - Adding the corresponding fields to fill for each button in the admin panel /Highest/
     - Fixing UI drop shadows on the admin panel /High/
     - Add a "target" list in CreatePost fragment (just all or unis or admins)
-    - Improving the add Student and Uni Layout
     - Loading animation when uploading signing in + stopping buttons
     - Add a popup For No Internet Connection Error
 
@@ -27,8 +26,9 @@ DONE:
     - Add the posts xml and logic for db [Done]
     - Add the Profile Activity and all of its functions [Done]
     - Add Post Author and Date [Done]
+    - Fix the add Student and Uni Layout [Done]
     - Fix Posts layout (the poster part should be more defined)
-    - Fix the fields on dark mode going dark as well
+    - Fix the fields on dark mode going dark as well [Done]
     - Fix All text inputs to replace the keyboard Newline with Next [Done]
     - Fix light and dark modes not working properly [Done]
     - Fix light and dark mode not saving after closing the app [Done]
