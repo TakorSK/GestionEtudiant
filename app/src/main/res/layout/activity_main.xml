@@ -40,5 +40,7 @@
         android:fitsSystemWindows="true"
         android:maxWidth="325dp"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu" />
+        app:menu="@menu/nav_menu"
+        app:itemTextColor="?attr/colorControlNormal"
+        app:itemIconTint="?attr/colorControlNormal" />
 </androidx.drawerlayout.widget.DrawerLayout>

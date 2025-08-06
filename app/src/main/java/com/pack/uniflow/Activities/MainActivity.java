@@ -1,7 +1,10 @@
 package com.pack.uniflow.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,7 +17,9 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import android.os.Handler;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -63,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final DatabaseReference studentsRef = database.getReference("students");
     private final DatabaseReference unisRef     = database.getReference("universities");
 
+    // Network connectivity checking
+    private Handler connectivityHandler = new Handler();
+    private Runnable connectivityRunnable;
+    private AlertDialog noInternetDialog;
+    private boolean isDialogVisible = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Read saved dark mode preference
@@ -100,6 +111,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadUserData();
         setupInitialFragment();
         setupBackButtonHandler();
+
+        // Setup periodic connectivity check runnable
+        connectivityRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (!isNetworkAvailable(MainActivity.this)) {
+                    runOnUiThread(() -> showNoInternetDialog());
+                } else {
+                    if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                        noInternetDialog.dismiss();
+                    }
+                }
+                connectivityHandler.postDelayed(this, 5000);
+            }
+        };
+
+        connectivityHandler.post(connectivityRunnable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connectivityHandler.removeCallbacks(connectivityRunnable);
+    }
+
+    private void showNoInternetDialog() {
+        if (isDialogVisible) return; // Already visible, don't show again
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
+        builder.setTitle("No Internet Connection");
+        builder.setMessage("Please check your internet connection and try again.");
+        builder.setCancelable(false);
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+
+        // Clear window background to transparent to remove weird corners
+        if (noInternetDialog.getWindow() != null) {
+            noInternetDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        isDialogVisible = true;
+
+        noInternetDialog.setOnDismissListener(dialog -> isDialogVisible = false);
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnected();
+        }
+        return false;
     }
 
     // -------------------- UI -------------------------------------------------
@@ -379,41 +444,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }); }
 
     private void showErrorProfile(){ runOnUiThread(()->{
-        profileNameTextView.setText("Error");
-        profileGroupTextView.setText("Loading failed");
+        profileNameTextView.setText("Error loading profile");
+        profileGroupTextView.setText("N/A");
         profileImageView.setImageResource(R.drawable.nav_profile_pic);
         updateMenuVisibility(false,false);
-        Toast.makeText(this,"Error loading profile",Toast.LENGTH_SHORT).show();
     }); }
 
-    @Override protected void onDestroy(){ super.onDestroy(); executorService.shutdown(); }
     private void setStudentOfflineAndLogout() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String studentId = prefs.getString("student_id", null);
-
-        if (studentId != null) {
-            DatabaseReference studentRef = FirebaseDatabase.getInstance()
-                    .getReference("students")
-                    .child(studentId);
-
-            studentRef.child("online").setValue(false) // or .setValue(0) if it's stored as int
-                    .addOnCompleteListener(task -> {
-                        clearSessionAndRedirect();
-                    });
+        if (currentStudent != null && currentStudent.getId() != null) {
+            studentsRef.child(currentStudent.getId()).child("isOnline").setValue(false).addOnCompleteListener(task -> {
+                handleLogout();
+            });
         } else {
-            clearSessionAndRedirect();
+            handleLogout();
         }
     }
-    private void clearSessionAndRedirect() {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.clear();
-        editor.apply();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-
 }

@@ -10,11 +10,11 @@ TODO:
     - Fixing UI drop shadows on the admin panel /High/
     - Add a "target" list in CreatePost fragment (just all or unis or admins)
     - Loading animation when uploading signing in + stopping buttons
-    - Add a popup For No Internet Connection Error
 
 DONE:
     - Add All UI Fragments [Done]
     - Add Admin Board [Done]
+    - Add a popup For No Internet Connection Error [Done]
     - Add Drawer [Done]
     - Add University Management Fragment for posts [Done]
     - Add Drop Shadows [Done]
@@ -26,7 +26,10 @@ DONE:
     - Add the posts xml and logic for db [Done]
     - Add the Profile Activity and all of its functions [Done]
     - Add Post Author and Date [Done]
+
     - Fix the add Student and Uni Layout [Done]
+    - Fix Item Navigator selection color [Done]
+    - Fix Color on primary [Done]
     - Fix Posts layout (the poster part should be more defined)
     - Fix the fields on dark mode going dark as well [Done]
     - Fix All text inputs to replace the keyboard Newline with Next [Done]

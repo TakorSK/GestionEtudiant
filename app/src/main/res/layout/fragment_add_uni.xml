@@ -1,94 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_dialog_rounded">
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="?attr/android:windowBackground">
 
-    <LinearLayout
+    <TextView
+        android:text="Add a New University"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        app:boxBackgroundMode="outline">
 
-        <TextView
-            android:text="Add a New University"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="?android:textColorPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
-
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etUniversityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="University Name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionNext"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint" />
+            android:imeOptions="actionNext" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etLocation"
-            android:hint="Location (optional)"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint"
             android:layout_width="match_parent"
-            android:imeOptions="actionNext"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:hint="Location (optional)"
+            android:imeOptions="actionNext" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEstablishedYear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="Established Year"
             android:inputType="number"
-            android:imeOptions="actionNext"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint"
+            android:imeOptions="actionNext" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etWebsite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
-
-        <EditText
-            android:id="@+id/etWebsite"
             android:hint="Website (optional)"
             android:inputType="textUri"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint"
-            android:layout_width="match_parent"
-            android:imeOptions="actionNext"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:imeOptions="actionNext" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etAssociatedStudentIds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="Associated Student IDs (comma-separated)"
             android:inputType="text"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint"
-            android:layout_width="match_parent"
-            android:imeOptions="actionNext"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:imeOptions="actionNext" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etUniversityPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="University Password"
-            android:inputType="textPassword"
-            android:textColor="?android:textColorPrimary"
-            android:textColorHint="?android:textColorHint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnSubmit"
-            android:text="Submit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:textColor="?android:textColorPrimary"
-            android:backgroundTint="?attr/colorPrimary" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        android:text="Submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary" />
 
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
