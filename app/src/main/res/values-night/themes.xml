@@ -1,13 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.UniFlow" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-        <item name="backgroundColor">@color/dark_bac</item>
+        <!-- Dark Theme Colors -->
         <item name="colorPrimary">@color/dark_prim_col</item>
-        <item name="colorPrimaryVariant">@color/dark_prim_col_var </item>
+        <item name="colorPrimaryVariant">@color/dark_prim_col_var</item>
         <item name="colorSecondary">@color/dark_sec_col</item>
-        <item name="colorSecondaryVariant"> @color/dark_sec_col</item>
-        <item name="android:textColorPrimary">@color/light_bac</item>">
+        <item name="android:windowBackground">@color/dark_bac</item>
+
+        <!-- Input Fields -->
+        <item name="colorControlNormal">@color/dark_field_outline</item>
+        <item name="colorControlActivated">@color/dark_sec_col</item>
+        <item name="colorControlHighlight">@color/dark_sec_col</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/dark_text</item>
+        <item name="android:textColorHint">@color/dark_hint</item>
+
+        <!-- TextInput styling -->
+        <item name="textInputStyle">@style/CustomTextInputStyle</item>
+    </style>
+
+    <style name="Theme.UniFlow" parent="Base.Theme.UniFlow" />
+
+    <style name="CustomTextInputStyle" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/dark_field_outline</item>
+        <item name="hintTextColor">@color/dark_hint</item>
+        <item name="boxBackgroundColor">@color/dark_field_outline</item>
     </style>
 </resources>

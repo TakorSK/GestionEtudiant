@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@drawable/bg_dialog_rounded">
+    android:background="?attr/android:windowBackground">
 
     <TextView
         android:text="Add a New Club"
@@ -15,38 +16,51 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp" />
 
-    <!-- Club Name -->
-    <EditText
-        android:id="@+id/etClubName"
-        android:hint="Club Name"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <!-- Club Description -->
-    <EditText
-        android:id="@+id/etDescription"
-        android:hint="Description"
-        android:textColor="?attr/colorBackgroundFloating"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        app:boxBackgroundMode="outline">
 
-    <!-- University ID -->
-    <EditText
-        android:id="@+id/etUniversityId"
-        android:hint="University ID"
-        android:textColor="?attr/colorBackgroundFloating"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etClubName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Club Name" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
 
-    <!-- Submit Button -->
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="outline"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etUniversityId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="University ID" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitClub"
-        android:text="Submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:textColor="?attr/colorBackgroundFloating" />
+        android:text="Submit"
+        app:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary" />
+
 </LinearLayout>

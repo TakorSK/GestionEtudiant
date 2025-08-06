@@ -5,10 +5,17 @@
         <item name="cornerSize"> 50% </item>
     </style>
 
-    <style name="RoundedDialog" parent="Theme.MaterialComponents.Light.Dialog">
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="RoundedDialog" parent="Theme.UniFlow">
+        <item name="android:windowBackground">@drawable/bg_dialog_rounded</item>
         <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.2</item>
+        <item name="android:windowMinWidthMajor">70%</item>
+        <item name="android:windowMinWidthMinor">70%</item>
     </style>
+
+
+
+
 </resources>
 
 

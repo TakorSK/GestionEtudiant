@@ -1,26 +1,23 @@
 package com.pack.uniflow.Activities;
 
-import com.pack.uniflow.Activities.SignupActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pack.uniflow.FirebaseConfig;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,11 +35,23 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         initializeViews();
         setupLoginButton();
         setupSignupButton();
 
+        // Auto-login if already logged in
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("is_logged_in", false)) {
+            String studentId = prefs.getString("STUDENT_ID", null);
+            String loginTypeStr = prefs.getString("LOGIN_TYPE", null);
+            String universityId = prefs.getString("UNIVERSITY_ID", null);
 
+            if (loginTypeStr != null) {
+                LoginType loginType = LoginType.valueOf(loginTypeStr);
+                startMainActivity(loginType, universityId, studentId);
+            }
+        }
     }
 
     private void initializeViews() {
@@ -72,23 +81,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(String loginId, String password) {
-        // 1. Debug admin
+        // Debug admin login
         if ("debug".equals(loginId) && "debug".equals(password)) {
             Toast.makeText(this, "Developer admin login", Toast.LENGTH_SHORT).show();
-            startMainActivity(LoginType.DEBUG_ADMIN, null,null);
+            startMainActivity(LoginType.DEBUG_ADMIN, null, null);
             return;
         }
 
-        // 2. University admin login (loginId as key, password check)
+        // University admin login
         unisRef.child(loginId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Uni uni = snapshot.getValue(Uni.class);
                 if (uni != null && uni.getUniPassword() != null && uni.getUniPassword().equals(password)) {
                     Toast.makeText(LoginActivity.this, "University admin login", Toast.LENGTH_SHORT).show();
-                    startMainActivity(LoginType.UNIVERSITY_ADMIN, loginId,null);
+                    startMainActivity(LoginType.UNIVERSITY_ADMIN, loginId, null);
                 } else {
-                    // 3. Try student login (by ID or email)
+                    // Try student login if university admin fails
                     checkStudentLogin(loginId, password);
                 }
             }
@@ -147,20 +156,27 @@ public class LoginActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Student login successful", Toast.LENGTH_SHORT).show();
             LoginType type = student.isAdmin() ? LoginType.STUDENT_ADMIN : LoginType.REGULAR_STUDENT;
-            startMainActivity(type, student.getUniId(),student.getId());
+            startMainActivity(type, student.getUniId(), student.getId());
         } else {
             Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void startMainActivity(LoginType loginType, String universityId, String studentId) {
+        // Save login state
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("is_logged_in", true);
+        editor.putString("LOGIN_TYPE", loginType.name());
+        editor.putString("UNIVERSITY_ID", universityId);
+        editor.putString("STUDENT_ID", studentId);
+        editor.apply();
+
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("STUDENT_ID", studentId);
         intent.putExtra("LOGIN_TYPE", loginType.name());
         intent.putExtra("UNIVERSITY_ID", universityId);
+        intent.putExtra("STUDENT_ID", studentId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putString("student_id", studentId).apply();
         startActivity(intent);
     }
 

@@ -1,12 +1,15 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -146,9 +149,18 @@ public class SignupActivity extends AppCompatActivity {
                                                                 runOnUiThread(() -> {
                                                                     Toast.makeText(SignupActivity.this,
                                                                             "Registration successful!", Toast.LENGTH_SHORT).show();
+                                                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SignupActivity.this);
+                                                                    SharedPreferences.Editor editor = prefs.edit();
+                                                                    editor.putBoolean("is_logged_in", true);
+                                                                    editor.putString("LOGIN_TYPE", "REGULAR_STUDENT"); // Or handle STUDENT_ADMIN logic here
+                                                                    editor.putString("UNIVERSITY_ID", universityId);
+                                                                    editor.putString("STUDENT_ID", studentId);
+                                                                    editor.apply();
+
                                                                     startActivity(new Intent(SignupActivity.this, MainActivity.class)
                                                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                                                     finish();
+
                                                                 });
                                                             })
                                                             .addOnFailureListener(e -> {

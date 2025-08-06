@@ -5,14 +5,14 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pack.uniflow.Club;
@@ -20,14 +20,15 @@ import com.pack.uniflow.R;
 
 public class AddClubFragment extends DialogFragment {
 
-    private EditText etClubName, etDescription, etUniversityId;
-    private Button btnSubmitClub;
+    private TextInputEditText etClubName, etDescription, etUniversityId;
+    private MaterialButton btnSubmitClub;
 
     private final DatabaseReference clubsRef = FirebaseDatabase.getInstance().getReference("clubs");
 
     public AddClubFragment() {
         setStyle(STYLE_NORMAL, R.style.RoundedDialog);
     }
+
 
     @Nullable
     @Override
@@ -56,7 +57,6 @@ public class AddClubFragment extends DialogFragment {
             return;
         }
 
-        // Create new Club object
         Club club = new Club();
         club.setName(name);
         club.setDescription(description.isEmpty() ? null : description);

@@ -1,19 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment"
-    android:clipChildren="false"> <!-- Prevent clipping of child views' shadows -->
+    android:clipChildren="false">
 
-    <!-- Title of the Page -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="16dp"
-        tools:context=".Fragments.HomeFragment"
-        android:clipToPadding="false"> <!-- Prevent clipping of shadows due to padding -->
+        android:clipToPadding="false">
 
         <!-- Title -->
         <TextView
@@ -21,16 +18,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="12dp"
             android:text="Home"
-            android:textSize="30sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
-        <!-- Scrollable Home List -->
+        <!-- RecyclerView fills remaining space -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/HomeRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 </RelativeLayout>

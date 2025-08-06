@@ -11,12 +11,23 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:orientation="vertical"
         android:padding="20dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Welcome Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="Welcome Back"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
         <!-- Email or Card ID Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -24,26 +35,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_cid_gmail"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Email or Card ID"
                 android:drawablePadding="20dp"
-                android:textColorHint="#aaa"
-                android:textColor="?attr/colorOnSurface"
+                android:hint="Email or Card ID"
                 android:imeOptions="actionNext"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="?attr/colorOnSurface"
+                android:textColorHint="#aaa" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/error_login_cid_gmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="start"
             android:text="Error message"
             android:textColor="#FF5252"
             android:textSize="12sp"
-            android:gravity="start"
             android:visibility="gone" />
 
         <!-- Password Field -->
@@ -52,26 +64,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/login_password"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Password"
-                android:inputType="textPassword"
                 android:drawablePadding="20dp"
-                android:textColor="?attr/colorOnSurface"
+                android:hint="Password"
                 android:imeOptions="actionDone"
-                android:singleLine="true"/>
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:textColor="?attr/colorOnSurface" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/error_login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="start"
             android:text="Error message"
             android:textColor="#FF5252"
             android:textSize="12sp"
-            android:gravity="start"
             android:visibility="gone" />
 
         <!-- Login Button -->
@@ -79,11 +92,11 @@
             android:id="@+id/login_button"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:text="Login"
-            android:textColor="?attr/colorOnSurface"
-            android:elevation="5dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp"
+            android:elevation="5dp"
+            android:text="Login"
+            android:textColor="?attr/colorOnSurface" />
 
     </LinearLayout>
 
@@ -97,6 +110,6 @@
         app:layout_constraintStart_toStartOf="parent"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

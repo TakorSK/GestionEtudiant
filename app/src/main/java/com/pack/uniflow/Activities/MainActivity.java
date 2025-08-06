@@ -16,20 +16,19 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pack.uniflow.FirebaseConfig;
 import com.pack.uniflow.Fragments.AdminFragment;
 import com.pack.uniflow.Fragments.ClubsFragment;
 import com.pack.uniflow.Fragments.CreatePostFragment;
@@ -66,6 +65,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Read saved dark mode preference
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean darkModeOn = prefs.getBoolean("dark_mode", false);
+
+        //Redirect if not logged in
+        boolean isLoggedIn = prefs.getBoolean("is_logged_in", false);
+
+        if (!isLoggedIn) {
+            // User not logged in → go to login screen
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // Apply mode before calling super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(
+                darkModeOn ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -221,11 +241,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // -------------------- Navigation ----------------------------------------
     private void setupInitialFragment() {
-        navigateToFragment(HomeFragment.newInstance(loginType,currentUniversityId), R.id.nav_home);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String lastFragment = prefs.getString("last_fragment", "home");
+
+        Fragment fragmentToLoad;
+        int menuIdToCheck;
+
+        switch (lastFragment) {
+            case "settings":
+                fragmentToLoad = new SettingsFragment();
+                menuIdToCheck = R.id.nav_settings;
+                break;
+            case "post":
+                fragmentToLoad = CreatePostFragment.newInstance(loginType, currentUniversityId);
+                menuIdToCheck = R.id.nav_post;
+                break;
+            case "admin":
+                fragmentToLoad = new AdminFragment();
+                menuIdToCheck = R.id.nav_admin;
+                break;
+            case "profile":
+                fragmentToLoad = new ProfileFragment();
+                menuIdToCheck = R.id.nav_profile;
+                break;
+            case "clubs":
+                fragmentToLoad = new ClubsFragment();
+                menuIdToCheck = R.id.nav_clubs;
+                break;
+            case "schedule":
+                fragmentToLoad = new ScheduleFragment();
+                menuIdToCheck = R.id.nav_schedule;
+                break;
+            case "scores":
+                fragmentToLoad = new ScoresFragment();
+                menuIdToCheck = R.id.nav_scores;
+                break;
+            default:
+                fragmentToLoad = HomeFragment.newInstance(loginType, currentUniversityId);
+                menuIdToCheck = R.id.nav_home;
+                break;
+        }
+
+        navigateToFragment(fragmentToLoad, menuIdToCheck);
     }
 
-    private void navigateToFragment(Fragment f,int menuId) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,f).commit();
+    private String getFragmentTagFromMenuId(int id) {
+        if (id == R.id.nav_home) return "home";
+        else if (id == R.id.nav_settings) return "settings";
+        else if (id == R.id.nav_post) return "post";
+        else if (id == R.id.nav_admin) return "admin";
+        else if (id == R.id.nav_profile) return "profile";
+        else if (id == R.id.nav_clubs) return "clubs";
+        else if (id == R.id.nav_schedule) return "schedule";
+        else if (id == R.id.nav_scores) return "scores";
+        else return "home";
+    }
+
+
+
+    private void navigateToFragment(Fragment f, int menuId) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, f).commit();
+
+        // ✅ Save the tag of the last fragment
+        String tag = getFragmentTagFromMenuId(menuId);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putString("last_fragment", tag)
+                .apply();
+
         navigationView.setCheckedItem(menuId);
         drawerLayout.closeDrawer(GravityCompat.START);
     }
