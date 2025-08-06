@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="Base.Theme.UniFlow" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Dark Theme Colors -->
         <item name="colorPrimary">@color/dark_prim_col</item>
@@ -23,7 +24,12 @@
 
     <style name="CustomTextInputStyle" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/dark_field_outline</item>
-        <item name="hintTextColor">@color/dark_hint</item>
         <item name="boxBackgroundColor">@color/dark_field_outline</item>
+        <item name="hintTextAppearance">@style/DarkHintTextStyle</item>
     </style>
+
+    <style name="DarkHintTextStyle" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/dark_hint</item>
+    </style>
+
 </resources>
