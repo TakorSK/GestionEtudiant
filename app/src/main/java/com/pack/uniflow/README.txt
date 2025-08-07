@@ -19,7 +19,7 @@ DONE:
     - Add University Management Fragment for posts [Done]
     - Add Drop Shadows [Done]
     - Add error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
-    - Add Settings; Lightmode/darkmode [Done]
+    - Add Settings; Light mode/Dark mode [Done]
     - Add Settings; profile picture uploads [Done]
     - Add Settings; profile bio [Done]
     - Add the Clubs display [Done]
@@ -32,21 +32,22 @@ DONE:
 
     - Update the search functionality UI [Done]
 
-    - Fix the add Student and Uni Layout [Done]
-    - Fix Item Navigator selection color [Done]
+    - Fix all text inputs to replace the keyboard Newline with Next [Done]
     - Fix Admin Panel drop shadow clipping issues [Done]
     - Fix Color on primary [Done]
-    - Fix Posts layout (the poster part should be more defined)
-    - Fix the fields on dark mode going dark as well [Done]
-    - Fix All text inputs to replace the keyboard Newline with Next [Done]
+    - Fix input fields not being a single line [Done]
+    - Fix Item Navigator selection color [Done]
     - Fix light and dark modes not working properly [Done]
     - Fix light and dark mode not saving after closing the app [Done]
-    - Fix input fields not being a single line [Done]
-    - Fix the signupActivity after the change of the xml [Done]
+    - Fix Posts layout (the poster part should be more defined)
+    - Fix the fields on dark mode going dark as well [Done]
+    - Fix the add Student and Uni Layout [Done]
     - Fix the fields color mismatch and darkness [Done]
+    - Fix the login Function and updating it [Done]
+    - Fix the signupActivity after the change of the xml [Done]
     - Fix the settings profile mask [Done]
-    - Fix the UI text colors [Done]
     - Fix the signup XML and add university and club, club being optional and university being required. [Done]
+    - Fix the UI text colors [Done]
 
 =======================================================================================
 
