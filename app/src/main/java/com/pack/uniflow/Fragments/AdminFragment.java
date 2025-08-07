@@ -19,9 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.UniversityAdapter;
+import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-import com.pack.uniflow.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +64,9 @@ public class AdminFragment extends Fragment {
         Button btnAddClub = view.findViewById(R.id.btnAddClub);
         btnAddClub.setOnClickListener(v -> openAddClubFragment());
 
+        Button btnAddStudent = view.findViewById(R.id.btnAddStudent);
+        btnAddStudent.setOnClickListener(v -> openAddStudentFragment());
+
         fetchData();
         return view;
     }
@@ -76,6 +79,11 @@ public class AdminFragment extends Fragment {
     private void openAddClubFragment() {
         AddClubFragment fragment = new AddClubFragment();
         fragment.show(getParentFragmentManager(), "AddClubFragment");
+    }
+
+    private void openAddStudentFragment() {
+        AddStudentFragment fragment = new AddStudentFragment();
+        fragment.show(getParentFragmentManager(), "AddStudentFragment");
     }
 
     private void fetchData() {
@@ -142,7 +150,7 @@ public class AdminFragment extends Fragment {
 
         List<UniversityWithStudents> combinedList = new ArrayList<>();
         for (Uni uni : universityListRaw) {
-            List<Student> list = studentMap.get(uni.getId());
+            List<Student> list = studentMap.get(String.valueOf(uni.getId()));
             if (list == null) {
                 list = new ArrayList<>();
             }
