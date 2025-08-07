@@ -4,23 +4,41 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
 
     private List<Student> studentList;
-    private Context context;
+    private final Context context;
+    private final List<Boolean> expandedStates;
 
     public StudentAdapter(List<Student> studentList, Context context) {
         this.studentList = studentList;
         this.context = context;
+        this.expandedStates = new ArrayList<>();
+        for (int i = 0; i < studentList.size(); i++) {
+            expandedStates.add(false); // All collapsed initially
+        }
+    }
+
+    public void updateList(List<Student> newStudentList) {
+        this.studentList = newStudentList;
+        expandedStates.clear();
+        for (int i = 0; i < newStudentList.size(); i++) {
+            expandedStates.add(false);
+        }
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,8 +51,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     @Override
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
         Student student = studentList.get(position);
-        holder.studentName.setText(student.getFullName());
-        holder.studentStatus.setText(student.isOnline() ? "Online" : "Offline");
+        boolean isExpanded = expandedStates.get(position);
+        holder.bind(student, isExpanded);
+
+        holder.studentHeader.setOnClickListener(v -> {
+            boolean newState = !expandedStates.get(position);
+            expandedStates.set(position, newState);
+            notifyItemChanged(position);
+        });
     }
 
     @Override
@@ -42,22 +66,51 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         return studentList.size();
     }
 
-    // Method to update the student list
-    public void updateList(List<Student> newStudentList) {
-        this.studentList = newStudentList;
-        notifyDataSetChanged();
-    }
-
-    // ViewHolder class for binding student data to views
     public static class StudentViewHolder extends RecyclerView.ViewHolder {
 
-        TextView studentName;
-        TextView studentStatus;
+        TextView studentName, studentStatus;
+        LinearLayout expandableLayout;
+        LinearLayout studentHeader;
+        ImageView arrowIcon;
+
+        TextView tvEmail, tvAge, tvTelephone, tvUniId, tvClubId, tvIsAdmin, tvRegDate, tvLastLogin, tvBio;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
+
             studentName = itemView.findViewById(R.id.studentName);
             studentStatus = itemView.findViewById(R.id.studentStatus);
+            expandableLayout = itemView.findViewById(R.id.expandableLayout);
+            studentHeader = itemView.findViewById(R.id.studentHeader);
+            arrowIcon = itemView.findViewById(R.id.arrowIcon);
+
+            tvEmail = itemView.findViewById(R.id.tvEmail);
+            tvAge = itemView.findViewById(R.id.tvAge);
+            tvTelephone = itemView.findViewById(R.id.tvTelephone);
+            tvUniId = itemView.findViewById(R.id.tvUniId);
+            tvClubId = itemView.findViewById(R.id.tvClubId);
+            tvIsAdmin = itemView.findViewById(R.id.tvIsAdmin);
+            tvRegDate = itemView.findViewById(R.id.tvRegDate);
+            tvLastLogin = itemView.findViewById(R.id.tvLastLogin);
+            tvBio = itemView.findViewById(R.id.tvBio);
+        }
+
+        public void bind(Student student, boolean isExpanded) {
+            studentName.setText(student.getFullName());
+            studentStatus.setText(student.isOnline() ? "Online" : "Offline");
+
+            tvEmail.setText("Email: " + student.getEmail());
+            tvAge.setText("Age: " + student.getAge());
+            tvTelephone.setText("Tel: " + (student.getTelephone() != null ? student.getTelephone() : "-"));
+            tvUniId.setText("University ID: " + (student.getUniId() != null ? student.getUniId() : "-"));
+            tvClubId.setText("Club ID: " + (student.getClubId() != null ? student.getClubId() : "-"));
+            tvIsAdmin.setText("Admin: " + (student.isAdmin() ? "Yes" : "No"));
+            tvRegDate.setText("Registered: " + (student.getRegistrationDate() != null ? student.getRegistrationDate() : "-"));
+            tvLastLogin.setText("Last Login: " + (student.getLastLogin() != null ? student.getLastLogin() : "-"));
+            tvBio.setText("Bio: " + (student.getBio() != null ? student.getBio() : "-"));
+
+            expandableLayout.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+            arrowIcon.setImageResource(isExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
         }
     }
 }

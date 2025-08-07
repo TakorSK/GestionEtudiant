@@ -1,74 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="16dp"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:clipToOutline="false">  <!-- Set this to false to avoid clipping -->
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground">
 
+    <!-- Header clickable area -->
     <LinearLayout
+        android:id="@+id/universityHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvUniversityName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="University Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface" />
+
+        <ImageView
+            android:id="@+id/ivToggle"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_drop_down"
+        android:contentDescription="Toggle details" />
+    </LinearLayout>
+
+    <!-- Expandable content -->
+    <LinearLayout
+        android:id="@+id/expandableLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:elevation="8dp"
-        android:background="@drawable/bg_card_shadow"
-        android:padding="16dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:outlineProvider="background"
-        android:layout_marginBottom="12dp">
+        android:visibility="gone"
+        android:paddingTop="8dp">
 
-        <LinearLayout
-            android:id="@+id/universityHeader"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:text="Location: Unknown"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurface" />
 
-            <TextView
-                android:id="@+id/tvUniversityName"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="University Name"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"/>
-
-            <ImageView
-                android:id="@+id/ivToggle"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_drop_down" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/expandableLayout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvYear"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:paddingTop="12dp">
+            android:text="Established: 0000"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurface" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enrolled Students"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#444"
-                android:layout_marginBottom="8dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/studentRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:paddingBottom="8dp"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvWebsite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Website: -"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnSurface" />
     </LinearLayout>
 </LinearLayout>

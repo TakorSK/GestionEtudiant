@@ -6,12 +6,23 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import com.pack.uniflow.Adapters.StudentAdapter;
 import com.pack.uniflow.Adapters.UniversityAdapter;
@@ -27,75 +38,124 @@ public class AdminFragment extends Fragment {
     private RecyclerView resultsRecyclerView;
     private LinearLayout resultsSection;
     private TextView noResultsText;
-    private EditText searchEditText; // EditText for search input
+    private EditText searchEditText;
 
     private StudentAdapter studentAdapter;
     private UniversityAdapter universityAdapter;
-    private List<Student> studentList = new ArrayList<>();
-    private List<Uni> universityList = new ArrayList<>();
 
-    // Test data initialization (you can remove this later and fetch real data)
-    private void initializeTestData() {
-        studentList.add(new Student("john.doe@example.com", "John Doe", 20, "1234567890", "uni123", "password123"));
-        studentList.add(new Student("jane.smith@example.com", "Jane Smith", 22, "9876543210", "uni123", "password456"));
-        studentList.add(new Student("alex.brown@example.com", "Alex Brown", 21, "5555555555", "uni124", "password789"));
+    private final List<Student> studentList = new ArrayList<>();
+    private final List<Uni> universityList = new ArrayList<>();
 
-        universityList.add(new Uni("University 123", "New York", 1990, "www.uni123.com", "uni123password"));
-        universityList.add(new Uni("University 124", "Los Angeles", 1985, "www.uni124.com", "uni124password"));
-        universityList.add(new Uni("University 125", "Chicago", 2000, "www.uni125.com", "uni125password"));
-    }
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference universitiesRef = database.getReference("universities");
+    private final DatabaseReference studentsRef = database.getReference("students");
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_admin, container, false);
 
-        // Initialize views
+        // === UI Init ===
         resultsRecyclerView = rootView.findViewById(R.id.resultsRecyclerView);
         resultsSection = rootView.findViewById(R.id.resultsSection);
         noResultsText = rootView.findViewById(R.id.noResultsText);
-        searchEditText = rootView.findViewById(R.id.searchEditText); // Use the EditText
+        searchEditText = rootView.findViewById(R.id.searchEditText);
 
-        // Set up the RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize the test data
-        initializeTestData();
+        // === Initialize adapters empty first ===
+        studentAdapter = new StudentAdapter(new ArrayList<>(), getContext());
+        universityAdapter = new UniversityAdapter(new ArrayList<>(), getContext());
 
-        // Add a TextWatcher to handle search text changes
+        // === Firebase Data Load ===
+        loadUniversitiesFromFirebase();
+        loadStudentsFromFirebase();
+
+        // === Search Logic ===
         searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                String query = charSequence.toString();
-                performSearch(query);
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                performSearch(s.toString());
             }
-
-            @Override
-            public void afterTextChanged(Editable editable) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
+
+        // === Add Button Functionalities ===
+        Button btnAddUniversity = rootView.findViewById(R.id.btnAddUniversity);
+        btnAddUniversity.setOnClickListener(v -> openAddUniversityFragment());
+
+        Button btnAddClub = rootView.findViewById(R.id.btnAddClub);
+        btnAddClub.setOnClickListener(v -> openAddClubFragment());
+
+        Button btnAddStudent = rootView.findViewById(R.id.btnAddStudent);
+        btnAddStudent.setOnClickListener(v -> openAddStudentFragment());
 
         return rootView;
     }
 
+    // === Firebase Data Fetch ===
+    private void loadUniversitiesFromFirebase() {
+        universitiesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                universityList.clear();
+                for (DataSnapshot uniSnap : snapshot.getChildren()) {
+                    Uni uni = uniSnap.getValue(Uni.class);
+                    if (uni != null) {
+                        try {
+                            uni.setId(Integer.parseInt(uniSnap.getKey()));
+                        } catch (NumberFormatException ignored) {}
+                        universityList.add(uni);
+                    }
+                }
+                performSearch(searchEditText.getText().toString()); // Re-filter after loading
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load universities", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadStudentsFromFirebase() {
+        studentsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                studentList.clear();
+                for (DataSnapshot studentSnap : snapshot.getChildren()) {
+                    Student student = studentSnap.getValue(Student.class);
+                    if (student != null) {
+                        studentList.add(student);
+                    }
+                }
+                // Update adapter data and refresh UI:
+                studentAdapter.updateList(studentList);
+
+                // If the current search is showing students, update UI:
+                String currentQuery = searchEditText.getText().toString();
+                if (currentQuery.startsWith("stu:")) {
+                    filterStudentList(currentQuery.substring(4).trim());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load students", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // === Search Logic ===
     private void performSearch(String query) {
-        // Show the results section
         resultsSection.setVisibility(View.VISIBLE);
 
-        // If the query starts with "uni:", search for universities
         if (query.startsWith("uni:")) {
-            String searchQuery = query.substring(4).trim(); // Remove 'uni:' prefix
-            filterUniversityList(searchQuery);
-        }
-        // If the query starts with "stu:", search for students
-        else if (query.startsWith("stu:")) {
-            String searchQuery = query.substring(4).trim(); // Remove 'stu:' prefix
-            filterStudentList(searchQuery);
-        }
-        // Default search (searching universities by name)
-        else {
+            filterUniversityList(query.substring(4).trim());
+        } else if (query.startsWith("stu:")) {
+            filterStudentList(query.substring(4).trim());
+        } else {
             filterUniversityList(query);
         }
     }
@@ -108,15 +168,14 @@ public class AdminFragment extends Fragment {
             }
         }
 
-        // Update the UI based on search results
         if (filteredList.isEmpty()) {
-            noResultsText.setVisibility(View.VISIBLE);  // Show "No results"
+            noResultsText.setVisibility(View.VISIBLE);
         } else {
-            noResultsText.setVisibility(View.GONE);     // Hide "No results"
-            universityAdapter = new UniversityAdapter(filteredList, getContext());
-            resultsRecyclerView.setAdapter(universityAdapter);
-            universityAdapter.notifyDataSetChanged();
+            noResultsText.setVisibility(View.GONE);
         }
+
+        universityAdapter = new UniversityAdapter(filteredList, getContext());
+        resultsRecyclerView.setAdapter(universityAdapter);
     }
 
     private void filterStudentList(String query) {
@@ -127,14 +186,29 @@ public class AdminFragment extends Fragment {
             }
         }
 
-        // Update the UI based on search results
         if (filteredList.isEmpty()) {
-            noResultsText.setVisibility(View.VISIBLE);  // Show "No results"
+            noResultsText.setVisibility(View.VISIBLE);
         } else {
-            noResultsText.setVisibility(View.GONE);     // Hide "No results"
-            studentAdapter = new StudentAdapter(filteredList, getContext());
-            resultsRecyclerView.setAdapter(studentAdapter);
-            studentAdapter.notifyDataSetChanged();
+            noResultsText.setVisibility(View.GONE);
         }
+
+        studentAdapter = new StudentAdapter(filteredList, getContext());
+        resultsRecyclerView.setAdapter(studentAdapter);
+    }
+
+    // === Button Dialogs ===
+    private void openAddUniversityFragment() {
+        AddUniFragment fragment = new AddUniFragment();
+        fragment.show(getParentFragmentManager(), "AddUniFragment");
+    }
+
+    private void openAddClubFragment() {
+        AddClubFragment fragment = new AddClubFragment();
+        fragment.show(getParentFragmentManager(), "AddClubFragment");
+    }
+
+    private void openAddStudentFragment() {
+        AddStudentFragment fragment = new AddStudentFragment();
+        fragment.show(getParentFragmentManager(), "AddStudentFragment");
     }
 }

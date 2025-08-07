@@ -3,51 +3,51 @@ MAKE SURE THAT WHENEVER YOU PUSH YOUR WORK IT DOES NOT CONTAIN ANY ERRORS THAT I
 
 ======================================== ADAM ========================================
 TODO:
-    - Adding the Scores display /High/
-    - Adding the Schedule display and logic /High/
-    - Adding Settings; profile info  /Optional/
-    - Adding the corresponding fields to fill for each button in the admin panel /Highest/
-    - Fixing UI drop shadows on the admin panel /High/
-    - Add a "target" list in CreatePost fragment (just all or unis or admins)
-    - Loading animation when uploading signing in + stopping buttons
+    - Add a "target" list in CreatePost fragment (e.g. all, unis, admins)         [Medium]
+    - Add corresponding DB fields to admin panel buttons                          [Highest]
+    - Add Schedule display and interaction logic                                  [High]
+    - Add Scores display section                                                  [High]
+    - Add Settings: profile info edit (e.g. name, email)                          [Optional]
+    - Add Upload/Sign-in loading animations and disable button during process     [Medium]
 
 DONE:
-    - Add All UI Fragments [Done]
-    - Add Admin Board [Done]
-    - Add the Popup For No Internet Connection Error [Done]
-    - Add Drawer [Done]
-    - Add University Management Fragment for posts [Done]
-    - Add Drop Shadows [Done]
-    - Add error messages to each input field.(ex when the ID format is wrong a little message will display in red under the field) (Finishing by friday at minimum.) [Done]
-    - Add Settings; Light mode/Dark mode [Done]
-    - Add Settings; profile picture uploads [Done]
-    - Add Settings; profile bio [Done]
-    - Add the Clubs display [Done]
-    - Add the posts xml and logic for db [Done]
-    - Add the Profile Activity and all of its functions [Done]
-    - Add the Add a Student button Layout and functionality + DB stuff [Done]
-    - Add Post Author and Date [Done]
-    - Add Post Date Functionality [Done]
-    - Add Post Sorting by date [Done]
+     - Add "Add a Student" layout, DB, and logic
+     - Add Admin Board fragment
+     - Add Clubs display logic
+     - Add Dark Mode / Light Mode + settings persistence
+     - Add Drawer navigation
+     - Add Drop Shadows
+     - Add error messages to input fields (e.g. red text under invalid fields)
+     - Add No Internet Popup dialog
+     - Add Post Author and Date
+     - Add Post Sorting by Date
+     - Add Posts layout and DB logic
+     - Add Profile Activity (with all functionalities)
+     - Add Search Functionality UI
+     - Add Settings: Bio support
+     - Add Settings: Profile picture upload
+     - Add Settings: Theme toggle (light/dark)
+     - Add UI Fragments (all)
+     - Add University Management fragment (posts)
 
-    - Update the search functionality UI [Done]
+     - Fix Admin Panel shadow clipping
+     - Fix Admin Panel UI drop shadows clipping/styling
+     - Fix Add Student & University layouts
+     - Fix Club field optional, University required in Signup
+     - Fix ColorPrimary mismatch
+     - Fix Dark Mode on input fields
+     - Fix Drawer navigation selection color
+     - Fix Fields color mismatch & darkness
+     - Fix Input fields to single line
+     - Fix Keyboard 'Next' action on text inputs
+     - Fix Light/Dark mode toggle + persistence
+     - Fix Login functionality
+     - Fix Posts layout (poster section more defined)
+     - Fix Settings profile image mask
+     - Fix Signup activity (updated XML)
+     - Fix Signup fields logic + layout
+     - Fix UI text colors
 
-    - Fix all text inputs to replace the keyboard Newline with Next [Done]
-    - Fix Admin Panel drop shadow clipping issues [Done]
-    - Fix Color on primary [Done]
-    - Fix input fields not being a single line [Done]
-    - Fix Item Navigator selection color [Done]
-    - Fix light and dark modes not working properly [Done]
-    - Fix light and dark mode not saving after closing the app [Done]
-    - Fix Posts layout (the poster part should be more defined)
-    - Fix the fields on dark mode going dark as well [Done]
-    - Fix the add Student and Uni Layout [Done]
-    - Fix the fields color mismatch and darkness [Done]
-    - Fix the login Function and updating it [Done]
-    - Fix the signupActivity after the change of the xml [Done]
-    - Fix the settings profile mask [Done]
-    - Fix the signup XML and add university and club, club being optional and university being required. [Done]
-    - Fix the UI text colors [Done]
 
 =======================================================================================
 

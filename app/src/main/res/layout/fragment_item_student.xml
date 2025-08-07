@@ -1,48 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/studentRootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical"
+    android:orientation="vertical"
     android:background="@drawable/bg_card_shadow"
     android:elevation="6dp"
-    android:translationZ="2dp"
+    android:padding="12dp"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:clipToOutline="false">
 
-    <ImageView
-        android:id="@+id/studentAvatar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/nav_profile_pic"
-        android:layout_marginEnd="12dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/circle_mask" />
-
+    <!-- Header Row -->
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/studentHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp">
 
-        <TextView
-            android:id="@+id/studentName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Null"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/studentAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/nav_profile_pic"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circle_mask" />
 
-        <TextView
-            android:id="@+id/studentStatus"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Online"
-            android:textSize="14sp"
-            android:textColor="#4CAF50" />
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/studentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Null"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/studentStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:textSize="14sp"
+                android:textColor="#4CAF50" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/arrowIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_drop_down"
+            android:contentDescription="Expand"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
+
+    <!-- Expandable Details -->
+    <LinearLayout
+        android:id="@+id/expandableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email: " />
+
+        <TextView
+            android:id="@+id/tvAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Age: " />
+
+        <TextView
+            android:id="@+id/tvTelephone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tel: " />
+
+        <TextView
+            android:id="@+id/tvUniId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="University ID: " />
+
+        <TextView
+            android:id="@+id/tvClubId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Club ID: " />
+
+        <TextView
+            android:id="@+id/tvIsAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin: " />
+
+        <TextView
+            android:id="@+id/tvRegDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registered: " />
+
+        <TextView
+            android:id="@+id/tvLastLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last Login: " />
+
+        <TextView
+            android:id="@+id/tvBio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bio: " />
+    </LinearLayout>
 </LinearLayout>
