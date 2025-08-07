@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    tools:context=".Fragments.AdminFragment">
+    android:padding="16dp">
 
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
         android:gravity="center_horizontal"
         android:clipChildren="false"
         android:clipToPadding="false">
@@ -52,7 +47,6 @@
                 android:text="Add a Club"
                 android:textColor="?attr/colorOnSurface"/>
 
-            <!-- New Add Student Button -->
             <Button
                 android:id="@+id/btnAddStudent"
                 android:layout_width="match_parent"
@@ -62,36 +56,57 @@
                 android:textColor="?attr/colorOnSurface"/>
         </LinearLayout>
 
-        <!-- Current Universities Section -->
+        <!-- Search Section inside the card -->
         <LinearLayout
             android:background="@drawable/bg_card_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:orientation="vertical"
             android:elevation="6dp"
-            android:padding="20dp">
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Current Universities"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="12dp"
-                android:textColor="?attr/colorOnSurface"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/universitiesRecyclerView"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:paddingBottom="16dp" />
+                android:queryHint="Search universities (default), or student:john" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Use 'student:' or 'uni:' prefix to search by category."
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp" />
+
+            <!-- Dynamic Results Display Section -->
+            <LinearLayout
+                android:id="@+id/resultsSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Placeholder TextView for "No Results" -->
+                <TextView
+                    android:id="@+id/noResultsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No results found"
+                    android:visibility="gone"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp" />
+
+                <!-- RecyclerView for displaying the results will be dynamically added here -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/resultsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
