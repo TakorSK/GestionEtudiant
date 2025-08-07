@@ -74,12 +74,14 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <View
+                <ImageView
                     android:layout_width="10dp"
                     android:layout_height="10dp"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="6dp"
-                    android:background="@drawable/online_circle_icon" />
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/online_circle_icon"
+                    app:tint="?attr/colorSecondary" />
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

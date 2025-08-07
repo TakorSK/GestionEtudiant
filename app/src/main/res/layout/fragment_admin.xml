@@ -67,6 +67,8 @@
             android:background="@drawable/bg_card_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical"
             android:elevation="6dp"
             android:padding="20dp">
@@ -84,7 +86,11 @@
                 android:id="@+id/universitiesRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp" />
+
         </LinearLayout>
 
     </LinearLayout>

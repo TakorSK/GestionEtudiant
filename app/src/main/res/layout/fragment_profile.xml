@@ -57,7 +57,9 @@
                         android:layout_height="28dp"
                         android:layout_gravity="bottom|end"
                         android:layout_margin="4dp"
-                        android:src="@drawable/online_circle_icon" />
+                        android:src="@drawable/online_circle_icon"
+                        app:tint="?attr/colorSecondary"/>
+
                 </FrameLayout>
 
                 <!-- Info Area -->

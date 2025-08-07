@@ -1,19 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark_prim_col">#73AB66</color> <!-- Muted Teal -->
-    <color name="dark_prim_col_var">#5B7C55</color> <!-- Darker Muted Teal -->
-    <color name="dark_sec_col">#70AD74</color> <!-- Moss Green -->
+    <!-- Dark Theme Colors -->
+    <color name="dark_prim_col">#73AB66</color>
+    <color name="dark_prim_col_var">#5B7C55</color>
+
+    <color name="dark_sec_col">#70AD74</color>
+    <color name="dark_sec_col_var">#8ACF8A</color>             <!-- lighter moss green variant -->
+
     <color name="dark_field_outline">#444444</color>
+    <color name="dark_field_outline_variant">#5A7C55</color>   <!-- a lighter/different outline -->
+
+    <color name="dark_bac">#121212</color>
+    <color name="dark_surface">#1E1E1E</color>                <!-- surface color for dark mode -->
+    <color name="dark_on_surface">#E0E0E0</color>             <!-- text on dark surface -->
+
     <color name="dark_text">#E0E0E0</color>
     <color name="dark_hint">#999999</color>
-    <color name="dark_bac">#121212</color>
 
-    <!-- Light Theme -->
-    <color name="light_bac">#F8FAFC</color>
-    <color name="light_prim_col">#D9EAFD</color>
-    <color name="light_prim_col_var">#BCCCDC</color>
-    <color name="light_sec_col">#9AA6B2</color>
+    <color name="dark_ripple">#70AD74</color>                 <!-- ripple with secondary moss green -->
+
+    <!-- Light Theme Colors -->
+    <color name="light_bac">#FCF9F8</color>
+
+    <color name="light_prim_col">#F29446</color>
+    <color name="light_prim_col_var">#DCC1B3</color>
+
+    <color name="light_sec_col">#FF9800</color>
+    <color name="light_sec_col_var">#FFB74D</color>
+
+    <color name="light_field_outline">#DCC7BC</color>
+
     <color name="light_text">#000000</color>
-    <color name="light_hint">#5A6A75</color>
-    <color name="light_field_outline">#BCCCDC</color>
+    <color name="light_hint">#75625A</color>
+
+    <color name="light_surface">#FFFFFF</color>
+    <color name="light_on_surface">#000000</color>
+
+    <!-- Misc Colors -->
+    <color name="error_red">#B00020</color>
+    <color name="on_error_text">#FFFFFF</color>
+
+    <color name="light_ripple">#FF9800</color>
 </resources>

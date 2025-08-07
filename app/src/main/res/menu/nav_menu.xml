@@ -9,29 +9,6 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/nav_home"
             android:title="@string/home" />
-
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/nav_settings"
-            android:title="@string/settings" />
-
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/nav_logout"
-            android:title="@string/logout" />
-    </group>
-
-    <!-- Admin-specific items (Debug Admin + University Admin) -->
-    <group android:id="@+id/group_admin" android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_admin"
-            android:icon="@drawable/nav_admin"
-            android:title="@string/admin" />
-
-        <item
-            android:id="@+id/nav_post"
-            android:icon="@drawable/nav_admin"
-            android:title="@string/posting" />
     </group>
 
     <!-- Student-specific items (hidden for University Admin) -->
@@ -56,4 +33,31 @@
             android:icon="@drawable/nav_clubs"
             android:title="@string/clubs" />
     </group>
+
+    <!-- Admin-specific items (Debug Admin + University Admin) -->
+    <group android:id="@+id/group_admin" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_admin"
+            android:icon="@drawable/nav_admin"
+            android:title="@string/admin" />
+
+        <item
+            android:id="@+id/nav_post"
+            android:icon="@drawable/nav_admin"
+            android:title="@string/posting" />
+    </group>
+
+    <!-- Settings and Logout at the bottom -->
+    <group android:id="@+id/group_settings_logout" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/nav_settings"
+            android:title="@string/settings" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/nav_logout"
+            android:title="@string/logout" />
+    </group>
+
 </menu>

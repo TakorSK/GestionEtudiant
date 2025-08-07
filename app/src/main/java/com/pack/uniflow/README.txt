@@ -32,6 +32,7 @@ DONE:
 
     - Fix the add Student and Uni Layout [Done]
     - Fix Item Navigator selection color [Done]
+    - Fix Admin Panel drop shadow clipping issues [Done]
     - Fix Color on primary [Done]
     - Fix Posts layout (the poster part should be more defined)
     - Fix the fields on dark mode going dark as well [Done]
