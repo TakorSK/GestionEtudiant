@@ -75,15 +75,23 @@ public class HomeFragment extends Fragment {
                         allPosts.add(post);
                     }
                 }
+
+                // ✅ Sort posts by createdAt descending (newest first)
+                allPosts.sort((p1, p2) -> {
+                    if (p1.getCreatedAt() == null || p2.getCreatedAt() == null) return 0;
+                    return p2.getCreatedAt().compareTo(p1.getCreatedAt());
+                });
+
                 filterAndDisplayPosts(allPosts);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error
+                // Optionally log or show error
             }
         });
     }
+
 
     private void filterAndDisplayPosts(List<Post> allPosts) {
         if (currentUserType == LoginType.DEBUG_ADMIN) {

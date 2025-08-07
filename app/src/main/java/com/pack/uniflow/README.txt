@@ -27,6 +27,7 @@ DONE:
     - Add the Profile Activity and all of its functions [Done]
     - Add the Add a Student button Layout and functionality + DB stuff [Done]
     - Add Post Author and Date [Done]
+    - Add Post Date Functionality [Done]
 
     - Fix the add Student and Uni Layout [Done]
     - Fix Item Navigator selection color [Done]

@@ -50,10 +50,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.description.setText(post.getDescription());
         holder.authorName.setText("By " + post.getAuthorName());
 
-        /*TODO:
-            add date stuff for post
-        // Set the date formatted nicely (assuming post.getDate() returns a string)
-        holder.postDate.setText(formatDate(post.getDate()));*/
+        // ✅ Set formatted date
+        holder.postDate.setText(formatDate(post.getCreatedAt()));
 
         String imageUri = post.getImageUri();
         if (imageUri != null && !imageUri.isEmpty()) {
@@ -65,11 +63,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     .centerCrop()
                     .into(holder.image);
 
-            // Increase divider margin when image visible
             setDividerTopMargin(holder.postDivider, 32);
         } else {
             holder.image.setVisibility(View.GONE);
-            // Smaller divider margin when no image
             setDividerTopMargin(holder.postDivider, 8);
         }
     }
@@ -93,19 +89,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return Math.round(dp * density);
     }
 
-    // Format date string from "yyyy-MM-dd" to "MMM d, yyyy" e.g. Aug 6, 2025
+    // ✅ Format raw "yyyy-MM-dd HH:mm:ss" → "Aug 7, 2025 4:13 PM"
     private String formatDate(String rawDate) {
         if (rawDate == null || rawDate.isEmpty()) return "";
 
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault());
 
         try {
             Date date = inputFormat.parse(rawDate);
             return outputFormat.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
-            return rawDate; // fallback to raw if parse fails
+            return rawDate; // fallback if parsing fails
         }
     }
 
