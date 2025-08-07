@@ -17,9 +17,6 @@ import com.pack.uniflow.Adapters.UniversityAdapter;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
-import com.pack.uniflow.StudentDao;
-import com.pack.uniflow.UniDao;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,21 +32,15 @@ public class AdminFragment extends Fragment {
     private List<Student> studentList = new ArrayList<>();
     private List<Uni> universityList = new ArrayList<>();
 
-    private StudentDao studentDao;
-    private UniDao uniDao;
+    // Test data initialization (you can remove this later and fetch real data)
+    private void initializeTestData() {
+        studentList.add(new Student("john.doe@example.com", "John Doe", 20, "1234567890", "uni123", "password123"));
+        studentList.add(new Student("jane.smith@example.com", "Jane Smith", 22, "9876543210", "uni123", "password456"));
+        studentList.add(new Student("alex.brown@example.com", "Alex Brown", 21, "5555555555", "uni124", "password789"));
 
-    public AdminFragment() {
-        // Initialize DAO classes for Firebase data access
-        studentDao = new StudentDao();
-        uniDao = new UniDao();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Enable Firebase persistence when the fragment is created
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true); // Enable persistence
+        universityList.add(new Uni("University 123", "New York", 1990, "www.uni123.com", "uni123password"));
+        universityList.add(new Uni("University 124", "Los Angeles", 1985, "www.uni124.com", "uni124password"));
+        universityList.add(new Uni("University 125", "Chicago", 2000, "www.uni125.com", "uni125password"));
     }
 
     @Override
@@ -65,9 +56,8 @@ public class AdminFragment extends Fragment {
         // Set up the RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Fetch real data from Firebase
-        fetchUniversities();
-        fetchStudents();
+        // Initialize the test data
+        initializeTestData();
 
         // Set up the SearchView
         SearchView searchView = rootView.findViewById(R.id.searchView);
@@ -89,34 +79,6 @@ public class AdminFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    private void fetchUniversities() {
-        uniDao.getAllUnis(new UniDao.LoadCallback() {
-            @Override
-            public void onLoaded(List<Uni> unis) {
-                universityList = unis;
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(getContext(), "Error fetching universities", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void fetchStudents() {
-        studentDao.getAllStudents(new StudentDao.LoadCallback() {
-            @Override
-            public void onLoaded(List<Student> students) {
-                studentList = students;
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Toast.makeText(getContext(), "Error fetching students", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void performSearch(String query) {
