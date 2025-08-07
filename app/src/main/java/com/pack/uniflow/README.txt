@@ -32,7 +32,7 @@ DONE:
 
      - Fix Admin Panel shadow clipping
      - Fix Admin Panel UI drop shadows clipping/styling
-     - Fix Add Student & University layouts
+     - Fix Add Student, Clubs & University layouts
      - Fix Club field optional, University required in Signup
      - Fix ColorPrimary mismatch
      - Fix Dark Mode on input fields
