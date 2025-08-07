@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:clipToOutline="false">
 
     <LinearLayout
         android:id="@+id/mainLayout"
@@ -13,7 +15,8 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:clipToOutline="false">
 
         <!-- Insertions Section -->
         <LinearLayout
@@ -64,24 +67,40 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:clipToOutline="false"
             android:elevation="6dp"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/searchView"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:queryHint="Search universities (default), or student:john" />
+                app:boxStrokeWidth="2dp"
+                app:boxStrokeColor="?attr/colorPrimary"
+                android:layout_marginBottom="12dp">
+
+                <EditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:inputType="text"
+                    android:padding="5dp"
+                    android:hint="Search"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
+                android:id="@+id/searchInstructionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Use 'student:' or 'uni:' prefix to search by category."
+                android:text="Search universities (default) or students (use 'student:' prefix)."
                 android:textSize="12sp"
                 android:textColor="?attr/colorOnSurface"
+                android:visibility="visible"
                 android:paddingTop="4dp"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="8dp"/>
 
             <!-- Dynamic Results Display Section -->
             <LinearLayout
@@ -89,26 +108,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:clipToOutline="false"
                 android:visibility="gone">
 
-                <!-- Placeholder TextView for "No Results" -->
                 <TextView
                     android:id="@+id/noResultsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="No results found"
                     android:visibility="gone"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:clipToOutline="false"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
 
-                <!-- RecyclerView for displaying the results will be dynamically added here -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/resultsRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:clipToOutline="false"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"/>
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

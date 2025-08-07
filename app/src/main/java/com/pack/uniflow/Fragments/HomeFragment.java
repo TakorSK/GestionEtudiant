@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
 
-                // ✅ Sort posts by createdAt descending (newest first)
+                //  Sort posts by createdAt descending (newest first)
                 allPosts.sort((p1, p2) -> {
                     if (p1.getCreatedAt() == null || p2.getCreatedAt() == null) return 0;
                     return p2.getCreatedAt().compareTo(p1.getCreatedAt());

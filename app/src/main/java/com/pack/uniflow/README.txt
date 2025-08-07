@@ -14,7 +14,7 @@ TODO:
 DONE:
     - Add All UI Fragments [Done]
     - Add Admin Board [Done]
-    - Add a popup For No Internet Connection Error [Done]
+    - Add the Popup For No Internet Connection Error [Done]
     - Add Drawer [Done]
     - Add University Management Fragment for posts [Done]
     - Add Drop Shadows [Done]
@@ -29,6 +29,8 @@ DONE:
     - Add Post Author and Date [Done]
     - Add Post Date Functionality [Done]
     - Add Post Sorting by date [Done]
+
+    - Update the search functionality UI [Done]
 
     - Fix the add Student and Uni Layout [Done]
     - Fix Item Navigator selection color [Done]

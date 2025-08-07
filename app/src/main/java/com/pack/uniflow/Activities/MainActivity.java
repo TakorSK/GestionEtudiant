@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
@@ -367,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void navigateToFragment(Fragment f, int menuId) {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, f).commit();
 
-        // ✅ Save the tag of the last fragment
+        // Save the tag of the last fragment
         String tag = getFragmentTagFromMenuId(menuId);
         PreferenceManager.getDefaultSharedPreferences(this)
                 .edit()
@@ -417,14 +419,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showAccessDenied(){ Toast.makeText(this,"Access denied",Toast.LENGTH_SHORT).show(); }
 
     // -------------------- Logout --------------------------------------------
-    private void handleLogout(){
-        if ((loginType==LoginType.REGULAR_STUDENT || loginType==LoginType.STUDENT_ADMIN) && currentStudent!=null && currentStudent.getId()!=null){
+    private void handleLogout() {
+        Log.d("Logout", "Logging out user...");
+
+        // Set student as offline in Firebase
+        if ((loginType == LoginType.REGULAR_STUDENT || loginType == LoginType.STUDENT_ADMIN) && currentStudent != null && currentStudent.getId() != null) {
             studentsRef.child(currentStudent.getId()).child("isOnline").setValue(false);
         }
-        Toast.makeText(this,"Logged out",Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        finish();
+
+        // Clear shared preferences to ensure no user session remains
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean("is_logged_in", false).apply(); // Set logged-in state to false
+        prefs.edit().remove("student_id").apply(); // Optionally remove student ID
+        prefs.edit().remove("last_fragment").apply(); // Remove the last fragment preference (this is key)
+
+        // Show logout toast
+        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
+
+        // Start LoginActivity and clear task stack
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        // Log for debugging
+        Log.d("Logout", "Finishing MainActivity");
+        finish(); // Ensure MainActivity is completely finished
     }
+
 
     // -------------------- Back ----------------------------------------------
     private void setupBackButtonHandler(){
@@ -453,10 +474,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setStudentOfflineAndLogout() {
         if (currentStudent != null && currentStudent.getId() != null) {
             studentsRef.child(currentStudent.getId()).child("isOnline").setValue(false).addOnCompleteListener(task -> {
+                clearFragmentBackStack();
                 handleLogout();
             });
         } else {
+            clearFragmentBackStack();
             handleLogout();
         }
     }
+
+    private void clearFragmentBackStack() {
+        // Clear all fragments in the back stack
+        getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
 }

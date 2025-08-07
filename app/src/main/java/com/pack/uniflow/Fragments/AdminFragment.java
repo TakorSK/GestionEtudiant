@@ -1,16 +1,17 @@
 package com.pack.uniflow.Fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-import androidx.appcompat.widget.SearchView;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.TextView;
-import android.widget.LinearLayout;
 
 import com.pack.uniflow.Adapters.StudentAdapter;
 import com.pack.uniflow.Adapters.UniversityAdapter;
@@ -26,6 +27,7 @@ public class AdminFragment extends Fragment {
     private RecyclerView resultsRecyclerView;
     private LinearLayout resultsSection;
     private TextView noResultsText;
+    private EditText searchEditText; // EditText for search input
 
     private StudentAdapter studentAdapter;
     private UniversityAdapter universityAdapter;
@@ -52,6 +54,7 @@ public class AdminFragment extends Fragment {
         resultsRecyclerView = rootView.findViewById(R.id.resultsRecyclerView);
         resultsSection = rootView.findViewById(R.id.resultsSection);
         noResultsText = rootView.findViewById(R.id.noResultsText);
+        searchEditText = rootView.findViewById(R.id.searchEditText); // Use the EditText
 
         // Set up the RecyclerView
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -59,23 +62,19 @@ public class AdminFragment extends Fragment {
         // Initialize the test data
         initializeTestData();
 
-        // Set up the SearchView
-        SearchView searchView = rootView.findViewById(R.id.searchView);
-        searchView.setQueryHint("Search universities (default), or student:john");
-
-        // Set up SearchView listeners
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        // Add a TextWatcher to handle search text changes
+        searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                String query = charSequence.toString();
                 performSearch(query);
-                return true;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                performSearch(newText);
-                return true;
-            }
+            public void afterTextChanged(Editable editable) {}
         });
 
         return rootView;
