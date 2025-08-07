@@ -59,6 +59,7 @@ TODO
     - Integrate the DB With the ADMIN menu (Affected stuff; AdminFragment, DummyStudent and DummyUniversities should be removed once you get the db working.)
     - Make the connexion last even after closing the app, it doesn't disconnect you
     - Fix the settings
+    - Link the DB to the search on Admin Pannel (its using mock data rn in adminpannelfragment.java i think)
     - Fix posting post-firebase changes
     - add club display and student adding in the admin panel
 
