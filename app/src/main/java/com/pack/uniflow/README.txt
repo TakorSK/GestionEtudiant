@@ -1,5 +1,5 @@
 TO organize our work Please log what you do in this file.
-MAKE SURE TO WHENEVER YOU PUSH YOUR WORK IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFORMANCE AND MAKE SURE THAT EVERYTHING SHOULD BE FUNCTIONAL. IF YOU ENCOUNTER SOME KIND OF AN ERROR PLEASE UPDATE YOUR STUDIO. IF IT PERSISTS PLEASE CONTACT ME.
+MAKE SURE THAT WHENEVER YOU PUSH YOUR WORK IT DOES NOT CONTAIN ANY ERRORS THAT IMPACT PERFORMANCE AND THAT EVERYTHING SHOULD BE FUNCTIONAL. IF YOU ENCOUNTER SOME KIND OF AN ERROR PLEASE UPDATE YOUR STUDIO. IF IT PERSISTS PLEASE CONTACT ME.
 
 ======================================== ADAM ========================================
 TODO:
@@ -61,7 +61,7 @@ TODO
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
     - edited the database for compatibility with the xml form, we forgot to put the password in the database lmao -Done
-    - edited the whole signup activity,uniflowDB and databaseclient after that -done
+    - edited the whole signup activity,uniflowDB and 'databaseclient' after that -done
     - Test The Database -done
     - Insert directly into database universities and clubs for testing -done
     - Added synchronization for the is_online and last_login columns in the database -done
