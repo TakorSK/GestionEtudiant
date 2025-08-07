@@ -28,6 +28,7 @@ DONE:
     - Add the Add a Student button Layout and functionality + DB stuff [Done]
     - Add Post Author and Date [Done]
     - Add Post Date Functionality [Done]
+    - Add Post Sorting by date [Done]
 
     - Fix the add Student and Uni Layout [Done]
     - Fix Item Navigator selection color [Done]
