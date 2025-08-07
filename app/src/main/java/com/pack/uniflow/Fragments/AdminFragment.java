@@ -23,9 +23,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+import com.pack.uniflow.Adapters.ClubAdapter;
 import com.pack.uniflow.Adapters.StudentAdapter;
 import com.pack.uniflow.Adapters.UniversityAdapter;
+import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Student;
 import com.pack.uniflow.Uni;
@@ -42,13 +43,16 @@ public class AdminFragment extends Fragment {
 
     private StudentAdapter studentAdapter;
     private UniversityAdapter universityAdapter;
+    private ClubAdapter clubAdapter;
 
     private final List<Student> studentList = new ArrayList<>();
     private final List<Uni> universityList = new ArrayList<>();
+    private final List<Club> clubList = new ArrayList<>();
 
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private final DatabaseReference universitiesRef = database.getReference("universities");
     private final DatabaseReference studentsRef = database.getReference("students");
+    private final DatabaseReference clubsRef = database.getReference("clubs");
 
     @Nullable
     @Override
@@ -67,10 +71,12 @@ public class AdminFragment extends Fragment {
         // === Initialize adapters empty first ===
         studentAdapter = new StudentAdapter(new ArrayList<>(), getContext());
         universityAdapter = new UniversityAdapter(new ArrayList<>(), getContext());
+        clubAdapter = new ClubAdapter(new ArrayList<>(), getContext());
 
         // === Firebase Data Load ===
         loadUniversitiesFromFirebase();
         loadStudentsFromFirebase();
+        loadClubsFromFirebase();
 
         // === Search Logic ===
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -130,10 +136,8 @@ public class AdminFragment extends Fragment {
                         studentList.add(student);
                     }
                 }
-                // Update adapter data and refresh UI:
                 studentAdapter.updateList(studentList);
 
-                // If the current search is showing students, update UI:
                 String currentQuery = searchEditText.getText().toString();
                 if (currentQuery.startsWith("stu:")) {
                     filterStudentList(currentQuery.substring(4).trim());
@@ -147,6 +151,31 @@ public class AdminFragment extends Fragment {
         });
     }
 
+    private void loadClubsFromFirebase() {
+        clubsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                clubList.clear();
+                for (DataSnapshot clubSnap : snapshot.getChildren()) {
+                    Club club = clubSnap.getValue(Club.class);
+                    if (club != null) {
+                        clubList.add(club);
+                    }
+                }
+
+                String currentQuery = searchEditText.getText().toString();
+                if (currentQuery.startsWith("club:")) {
+                    filterClubList(currentQuery.substring(5).trim());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load clubs", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     // === Search Logic ===
     private void performSearch(String query) {
         resultsSection.setVisibility(View.VISIBLE);
@@ -155,8 +184,10 @@ public class AdminFragment extends Fragment {
             filterUniversityList(query.substring(4).trim());
         } else if (query.startsWith("stu:")) {
             filterStudentList(query.substring(4).trim());
+        } else if (query.startsWith("club:")) {
+            filterClubList(query.substring(5).trim());
         } else {
-            filterUniversityList(query);
+            filterUniversityList(query); // Default to uni
         }
     }
 
@@ -168,11 +199,7 @@ public class AdminFragment extends Fragment {
             }
         }
 
-        if (filteredList.isEmpty()) {
-            noResultsText.setVisibility(View.VISIBLE);
-        } else {
-            noResultsText.setVisibility(View.GONE);
-        }
+        noResultsText.setVisibility(filteredList.isEmpty() ? View.VISIBLE : View.GONE);
 
         universityAdapter = new UniversityAdapter(filteredList, getContext());
         resultsRecyclerView.setAdapter(universityAdapter);
@@ -186,14 +213,24 @@ public class AdminFragment extends Fragment {
             }
         }
 
-        if (filteredList.isEmpty()) {
-            noResultsText.setVisibility(View.VISIBLE);
-        } else {
-            noResultsText.setVisibility(View.GONE);
-        }
+        noResultsText.setVisibility(filteredList.isEmpty() ? View.VISIBLE : View.GONE);
 
         studentAdapter = new StudentAdapter(filteredList, getContext());
         resultsRecyclerView.setAdapter(studentAdapter);
+    }
+
+    private void filterClubList(String query) {
+        List<Club> filteredList = new ArrayList<>();
+        for (Club club : clubList) {
+            if (club.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(club);
+            }
+        }
+
+        noResultsText.setVisibility(filteredList.isEmpty() ? View.VISIBLE : View.GONE);
+
+        clubAdapter = new ClubAdapter(filteredList, getContext());
+        resultsRecyclerView.setAdapter(clubAdapter);
     }
 
     // === Button Dialogs ===

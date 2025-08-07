@@ -23,12 +23,15 @@ DONE:
      - Add Post Sorting by Date
      - Add Posts layout and DB logic
      - Add Profile Activity (with all functionalities)
+     - Add Search hint text to include instructions for 'club:' prefix
      - Add Search Functionality UI
      - Add Settings: Bio support
      - Add Settings: Profile picture upload
      - Add Settings: Theme toggle (light/dark)
      - Add UI Fragments (all)
      - Add University Management fragment (posts)
+
+     - Refactor search filtering logic to support clubs in addition to students and universities
 
      - Fix Admin Panel shadow clipping
      - Fix Admin Panel UI drop shadows clipping/styling
@@ -48,6 +51,7 @@ DONE:
      - Fix Signup fields logic + layout
      - Fix UI text colors
 
+     - Update UI layouts to include club-related views and buttons
 
 =======================================================================================
 

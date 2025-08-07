@@ -38,7 +38,9 @@ public class ClubsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.clubsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ClubAdapter(new ArrayList<>());
+
+        // ✅ Fix: Provide both arguments as required
+        adapter = new ClubAdapter(new ArrayList<>(), getContext());
         recyclerView.setAdapter(adapter);
 
         loadClubsFromFirebase();
@@ -54,6 +56,8 @@ public class ClubsFragment extends Fragment {
                     Club club = snap.getValue(Club.class);
                     if (club != null) clubs.add(club);
                 }
+
+
                 adapter.updateClubs(clubs);
             }
 

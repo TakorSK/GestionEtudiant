@@ -95,12 +95,12 @@
                 android:id="@+id/searchInstructionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Search universities (default) or students (use 'student:' prefix)."
+                android:text="Use ‘stu:’ for students, ‘club:’ for clubs, or search universities by default."
                 android:textSize="12sp"
                 android:textColor="?attr/colorOnSurface"
-                android:visibility="visible"
                 android:paddingTop="4dp"
-                android:paddingBottom="8dp"/>
+                android:paddingBottom="8dp"
+                android:visibility="visible"/>
 
             <!-- Dynamic Results Display Section -->
             <LinearLayout
