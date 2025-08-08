@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadStudentData() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String studentId = prefs.getString("student_id", null);
+        String studentId = prefs.getString("STUDENT_ID²", null);
 
         if (studentId == null) {
             showErrorProfile();

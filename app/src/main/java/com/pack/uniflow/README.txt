@@ -9,6 +9,7 @@ TODO:
     - Add Scores display section                                                  [High]
     - Add Settings: profile info edit (e.g. name, email)                          [Optional]
     - Add Upload/Sign-in loading animations and disable button during process     [Medium]
+    - Add a "tag" field to posts to know who can look and who can't (for admin, it's tags uniAdmins, students and clubs. for uni it's this.uni means members of the uni, so students. or all, wich would just be a public post for all unis and students and clubs. for club it would be same thing, this.club or all (when we start doing clubs seriously))               [Low]"
 
 DONE:
      - Add "Add a Student" layout, DB, and logic
