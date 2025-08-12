@@ -22,16 +22,19 @@ import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private PostAdapter adapter;
     private LoginType currentUserType;
-    private String currentUniversityId = null;
-    private boolean isAdmin = false;
+    private String currentUniversityId;
+    private boolean isAdmin;
+    private List<String> userTags;
 
     // Firebase references
     private final DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
@@ -52,8 +55,14 @@ public class HomeFragment extends Fragment {
         if (args != null) {
             currentUserType = LoginType.valueOf(args.getString("LOGIN_TYPE", LoginType.REGULAR_STUDENT.name()));
             currentUniversityId = args.getString("UNIVERSITY_ID");
+            userTags = args.getStringArrayList("USER_TAGS");
             isAdmin = currentUserType == LoginType.DEBUG_ADMIN ||
-                    currentUserType == LoginType.STUDENT_ADMIN;
+                    currentUserType == LoginType.STUDENT_ADMIN ||
+                    currentUserType == LoginType.UNIVERSITY_ADMIN;
+        } else {
+            userTags = new ArrayList<>();
+            currentUserType = LoginType.REGULAR_STUDENT;
+            isAdmin = false;
         }
 
         recyclerView = view.findViewById(R.id.HomeRecyclerView);
@@ -80,9 +89,12 @@ public class HomeFragment extends Fragment {
                 }
 
                 // Sort posts by createdAt descending (newest first)
-                allPosts.sort((p1, p2) -> {
-                    if (p1.getCreatedAt() == null || p2.getCreatedAt() == null) return 0;
-                    return p2.getCreatedAt().compareTo(p1.getCreatedAt());
+                Collections.sort(allPosts, new Comparator<Post>() {
+                    @Override
+                    public int compare(Post p1, Post p2) {
+                        if (p1.getCreatedAt() == null || p2.getCreatedAt() == null) return 0;
+                        return p2.getCreatedAt().compareTo(p1.getCreatedAt());
+                    }
                 });
 
                 filterAndDisplayPosts(allPosts);
@@ -159,11 +171,12 @@ public class HomeFragment extends Fragment {
     }
 
     // Factory method to create fragment with arguments
-    public static HomeFragment newInstance(LoginType loginType, String universityId) {
+    public static HomeFragment newInstance(LoginType loginType, String universityId, ArrayList<String> userTags) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putString("LOGIN_TYPE", loginType.name());
         args.putString("UNIVERSITY_ID", universityId);
+        args.putStringArrayList("USER_TAGS", userTags);
         fragment.setArguments(args);
         return fragment;
     }
