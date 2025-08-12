@@ -4,12 +4,13 @@ package com.pack.uniflow;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 // Android SDK classes are now available
-import android.text.TextUtils; // Keep this import
 
 // Standard JUnit imports remain the same
 import org.junit.Test;
 import org.junit.runner.RunWith; // Import RunWith
 import static org.junit.Assert.*;
+
+import com.pack.uniflow.Models.Uni;
 
 import java.util.ArrayList;
 import java.util.Arrays;

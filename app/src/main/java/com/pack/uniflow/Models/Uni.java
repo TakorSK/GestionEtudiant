@@ -1,6 +1,5 @@
-package com.pack.uniflow;
+package com.pack.uniflow.Models;
 
-import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;

@@ -24,19 +24,17 @@ import android.provider.MediaStore; // Import MediaStore
 
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule; // For permissions
 
-import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni; // Needed for Student FK
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni; // Needed for Student FK
 import com.pack.uniflow.UniflowDB;
-import com.pack.uniflow.StudentDao; // Import DAOs
-import com.pack.uniflow.UniDao;
+import com.pack.uniflow.Models.StudentDao; // Import DAOs
+import com.pack.uniflow.Models.UniDao;
 // import com.pack.uniflow.util.EspressoIdlingResource; // Import your IdlingResource
 
 import org.junit.After;

@@ -11,8 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pack.uniflow.Models.Student;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         this.context = context;
         this.expandedStates = new ArrayList<>();
         for (int i = 0; i < studentList.size(); i++) {
-            expandedStates.add(false); // All collapsed initially
+            expandedStates.add(false); // Initially collapsed
         }
     }
 
@@ -73,7 +73,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         LinearLayout studentHeader;
         ImageView arrowIcon;
 
-        TextView tvEmail, tvAge, tvTelephone, tvUniId, tvClubId, tvIsAdmin, tvRegDate, tvLastLogin, tvBio;
+        TextView tvId, tvEmail, tvAge, tvTelephone, tvUniId, tvClubId, tvIsAdmin, tvRegDate, tvLastLogin, tvBio;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,6 +83,10 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             expandableLayout = itemView.findViewById(R.id.expandableLayout);
             studentHeader = itemView.findViewById(R.id.studentHeader);
             arrowIcon = itemView.findViewById(R.id.arrowIcon);
+
+            // Add student ID view reference
+            tvId = new TextView(itemView.getContext());
+            expandableLayout.addView(tvId, 0); // Insert at top of expandable
 
             tvEmail = itemView.findViewById(R.id.tvEmail);
             tvAge = itemView.findViewById(R.id.tvAge);
@@ -99,6 +103,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             studentName.setText(student.getFullName());
             studentStatus.setText(student.isOnline() ? "Online" : "Offline");
 
+            tvId.setText("Student ID: " + (student.getId() != null ? student.getId() : "-"));
             tvEmail.setText("Email: " + student.getEmail());
             tvAge.setText("Age: " + student.getAge());
             tvTelephone.setText("Tel: " + (student.getTelephone() != null ? student.getTelephone() : "-"));

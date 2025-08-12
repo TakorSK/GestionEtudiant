@@ -24,8 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Models.Post;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 

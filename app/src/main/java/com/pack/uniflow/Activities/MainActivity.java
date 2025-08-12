@@ -40,12 +40,13 @@ import com.pack.uniflow.Fragments.AdminFragment;
 import com.pack.uniflow.Fragments.ClubsFragment;
 import com.pack.uniflow.Fragments.CreatePostFragment;
 import com.pack.uniflow.Fragments.HomeFragment;
+import com.pack.uniflow.Fragments.MessagesFragment;
 import com.pack.uniflow.Fragments.ProfileFragment;
 import com.pack.uniflow.Fragments.ScheduleFragment;
 import com.pack.uniflow.Fragments.SettingsFragment;
 import com.pack.uniflow.Fragments.ScoresFragment;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
@@ -271,7 +272,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profileNameTextView.setText("University Admin");
             profileGroupTextView.setText(currentUniversity != null ? currentUniversity.getName() : "Administrator");
             profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(false,true); // post visible
+            // University admin sees everything *except* admin panels
+            updateMenuVisibility(false, true); // admin group hidden, student group visible
         });
     }
 
@@ -280,18 +282,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             profileNameTextView.setText("Debug Admin");
             profileGroupTextView.setText("Developer Mode");
             profileImageView.setImageResource(R.drawable.nav_profile_pic);
-            updateMenuVisibility(true,false);
+            // Debug admin sees everything
+            updateMenuVisibility(true, true); // both admin and student groups visible
         });
     }
 
     private void updateStudentProfile() {
         runOnUiThread(() -> {
-            profileNameTextView.setText(currentStudent.getFullName().isEmpty()?"Unknown":currentStudent.getFullName());
-            profileGroupTextView.setText(currentUniversity!=null?currentUniversity.getName():"Unknown University");
+            profileNameTextView.setText(currentStudent.getFullName().isEmpty() ? "Unknown" : currentStudent.getFullName());
+            profileGroupTextView.setText(currentUniversity != null ? currentUniversity.getName() : "Unknown University");
             loadProfileImage(currentStudent.getProfilePictureUri());
-            updateMenuVisibility(currentStudent.isAdmin()||loginType==LoginType.DEBUG_ADMIN,true);
+            // Student (non-admin) sees student group only; admins see both groups
+            boolean showAdmin = currentStudent.isAdmin() || loginType == LoginType.DEBUG_ADMIN;
+            updateMenuVisibility(showAdmin, true);
         });
     }
+
 
     private void updateMenuVisibility(boolean showAdminItems, boolean showStudentItems) {
         Menu menu = navigationView.getMenu();
@@ -361,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else if (id == R.id.nav_clubs) return "clubs";
         else if (id == R.id.nav_schedule) return "schedule";
         else if (id == R.id.nav_scores) return "scores";
+        else if (id == R.id.nav_messages) return "messages";
         else return "home";
     }
 
@@ -404,6 +411,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (hasStudentAccess()) fragment = new ScheduleFragment();
         } else if (id == R.id.nav_scores) {
             if (hasStudentAccess()) fragment = new ScoresFragment();
+        else if (id == R.id.nav_messages) {
+            if (hasStudentAccess()) fragment = new MessagesFragment();
+        }
+
         }
 
         if (fragment != null) navigateToFragment(fragment, id);

@@ -18,12 +18,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pack.uniflow.Models.Student;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
 
 public class AddStudentFragment extends DialogFragment {
 
-    private TextInputEditText etFullName, etEmail, etPassword, etAge, etTelephone, etUniversityId;
+    private TextInputEditText etCIN, etFullName, etEmail, etPassword, etAge, etTelephone, etUniversityId;
     private MaterialButton btnSubmitStudent;
 
     private final DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
@@ -40,6 +40,7 @@ public class AddStudentFragment extends DialogFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_student, container, false);
 
+        etCIN = view.findViewById(R.id.etCIN);
         etFullName = view.findViewById(R.id.etFullName);
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
@@ -54,6 +55,7 @@ public class AddStudentFragment extends DialogFragment {
     }
 
     private void handleSubmit() {
+        String cin = etCIN.getText().toString().trim();
         String fullName = etFullName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -61,7 +63,7 @@ public class AddStudentFragment extends DialogFragment {
         String telephone = etTelephone.getText().toString().trim();
         String uniId = etUniversityId.getText().toString().trim();
 
-        if (TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email)
+        if (TextUtils.isEmpty(cin) || TextUtils.isEmpty(fullName) || TextUtils.isEmpty(email)
                 || TextUtils.isEmpty(password) || TextUtils.isEmpty(ageStr)
                 || TextUtils.isEmpty(telephone) || TextUtils.isEmpty(uniId)) {
             Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -76,17 +78,18 @@ public class AddStudentFragment extends DialogFragment {
             return;
         }
 
-        validateUniversityExists(uniId, fullName, email, password, age, telephone);
+        // Check if university exists
+        validateUniversityExists(uniId, cin, fullName, email, password, age, telephone);
     }
 
-    private void validateUniversityExists(String uniId, String fullName, String email, String password, int age, String telephone) {
+    private void validateUniversityExists(String uniId, String cin, String fullName, String email, String password, int age, String telephone) {
         unisRef.child(uniId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     Toast.makeText(getContext(), "University ID not found!", Toast.LENGTH_SHORT).show();
                 } else {
-                    insertStudentIntoFirebase(fullName, email, password, age, telephone, uniId);
+                    checkIfStudentIdExists(cin, fullName, email, password, age, telephone, uniId);
                 }
             }
 
@@ -97,17 +100,29 @@ public class AddStudentFragment extends DialogFragment {
         });
     }
 
-    private void insertStudentIntoFirebase(String fullName, String email, String password, int age, String telephone, String uniId) {
-        String newId = studentsRef.push().getKey();
-        if (newId == null) {
-            Toast.makeText(getContext(), "Failed to generate student ID", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void checkIfStudentIdExists(String cin, String fullName, String email, String password, int age, String telephone, String uniId) {
+        studentsRef.child(cin).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(getContext(), "Student ID (CIN) already exists!", Toast.LENGTH_SHORT).show();
+                } else {
+                    insertStudentWithCIN(cin, fullName, email, password, age, telephone, uniId);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to check student ID", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void insertStudentWithCIN(String cin, String fullName, String email, String password, int age, String telephone, String uniId) {
         Student student = new Student(email, fullName, age, telephone, uniId, password);
-        student.setId(newId);
+        student.setId(cin);
 
-        studentsRef.child(newId).setValue(student)
+        studentsRef.child(cin).setValue(student)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), "Student Added Successfully", Toast.LENGTH_SHORT).show();
                     dismiss();
