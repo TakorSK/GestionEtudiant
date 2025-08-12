@@ -2,28 +2,32 @@ package com.pack.uniflow;
 
 import androidx.annotation.NonNull;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Student {
-    private String id; // Changed from int to String
-    private String sectionId; // Changed from Integer to String
+    private String id;
+    private String sectionId;
     @NonNull private String email;
     @NonNull private String fullName;
     private int age;
     private String telephone;
-    private String uniId; // Changed from int to String
-    private String clubId; // Changed from Integer to String
+    private String uniId;
+    private String clubId;
     private boolean isOnline = false;
     private boolean isAdmin = false;
     private String registrationDate;
     private String lastLogin;
     @NonNull private String password;
-    private String bio; // Fixed capitalization
+    private String bio;
     private String profilePictureUri;
+    private List<String> tags; // 🔹 NEW
 
     // Required empty constructor for Firebase
     public Student() {
+        this.tags = new ArrayList<>();
     }
 
     public Student(@NonNull String email, @NonNull String fullName, int age,
@@ -39,9 +43,10 @@ public class Student {
                 .format(new Date());
         this.profilePictureUri = "";
         this.isAdmin = false;
+        this.tags = new ArrayList<>();
     }
 
-    // Getters and setters (required for Firebase)
+    // --- Getters & Setters ---
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -86,4 +91,20 @@ public class Student {
 
     public String getProfilePictureUri() { return profilePictureUri; }
     public void setProfilePictureUri(String profilePictureUri) { this.profilePictureUri = profilePictureUri; }
+
+    public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+
+    // --- Tag helpers ---
+    public void addTag(String tag) {
+        if (!tags.contains(tag)) tags.add(tag);
+    }
+
+    public void removeTag(String tag) {
+        tags.remove(tag);
+    }
+
+    public boolean hasTag(String tag) {
+        return tags.contains(tag);
+    }
 }

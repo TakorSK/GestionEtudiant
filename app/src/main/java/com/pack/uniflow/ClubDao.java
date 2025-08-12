@@ -17,7 +17,7 @@ public class ClubDao {
         clubsRef = FirebaseDatabase.getInstance().getReference("clubs");
     }
 
-    // Equivalent to @Insert
+    // Insert
     public void insert(Club club, InsertCallback callback) {
         String clubId = clubsRef.push().getKey();
         club.setId(clubId);
@@ -26,7 +26,7 @@ public class ClubDao {
                 .addOnFailureListener(callback::onError);
     }
 
-    // Equivalent to getAllClubs()
+    // Get all clubs
     public void getAllClubs(LoadCallback callback) {
         clubsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -35,6 +35,28 @@ public class ClubDao {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Club club = snapshot.getValue(Club.class);
                     clubs.add(club);
+                }
+                callback.onLoaded(clubs);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.toException());
+            }
+        });
+    }
+
+    // Get clubs by tag
+    public void getClubsByTag(String tag, LoadCallback callback) {
+        clubsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Club> clubs = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Club club = snapshot.getValue(Club.class);
+                    if (club != null && club.getTags() != null && club.getTags().contains(tag)) {
+                        clubs.add(club);
+                    }
                 }
                 callback.onLoaded(clubs);
             }

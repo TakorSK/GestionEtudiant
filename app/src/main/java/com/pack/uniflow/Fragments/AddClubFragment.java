@@ -18,6 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddClubFragment extends DialogFragment {
 
     private TextInputEditText etClubName, etDescription, etUniversityId;
@@ -28,7 +31,6 @@ public class AddClubFragment extends DialogFragment {
     public AddClubFragment() {
         setStyle(STYLE_NORMAL, R.style.RoundedDialog);
     }
-
 
     @Nullable
     @Override
@@ -61,6 +63,11 @@ public class AddClubFragment extends DialogFragment {
         club.setName(name);
         club.setDescription(description.isEmpty() ? null : description);
         club.setUniId(uniId);
+
+        // ✅ Add default tag = club name
+        List<String> tags = new ArrayList<>();
+        tags.add(name);
+        club.setTags(tags);
 
         insertClubIntoFirebase(club);
     }

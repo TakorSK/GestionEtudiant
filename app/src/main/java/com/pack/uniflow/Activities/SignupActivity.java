@@ -21,7 +21,9 @@ import com.pack.uniflow.R;
 import com.pack.uniflow.StudentDao;
 import com.pack.uniflow.UniDao;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,14 +94,14 @@ public class SignupActivity extends AppCompatActivity {
     private void processRegistration(String studentId, String name, String firstname, String ageStr,
                                      String telephone, String password, String email, String universityId) {
         try {
-            final int age = Integer.parseInt(ageStr); // Made final
-            final String fullName = name + " " + firstname; // Made final
+            final int age = Integer.parseInt(ageStr);
+            final String fullName = name + " " + firstname;
 
             // 1. Check university exists
             unisRef.child(universityId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    final Uni university = dataSnapshot.getValue(Uni.class); // Made final
+                    final Uni university = dataSnapshot.getValue(Uni.class);
                     if (university == null) {
                         showErrorOnUI(errorUniversityId, "University not found");
                         return;
@@ -131,11 +133,11 @@ public class SignupActivity extends AppCompatActivity {
                                                         return;
                                                     }
 
-                                                    // 5. Create and save new student
+                                                    // 5. Create and save new student with university tag
                                                     Student student = new Student(
                                                             email,
-                                                            fullName, // Using final variable
-                                                            age,     // Using final variable
+                                                            fullName,
+                                                            age,
                                                             telephone,
                                                             universityId,
                                                             password
@@ -143,6 +145,11 @@ public class SignupActivity extends AppCompatActivity {
                                                     student.setId(studentId);
                                                     student.setOnline(true);
                                                     student.setLastLogin(dateFormat.format(new Date()));
+
+                                                    // NEW: Add tag = university name
+                                                    List<String> tags = new ArrayList<>();
+                                                    tags.add(university.getName());
+                                                    student.setTags(tags);
 
                                                     studentsRef.child(studentId).setValue(student)
                                                             .addOnSuccessListener(aVoid -> {
@@ -152,7 +159,7 @@ public class SignupActivity extends AppCompatActivity {
                                                                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SignupActivity.this);
                                                                     SharedPreferences.Editor editor = prefs.edit();
                                                                     editor.putBoolean("is_logged_in", true);
-                                                                    editor.putString("LOGIN_TYPE", "REGULAR_STUDENT"); // Or handle STUDENT_ADMIN logic here
+                                                                    editor.putString("LOGIN_TYPE", "REGULAR_STUDENT");
                                                                     editor.putString("UNIVERSITY_ID", universityId);
                                                                     editor.putString("STUDENT_ID", studentId);
                                                                     editor.apply();
@@ -160,7 +167,6 @@ public class SignupActivity extends AppCompatActivity {
                                                                     startActivity(new Intent(SignupActivity.this, MainActivity.class)
                                                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                                                     finish();
-
                                                                 });
                                                             })
                                                             .addOnFailureListener(e -> {
@@ -202,6 +208,7 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
+
     private void showDatabaseError(DatabaseError databaseError) {
         Toast.makeText(SignupActivity.this,
                 "Database error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
@@ -221,7 +228,7 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         // University Code Validation
-        if (universityCode.isEmpty() || !universityCode.matches("\\d+")) {
+        if (universityCode.isEmpty() || !universityCode.matches("\\ d+")) {
             showError(errorUniversityId, "Enter valid university code");
             isValid = false;
         }

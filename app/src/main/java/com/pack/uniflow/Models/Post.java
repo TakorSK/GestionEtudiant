@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Post {
@@ -15,6 +16,7 @@ public class Post {
     private String createdAt;
     private String authorName; // Recommended for denormalization
     private String authorProfileImage; // Recommended for denormalization
+    private List<String> tags; // Added tags field
 
     // Required empty constructor for Firebase
     public Post() {
@@ -22,7 +24,7 @@ public class Post {
 
     // Constructor for creating new posts
     public Post(@NonNull String title, String description, String imageUri, String authorId,
-                String authorName, String authorProfileImage) {
+                String authorName, String authorProfileImage, List<String> tags) {
         this.title = title;
         this.description = description;
         this.imageUri = imageUri;
@@ -31,6 +33,7 @@ public class Post {
         this.authorProfileImage = authorProfileImage;
         this.createdAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 .format(new Date());
+        this.tags = tags;
     }
 
     // Getters and setters (required for Firebase serialization)
@@ -97,5 +100,13 @@ public class Post {
 
     public void setAuthorProfileImage(String authorProfileImage) {
         this.authorProfileImage = authorProfileImage;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

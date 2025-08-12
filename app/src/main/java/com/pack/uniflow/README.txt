@@ -53,6 +53,8 @@ DONE:
      - Fix UI text colors
 
      - Update UI layouts to include club-related views and buttons
+     - Add club display and student adding in the admin panel
+
 
 =======================================================================================
 
@@ -66,7 +68,7 @@ TODO
     - Fix the settings
     - Link the DB to the search on Admin Pannel (its using mock data rn in adminpannelfragment.java i think)
     - Fix posting post-firebase changes
-    - add club display and student adding in the admin panel
+    - make a tag system: universities can only post either for their default tag, or all. clubs can only post to their members, or all. and admins can post for admins only, universities only, students from a certain university tag or all.
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done
