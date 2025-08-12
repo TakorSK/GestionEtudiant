@@ -10,6 +10,7 @@ TODO:
     - Add Upload/Sign-in loading animations and disable button during process     [Medium]
     - Add a "tag" field to posts to know who can look and who can't (for admin, it's tag uniAdmins, students and clubs. for uni it's this.uni means members of the uni, so students. or all, wich would just be a public post for all unis and students and clubs. for club it would be same thing, this.club or all (when we start doing clubs seriously))               [Low]"
     - Fix drawer display for each account type                                    [High]
+    - Fix Lifecycle problem in profile fragment                                           [High]
 
 DONE:
      - Add "Add a Student" layout, DB, and logic
@@ -49,6 +50,7 @@ DONE:
      - Fix Light/Dark mode toggle + persistence
      - Fix Login functionality
      - Fix Posts layout (poster section more defined)
+     - Fix Profile fragment
      - Fix Settings profile image mask
      - Fix Signup activity (updated XML)
      - Fix Signup fields logic + layout

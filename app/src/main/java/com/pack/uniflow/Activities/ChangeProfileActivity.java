@@ -18,6 +18,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -64,27 +66,32 @@ public class ChangeProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileData() {
-        studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot studentSnap : snapshot.getChildren()) {
-                            currentStudent = studentSnap.getValue(Student.class);
-                            currentStudentId = studentSnap.getKey();
-                            if (currentStudent != null) {
-                                edtBio.setText(currentStudent.getBio() != null ? currentStudent.getBio() : "");
-                                if (currentStudent.getProfilePictureUri() != null && !currentStudent.getProfilePictureUri().isEmpty()) {
-                                    loadImageWithGlide(Uri.parse(currentStudent.getProfilePictureUri()), ivProfilePicture);
-                                }
-                            }
-                        }
-                    }
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ChangeProfileActivity.this, "Error loading profile", Toast.LENGTH_SHORT).show();
+        currentStudentId = currentUser.getUid();
+
+        studentsRef.child(currentStudentId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currentStudent = snapshot.getValue(Student.class);
+                if (currentStudent != null) {
+                    edtBio.setText(currentStudent.getBio() != null ? currentStudent.getBio() : "");
+                    if (currentStudent.getProfilePictureUri() != null && !currentStudent.getProfilePictureUri().isEmpty()) {
+                        loadImageWithGlide(Uri.parse(currentStudent.getProfilePictureUri()), ivProfilePicture);
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ChangeProfileActivity.this, "Error loading profile", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void checkPermissionsAndOpenImagePicker() {

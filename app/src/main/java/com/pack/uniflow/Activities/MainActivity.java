@@ -76,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AlertDialog noInternetDialog;
     private boolean isDialogVisible = false;
 
+    public Student getCurrentStudent() {
+        return currentStudent;
+    }
+
+    public Uni getCurrentUniversity() {
+        return currentUniversity;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Read saved dark mode preference
@@ -329,9 +337,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 menuIdToCheck = R.id.nav_admin;
                 break;
             case "profile":
-                fragmentToLoad = new ProfileFragment();
+                ProfileFragment profileFragment = new ProfileFragment();
+                Bundle args = new Bundle();
+                args.putString("student_id", currentStudent != null ? currentStudent.getId() : null);
+                profileFragment.setArguments(args);
+                fragmentToLoad = profileFragment;
                 menuIdToCheck = R.id.nav_profile;
                 break;
+
             case "clubs":
                 fragmentToLoad = new ClubsFragment();
                 menuIdToCheck = R.id.nav_clubs;
@@ -391,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
         } else if (id == R.id.nav_logout) {
-            setStudentOfflineAndLogout(); // <- replaced
+            setStudentOfflineAndLogout();
             return true;
         } else if (id == R.id.nav_post) {
             if (hasPostingAccess()) fragment = CreatePostFragment.newInstance(loginType, currentUniversityId);
@@ -407,17 +420,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (hasStudentAccess()) fragment = new ScoresFragment();
         }
 
-        if (fragment != null) navigateToFragment(fragment, id);
-        else showAccessDenied();
+        if (fragment != null) {
+            navigateToFragment(fragment, id);
+        }
+        // Removed access denied toast because menu items will be hidden if no access
 
         return true;
     }
+
     // -------------------- Access Helpers ------------------------------------
     private boolean hasAdminAccess()   { return loginType==LoginType.DEBUG_ADMIN || (currentStudent!=null && currentStudent.isAdmin()); }
     private boolean hasPostingAccess() { return loginType==LoginType.UNIVERSITY_ADMIN || hasAdminAccess(); }
     private boolean hasStudentAccess() { return loginType==LoginType.REGULAR_STUDENT || loginType==LoginType.STUDENT_ADMIN; }
-
-    private void showAccessDenied(){ Toast.makeText(this,"Access denied",Toast.LENGTH_SHORT).show(); }
 
     // -------------------- Logout --------------------------------------------
     private void handleLogout() {
@@ -431,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Clear shared preferences to ensure no user session remains
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putBoolean("is_logged_in", false).apply(); // Set logged-in state to false
-        prefs.edit().remove("student_id").apply(); // Optionally remove student ID
+        prefs.edit().remove("STUDENT_ID").apply(); // match the key case exactly
         prefs.edit().remove("last_fragment").apply(); // Remove the last fragment preference (this is key)
 
         // Show logout toast
