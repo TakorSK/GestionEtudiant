@@ -26,10 +26,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.ClubAdapter;
 import com.pack.uniflow.Adapters.StudentAdapter;
 import com.pack.uniflow.Adapters.UniversityAdapter;
-import com.pack.uniflow.Models.Club;
+import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Models.Student;
-import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
 
 import java.util.ArrayList;
 import java.util.List;

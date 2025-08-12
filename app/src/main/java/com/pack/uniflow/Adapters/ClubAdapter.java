@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pack.uniflow.Models.Club;
+import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
 
 import java.util.List;

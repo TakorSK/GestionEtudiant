@@ -1,7 +1,7 @@
 package com.pack.uniflow.Activities;
 
 import android.content.Context;
-
+import android.content.Intent; // Import Intent for onBackPressed test
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.intent.Intents;
@@ -27,15 +27,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Models.Student;
-import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
 import com.pack.uniflow.UniflowDB;
-import com.pack.uniflow.Models.StudentDao;
-import com.pack.uniflow.Models.UniDao;
+import com.pack.uniflow.StudentDao;
+import com.pack.uniflow.UniDao;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays; // For creating list
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 

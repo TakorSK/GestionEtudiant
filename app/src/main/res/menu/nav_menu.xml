@@ -19,12 +19,6 @@
             android:title="@string/profile" />
 
         <item
-            android:id="@+id/nav_messages"
-            android:icon="@drawable/nav_message"
-            android:title="Messages" />
-
-
-        <item
             android:id="@+id/nav_schedule"
             android:icon="@drawable/nav_schedule"
             android:title="@string/schedule" />

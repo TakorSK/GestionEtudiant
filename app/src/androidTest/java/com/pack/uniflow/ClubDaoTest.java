@@ -15,11 +15,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-import com.pack.uniflow.Models.Club;
-import com.pack.uniflow.Models.ClubDao;
-import com.pack.uniflow.Models.Uni;
-import com.pack.uniflow.Models.UniDao;
-
 /**
  * Instrumented test for ClubDao interface.
  */

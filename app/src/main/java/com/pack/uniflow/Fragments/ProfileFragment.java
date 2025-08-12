@@ -18,9 +18,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pack.uniflow.Models.Section;
-import com.pack.uniflow.Models.Student;
-import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Section;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
 import com.pack.uniflow.R;
 
 public class ProfileFragment extends Fragment {

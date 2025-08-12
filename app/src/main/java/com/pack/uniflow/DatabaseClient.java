@@ -1,4 +1,4 @@
-package com.pack.uniflow.Models;
+package com.pack.uniflow;
 
 import android.content.Context;
 import android.util.Log;

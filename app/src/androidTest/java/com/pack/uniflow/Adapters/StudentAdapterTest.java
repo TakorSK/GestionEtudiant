@@ -4,12 +4,16 @@ import static org.junit.Assert.*;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.core.content.ContextCompat; // For getting colors
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.pack.uniflow.Models.Student; // Import Student
+import com.pack.uniflow.R;
+import com.pack.uniflow.Student; // Import Student
 
 import org.junit.Before;
 import org.junit.Test;

@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.ClubAdapter;
-import com.pack.uniflow.Models.Club;
+import com.pack.uniflow.Club;
 import com.pack.uniflow.R;
 
 import java.util.ArrayList;

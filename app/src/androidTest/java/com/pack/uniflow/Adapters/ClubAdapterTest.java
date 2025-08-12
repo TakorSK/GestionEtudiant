@@ -1,14 +1,19 @@
 package com.pack.uniflow.Adapters;
 
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout; // Use a simple ViewGroup for inflation context
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.pack.uniflow.Models.Club;
+import com.pack.uniflow.Club;
+import com.pack.uniflow.R;
 
 import org.junit.Before;
 import org.junit.Test;

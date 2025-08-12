@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.pack.uniflow.Models.Student;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

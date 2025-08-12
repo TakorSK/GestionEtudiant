@@ -1,4 +1,4 @@
-package com.pack.uniflow.Models;
+package com.pack.uniflow;
 
 import com.google.firebase.database.FirebaseDatabase;
 

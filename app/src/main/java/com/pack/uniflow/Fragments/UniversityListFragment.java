@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.pack.uniflow.Adapters.UniversityAdapter;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Uni;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

@@ -3,6 +3,7 @@ package com.pack.uniflow.Activities;
 // [ ... Keep ALL necessary imports from the previous version ... ]
 // Including:
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -11,6 +12,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 // Import ViewAssertions class
+import androidx.test.espresso.assertion.ViewAssertions;
 // Import matches method statically
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 // Import ALL standard ViewMatchers statically (includes isDisplayed, withId, etc.)
@@ -31,7 +33,9 @@ import static org.hamcrest.Matchers.not;
 // Android Imports
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.Gravity;
+import android.view.View;
 // JUnit Imports
 import org.junit.After;
 import org.junit.Before;
@@ -40,14 +44,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 // Project Imports
+import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Models.Section;
-import com.pack.uniflow.Models.Student;
-import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Section;
+import com.pack.uniflow.Student;
+import com.pack.uniflow.Uni;
 import com.pack.uniflow.UniflowDB;
-import com.pack.uniflow.Models.SectionDao;
-import com.pack.uniflow.Models.StudentDao;
-import com.pack.uniflow.Models.UniDao;
+import com.pack.uniflow.SectionDao;
+import com.pack.uniflow.StudentDao;
+import com.pack.uniflow.UniDao;
 // import com.pack.uniflow.util.EspressoIdlingResource;
 // Java Imports
 import java.io.IOException;
