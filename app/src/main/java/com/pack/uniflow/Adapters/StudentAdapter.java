@@ -73,7 +73,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         LinearLayout studentHeader;
         ImageView arrowIcon;
 
-        TextView tvEmail, tvAge, tvTelephone, tvUniId, tvClubId, tvIsAdmin, tvRegDate, tvLastLogin, tvBio;
+        TextView tvStudentId, tvEmail, tvAge, tvTelephone, tvUniId, tvClubId, tvIsAdmin, tvRegDate, tvLastLogin, tvBio;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,6 +84,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             studentHeader = itemView.findViewById(R.id.studentHeader);
             arrowIcon = itemView.findViewById(R.id.arrowIcon);
 
+            tvStudentId = itemView.findViewById(R.id.tvStudentId);
             tvEmail = itemView.findViewById(R.id.tvEmail);
             tvAge = itemView.findViewById(R.id.tvAge);
             tvTelephone = itemView.findViewById(R.id.tvTelephone);
@@ -99,6 +100,9 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             studentName.setText(student.getFullName());
             studentStatus.setText(student.isOnline() ? "Online" : "Offline");
 
+            // Set the ID here
+            tvStudentId.setText("ID: " + (student.getId() != null ? student.getId() : "-"));
+
             tvEmail.setText("Email: " + student.getEmail());
             tvAge.setText("Age: " + student.getAge());
             tvTelephone.setText("Tel: " + (student.getTelephone() != null ? student.getTelephone() : "-"));
@@ -113,4 +117,5 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
             arrowIcon.setImageResource(isExpanded ? R.drawable.ic_arrow_drop_up : R.drawable.ic_arrow_drop_down);
         }
     }
+
 }
