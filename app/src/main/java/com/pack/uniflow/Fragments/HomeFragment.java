@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.PostAdapter;
 import com.pack.uniflow.Models.Post;
+import com.pack.uniflow.Models.Student;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
@@ -35,8 +36,9 @@ public class HomeFragment extends Fragment {
     private boolean isAdmin;
     private List<String> userTags;
 
-    // Firebase reference
+    // Firebase references
     private final DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("posts");
+    private final DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +50,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Get arguments from MainActivity
+        // Get user type and university ID from arguments
         Bundle args = getArguments();
         if (args != null) {
             currentUserType = LoginType.valueOf(args.getString("LOGIN_TYPE", LoginType.REGULAR_STUDENT.name()));
@@ -66,8 +68,8 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.HomeRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Pass tags to adapter
-        adapter = new PostAdapter(getContext(), new ArrayList<>(), isAdmin ? null : userTags);
+        // Initialize adapter with empty posts list and empty user tags list
+        adapter = new PostAdapter(getContext(), new ArrayList<>(), Collections.emptyList());
         recyclerView.setAdapter(adapter);
 
         loadPostsFromFirebase();
@@ -76,17 +78,17 @@ public class HomeFragment extends Fragment {
     private void loadPostsFromFirebase() {
         postsRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Post> allPosts = new ArrayList<>();
-                for (DataSnapshot postSnap : snapshot.getChildren()) {
-                    Post post = postSnap.getValue(Post.class);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
                     if (post != null) {
-                        post.setId(postSnap.getKey());
+                        post.setId(snapshot.getKey());
                         allPosts.add(post);
                     }
                 }
 
-                // Sort newest first (API 21+ compatible)
+                // Sort posts by createdAt descending (newest first)
                 Collections.sort(allPosts, new Comparator<Post>() {
                     @Override
                     public int compare(Post p1, Post p2) {
@@ -95,22 +97,80 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-                if (isAdmin) {
-                    // Admins see all posts, skip tag filtering
-                    adapter.updatePosts(allPosts);
-                } else {
-                    adapter.updatePosts(allPosts);
-                }
+                filterAndDisplayPosts(allPosts);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Optionally log the error
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Optionally log or show error
             }
         });
     }
 
-    // Updated factory method to include user tags
+
+    private void filterAndDisplayPosts(List<Post> allPosts) {
+        if (currentUserType == LoginType.DEBUG_ADMIN) {
+            // Debug admin sees all posts
+            adapter.updatePosts(allPosts);
+            return;
+        }
+
+        List<Post> filteredPosts = new ArrayList<>();
+        for (Post post : allPosts) {
+            checkPostVisibility(post, filteredPosts);
+        }
+        adapter.updatePosts(filteredPosts);
+    }
+
+    private void checkPostVisibility(Post post, List<Post> filteredPosts) {
+        if (post.getAuthorId() == null) return;
+
+        // Check if this is an admin post (authorId starts with "admin_")
+        boolean isAdminPost = post.getAuthorId().startsWith("admin_");
+        boolean isFromCurrentUniversity = false;
+
+        if (isAdminPost) {
+            // For admin posts, check if it's for this university
+            if (post.getAuthorId().equals("admin_" + currentUniversityId)) {
+                isFromCurrentUniversity = true;
+            }
+        } else {
+            // For student posts, check the student's university
+            studentsRef.child(post.getAuthorId())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Student author = snapshot.getValue(Student.class);
+                            if (author != null && author.getUniId() != null &&
+                                    author.getUniId().equals(currentUniversityId)) {
+                                filteredPosts.add(post);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle error
+                        }
+                    });
+            return; // We'll add this post later in the callback
+        }
+
+        // Apply visibility rules
+        if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
+            // University admins see their posts and admin posts
+            if (isAdminPost || isFromCurrentUniversity) {
+                filteredPosts.add(post);
+            }
+        } else {
+            // Students see admin posts and their university's posts
+            if (isAdminPost || isFromCurrentUniversity) {
+                filteredPosts.add(post);
+            }
+        }
+    }
+
+    // Factory method to create fragment with arguments
     public static HomeFragment newInstance(LoginType loginType, String universityId, ArrayList<String> userTags) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
