@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+
         View header = navigationView.getHeaderView(0);
         profileImageView     = header.findViewById(R.id.profile_image);
         profileNameTextView  = header.findViewById(R.id.profile_name_text_view);
@@ -219,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void loadStudentData() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String studentId = prefs.getString("STUDENT_ID²", null);
+        String studentId = prefs.getString("STUDENT_ID", null);
 
         if (studentId == null) {
             showErrorProfile();

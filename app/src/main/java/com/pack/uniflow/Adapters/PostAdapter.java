@@ -17,6 +17,7 @@ import com.pack.uniflow.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,14 +26,49 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private final Context context;
     private List<Post> postList;
+    private final List<String> userTags; // Logged-in user's tags (can be empty)
 
-    public PostAdapter(Context context, List<Post> postList) {
+    public PostAdapter(Context context, List<Post> postList, List<String> userTags) {
         this.context = context;
-        this.postList = postList;
+        this.userTags = (userTags != null) ? userTags : new ArrayList<String>();
+        setFilteredPosts(postList);
     }
 
+    /**
+     * Filters posts: if userTags is empty → show all posts,
+     * otherwise show only posts that share at least one tag with userTags.
+     */
+    private void setFilteredPosts(List<Post> allPosts) {
+        if (allPosts == null) {
+            this.postList = new ArrayList<>();
+            return;
+        }
+
+        // If user has no tags, show all posts
+        if (userTags.isEmpty()) {
+            this.postList = new ArrayList<>(allPosts);
+            return;
+        }
+
+        List<Post> filtered = new ArrayList<>();
+        for (Post post : allPosts) {
+            if (post.getTags() != null) {
+                for (String tag : post.getTags()) {
+                    if (userTags.contains(tag)) {
+                        filtered.add(post);
+                        break; // Found a matching tag → no need to check further
+                    }
+                }
+            }
+        }
+        this.postList = filtered;
+    }
+
+    /**
+     * Updates adapter data and refreshes UI.
+     */
     public void updatePosts(List<Post> newPosts) {
-        postList = newPosts;
+        setFilteredPosts(newPosts);
         notifyDataSetChanged();
     }
 
@@ -50,7 +86,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.description.setText(post.getDescription());
         holder.authorName.setText("By " + post.getAuthorName());
 
-        // ✅ Set formatted date
         holder.postDate.setText(formatDate(post.getCreatedAt()));
 
         String imageUri = post.getImageUri();
@@ -62,7 +97,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     .error(R.drawable.placeholder)
                     .centerCrop()
                     .into(holder.image);
-
             setDividerTopMargin(holder.postDivider, 32);
         } else {
             holder.image.setVisibility(View.GONE);
@@ -72,7 +106,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public int getItemCount() {
-        return postList != null ? postList.size() : 0;
+        return (postList != null) ? postList.size() : 0;
     }
 
     private void setDividerTopMargin(View divider, int dp) {
@@ -89,10 +123,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return Math.round(dp * density);
     }
 
-    // ✅ Format raw "yyyy-MM-dd HH:mm:ss" → "Aug 7, 2025 4:13 PM"
     private String formatDate(String rawDate) {
         if (rawDate == null || rawDate.isEmpty()) return "";
-
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault());
 
@@ -101,7 +133,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             return outputFormat.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
-            return rawDate; // fallback if parsing fails
+            return rawDate;
         }
     }
 

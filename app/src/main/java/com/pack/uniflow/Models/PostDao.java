@@ -36,7 +36,7 @@ public class PostDao {
                 List<Post> posts = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
-                    posts.add(0, post); // Add to beginning to reverse order
+                    posts.add(0, post); // Reverse order (latest first)
                 }
                 callback.onLoaded(posts);
             }
@@ -60,8 +60,30 @@ public class PostDao {
                 List<Post> posts = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
-                    if (post.getAuthorId().equals(authorId)) {
-                        posts.add(0, post); // Add to beginning to reverse order
+                    if (post != null && authorId.equals(post.getAuthorId())) {
+                        posts.add(0, post);
+                    }
+                }
+                callback.onLoaded(posts);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onError(databaseError.toException());
+            }
+        });
+    }
+
+    // 🔹 New: Get posts by a specific tag
+    public void getPostsByTag(String tag, LoadCallback callback) {
+        postsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Post> posts = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    if (post != null && post.getTags() != null && post.getTags().contains(tag)) {
+                        posts.add(0, post);
                     }
                 }
                 callback.onLoaded(posts);

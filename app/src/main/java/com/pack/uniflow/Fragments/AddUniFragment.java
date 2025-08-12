@@ -78,30 +78,53 @@ public class AddUniFragment extends DialogFragment {
         try {
             int establishedYear = Integer.parseInt(establishedYearStr);
 
-            Uni university = new Uni(name,
+            // ✅ Vérification des IDs
+            List<String> parsedIds = parseStudentIds(associatedIdsRaw);
+            if (parsedIds == null) {
+                Toast.makeText(getContext(), "Student IDs must be 8 digits each", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Uni university = new Uni(
+                    name,
                     location.isEmpty() ? null : location,
                     establishedYear,
                     website.isEmpty() ? null : website,
-                    uniPassword);
+                    uniPassword
+            );
 
-            university.setAssociatedStudentIds(parseStudentIds(associatedIdsRaw));
+            university.setAssociatedStudentIds(parsedIds);
+
+            // ✅ Add default tag = university name
+            List<String> tags = new ArrayList<>();
+            tags.add(name); // the name itself as a tag
+            university.setTags(tags);
 
             insertUniversityWithAutoIncrement(university);
+
         } catch (NumberFormatException e) {
             Toast.makeText(getContext(), "Invalid year format", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private List<String> parseStudentIds(String rawInput) {
         List<String> result = new ArrayList<>();
         if (!TextUtils.isEmpty(rawInput)) {
             for (String id : rawInput.split(",")) {
                 String trimmed = id.trim();
-                if (!trimmed.isEmpty()) result.add(trimmed);
+                if (!trimmed.matches("\\d{8}")) {
+                    // Si ce n'est pas 8 chiffres → erreur
+                    return null;
+                }
+                result.add(trimmed);
             }
         }
         return result;
     }
+
+
 
     private void insertUniversityWithAutoIncrement(Uni university) {
         counterRef.runTransaction(new Transaction.Handler() {
