@@ -5,7 +5,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasFlag;
@@ -19,20 +18,18 @@ import android.content.Intent;
 import android.util.Log; // Import Log for "gift" messages
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 // Project Specific Imports
-import com.pack.uniflow.DatabaseClient;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.UniflowDB;
 // *** ADDED DAO IMPORTS ***
-import com.pack.uniflow.StudentDao;
-import com.pack.uniflow.UniDao;
+import com.pack.uniflow.Models.StudentDao;
+import com.pack.uniflow.Models.UniDao;
 // import com.pack.uniflow.util.EspressoIdlingResource;
 
 // JUnit Imports

@@ -24,10 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Models.Post;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
+
+import java.util.Collections;
 
 public class CreatePostFragment extends Fragment {
 
@@ -84,22 +86,30 @@ public class CreatePostFragment extends Fragment {
 
     private void loadUserData() {
         if (currentUserType == LoginType.UNIVERSITY_ADMIN) {
-            if (currentUniversityId != null)
+            if (currentUniversityId != null) {
                 unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new UniListener());
+            }
         } else {
+            // Load the currently online student — assumes only one online student for demo purposes
             studentsRef.orderByChild("isOnline").equalTo(true).limitToFirst(1)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
                             for (DataSnapshot snap : snapshot.getChildren()) {
-                                currentStudent = snap.getValue(Student.class);
-                                if (currentStudent == null) continue;
-                                currentStudent.setId(snap.getKey());
-                                currentUniversityId = currentStudent.getUniId();
-                                if (currentUniversityId != null)
-                                    unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new UniListener());
+                                Student student = snap.getValue(Student.class);
+                                if (student != null) {
+                                    student.setId(snap.getKey());
+                                    currentStudent = student;
+                                    currentUniversityId = student.getUniId();
+                                    if (currentUniversityId != null) {
+                                        unisRef.child(currentUniversityId).addListenerForSingleValueEvent(new UniListener());
+                                    }
+                                    break;
+                                }
                             }
                         }
-                        @Override public void onCancelled(@NonNull DatabaseError error) { showToast("Error loading user"); }
+                        @Override public void onCancelled(@NonNull DatabaseError error) {
+                            showToast("Error loading user data");
+                        }
                     });
         }
     }
@@ -118,7 +128,10 @@ public class CreatePostFragment extends Fragment {
     private void submitPost() {
         String title       = editPostTitle.getText().toString().trim();
         String description = editPostDescription.getText().toString().trim();
-        if (TextUtils.isEmpty(title)) { editPostTitle.setError("Title is required"); return; }
+        if (TextUtils.isEmpty(title)) {
+            editPostTitle.setError("Title is required");
+            return;
+        }
 
         String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
         String authorName     = getAuthorName();
@@ -130,7 +143,8 @@ public class CreatePostFragment extends Fragment {
                 imageUriString,
                 getAuthorId(),
                 authorName,
-                profileImage
+                profileImage,
+                Collections.emptyList()
         );
 
         String newId = postsRef.push().getKey();
@@ -142,23 +156,32 @@ public class CreatePostFragment extends Fragment {
                         resetForm();
                     })
                     .addOnFailureListener(e -> showToast("Failed to create post"));
+        } else {
+            showToast("Failed to generate post ID");
         }
     }
 
     private String getAuthorName() {
         switch (currentUserType) {
-            case DEBUG_ADMIN:      return "ADMIN (System)";
-            case UNIVERSITY_ADMIN: return currentUniversity != null ? currentUniversity.getName() + " Administration" : "University";
-            case STUDENT_ADMIN:    return currentStudent != null ? "ADMIN (" + currentStudent.getFullName() + ")" : "Student Admin";
-            default:               return currentStudent != null ? currentStudent.getFullName() : "Student";
+            case DEBUG_ADMIN:
+                return "ADMIN (System)";
+            case UNIVERSITY_ADMIN:
+                return currentUniversity != null ? currentUniversity.getName() + " Administration" : "University";
+            case STUDENT_ADMIN:
+                return currentStudent != null ? "ADMIN (" + currentStudent.getFullName() + ")" : "Student Admin";
+            default:
+                return currentStudent != null ? currentStudent.getFullName() : "Student";
         }
     }
 
     private String getAuthorId() {
         switch (currentUserType) {
-            case DEBUG_ADMIN:      return "debug_admin";
-            case UNIVERSITY_ADMIN: return currentUniversityId != null ? "uni_" + currentUniversityId : "uni_unknown";
-            default:               return currentStudent != null && currentStudent.getId() != null ? currentStudent.getId() : "unknown";
+            case DEBUG_ADMIN:
+                return "debug_admin";
+            case UNIVERSITY_ADMIN:
+                return currentUniversityId != null ? "uni_" + currentUniversityId : "uni_unknown";
+            default:
+                return (currentStudent != null && currentStudent.getId() != null) ? currentStudent.getId() : "unknown";
         }
     }
 
@@ -174,14 +197,30 @@ public class CreatePostFragment extends Fragment {
         selectedImageUri = null;
     }
 
-    private void showToast(String msg) { if (isAdded()) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show(); }
+    private void showToast(String msg) {
+        if (isAdded()) {
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private class UniListener implements ValueEventListener {
-        @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
             currentUniversity = snapshot.getValue(Uni.class);
-            if (currentUniversity != null) currentUniversity.setId(Integer.parseInt(snapshot.getKey()));
+            if (currentUniversity != null) {
+                // snapshot.getKey() is a String, so parse safely
+                try {
+                    currentUniversity.setId(Integer.parseInt(snapshot.getKey()));
+                } catch (NumberFormatException e) {
+                    currentUniversity.setId(-1); // fallback
+                }
+            }
         }
-        @Override public void onCancelled(@NonNull DatabaseError error) { showToast("Error loading university"); }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            showToast("Error loading university");
+        }
     }
 
     public static CreatePostFragment newInstance(LoginType loginType, String universityId) {

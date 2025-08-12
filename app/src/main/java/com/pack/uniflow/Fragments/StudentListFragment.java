@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.pack.uniflow.Adapters.StudentAdapter;
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
+import com.pack.uniflow.Models.Student;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

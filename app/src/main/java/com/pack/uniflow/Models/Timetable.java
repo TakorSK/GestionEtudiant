@@ -1,4 +1,4 @@
-package com.pack.uniflow;
+package com.pack.uniflow.Models;
 
 public class Timetable {
     private String id; // Changed from int to String

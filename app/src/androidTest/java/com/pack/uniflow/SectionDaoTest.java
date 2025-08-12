@@ -15,6 +15,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+import com.pack.uniflow.Models.Section;
+import com.pack.uniflow.Models.SectionDao;
+import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Models.UniDao;
+
 /**
  * Instrumented test for SectionDao interface.
  */

@@ -7,22 +7,19 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static org.junit.Assert.*;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView; // <-- IMPORT ImageView
 
 import androidx.core.content.ContextCompat; // <-- IMPORT ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager; // Import needed for LayoutManager check
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.pack.uniflow.Fragments.AdminFragment; // Import the inner class
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

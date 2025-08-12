@@ -18,6 +18,8 @@ import com.pack.uniflow.R;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +39,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     /**
      * Filters posts: if userTags is empty → show all posts,
      * otherwise show only posts that share at least one tag with userTags.
+     * Also sorts posts by createdAt date descending (newest first).
      */
     private void setFilteredPosts(List<Post> allPosts) {
         if (allPosts == null) {
@@ -44,23 +47,42 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             return;
         }
 
+        List<Post> filtered;
         // If user has no tags, show all posts
         if (userTags.isEmpty()) {
-            this.postList = new ArrayList<>(allPosts);
-            return;
-        }
-
-        List<Post> filtered = new ArrayList<>();
-        for (Post post : allPosts) {
-            if (post.getTags() != null) {
-                for (String tag : post.getTags()) {
-                    if (userTags.contains(tag)) {
-                        filtered.add(post);
-                        break; // Found a matching tag → no need to check further
+            filtered = new ArrayList<>(allPosts);
+        } else {
+            filtered = new ArrayList<>();
+            for (Post post : allPosts) {
+                if (post.getTags() != null) {
+                    for (String tag : post.getTags()) {
+                        if (userTags.contains(tag)) {
+                            filtered.add(post);
+                            break; // Found a matching tag → no need to check further
+                        }
                     }
                 }
             }
         }
+
+        // Sort posts by createdAt date descending (newest first)
+        Collections.sort(filtered, new Comparator<Post>() {
+            @Override
+            public int compare(Post p1, Post p2) {
+                if (p1.getCreatedAt() == null) return 1;
+                if (p2.getCreatedAt() == null) return -1;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                try {
+                    Date d1 = sdf.parse(p1.getCreatedAt());
+                    Date d2 = sdf.parse(p2.getCreatedAt());
+                    return d2.compareTo(d1); // newest first
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        });
+
         this.postList = filtered;
     }
 

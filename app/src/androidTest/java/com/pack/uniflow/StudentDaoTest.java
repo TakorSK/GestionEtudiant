@@ -15,6 +15,11 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.StudentDao;
+import com.pack.uniflow.Models.Uni;
+import com.pack.uniflow.Models.UniDao;
+
 /**
  * Instrumented test for StudentDao interface.
  */

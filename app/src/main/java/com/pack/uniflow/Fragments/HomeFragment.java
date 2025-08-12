@@ -17,11 +17,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.pack.uniflow.Adapters.PostAdapter;
 import com.pack.uniflow.Models.Post;
-import com.pack.uniflow.Student;
+import com.pack.uniflow.Models.Student;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -57,7 +58,9 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.HomeRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PostAdapter(getContext(), new ArrayList<>());
+
+        // Initialize adapter with empty posts list and empty user tags list
+        adapter = new PostAdapter(getContext(), new ArrayList<>(), Collections.emptyList());
         recyclerView.setAdapter(adapter);
 
         loadPostsFromFirebase();
@@ -76,7 +79,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
 
-                //  Sort posts by createdAt descending (newest first)
+                // Sort posts by createdAt descending (newest first)
                 allPosts.sort((p1, p2) -> {
                     if (p1.getCreatedAt() == null || p2.getCreatedAt() == null) return 0;
                     return p2.getCreatedAt().compareTo(p1.getCreatedAt());

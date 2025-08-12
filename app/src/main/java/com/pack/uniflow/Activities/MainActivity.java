@@ -44,8 +44,8 @@ import com.pack.uniflow.Fragments.ProfileFragment;
 import com.pack.uniflow.Fragments.ScheduleFragment;
 import com.pack.uniflow.Fragments.SettingsFragment;
 import com.pack.uniflow.Fragments.ScoresFragment;
-import com.pack.uniflow.Student;
-import com.pack.uniflow.Uni;
+import com.pack.uniflow.Models.Student;
+import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 

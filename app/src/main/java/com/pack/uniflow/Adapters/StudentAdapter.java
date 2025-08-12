@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.pack.uniflow.R;
-import com.pack.uniflow.Student;
+import com.pack.uniflow.Models.Student;
 
 import java.util.ArrayList;
 import java.util.List;
