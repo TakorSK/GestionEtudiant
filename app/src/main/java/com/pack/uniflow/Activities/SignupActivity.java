@@ -208,6 +208,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
+
     private void showDatabaseError(DatabaseError databaseError) {
         Toast.makeText(SignupActivity.this,
                 "Database error: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();

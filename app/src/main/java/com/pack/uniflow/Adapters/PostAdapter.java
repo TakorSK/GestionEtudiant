@@ -18,8 +18,6 @@ import com.pack.uniflow.R;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -28,67 +26,36 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private final Context context;
     private List<Post> postList;
-    private final List<String> userTags; // Logged-in user's tags (can be empty)
+    private final List<String> userTags; // ✅ Logged-in user's tags
 
     public PostAdapter(Context context, List<Post> postList, List<String> userTags) {
         this.context = context;
-        this.userTags = (userTags != null) ? userTags : new ArrayList<String>();
+        this.userTags = userTags != null ? userTags : new ArrayList<>();
         setFilteredPosts(postList);
     }
 
-    /**
-     * Filters posts: if userTags is empty → show all posts,
-     * otherwise show only posts that share at least one tag with userTags.
-     * Also sorts posts by createdAt date descending (newest first).
-     */
+    // ✅ Only keep posts where user has at least one matching tag
     private void setFilteredPosts(List<Post> allPosts) {
         if (allPosts == null) {
             this.postList = new ArrayList<>();
             return;
         }
 
-        List<Post> filtered;
-        // If user has no tags, show all posts
-        if (userTags.isEmpty()) {
-            filtered = new ArrayList<>(allPosts);
-        } else {
-            filtered = new ArrayList<>();
-            for (Post post : allPosts) {
-                if (post.getTags() != null) {
-                    for (String tag : post.getTags()) {
-                        if (userTags.contains(tag)) {
-                            filtered.add(post);
-                            break; // Found a matching tag → no need to check further
-                        }
+        List<Post> filtered = new ArrayList<>();
+        for (Post post : allPosts) {
+            if (post.getTags() != null) {
+                for (String tag : post.getTags()) {
+                    if (userTags.contains(tag)) {
+                        filtered.add(post);
+                        break; // found a matching tag → no need to check further
                     }
                 }
             }
         }
-
-        // Sort posts by createdAt date descending (newest first)
-        Collections.sort(filtered, new Comparator<Post>() {
-            @Override
-            public int compare(Post p1, Post p2) {
-                if (p1.getCreatedAt() == null) return 1;
-                if (p2.getCreatedAt() == null) return -1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                try {
-                    Date d1 = sdf.parse(p1.getCreatedAt());
-                    Date d2 = sdf.parse(p2.getCreatedAt());
-                    return d2.compareTo(d1); // newest first
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return 0;
-                }
-            }
-        });
-
         this.postList = filtered;
     }
 
-    /**
-     * Updates adapter data and refreshes UI.
-     */
+    // ✅ Update posts with filtering
     public void updatePosts(List<Post> newPosts) {
         setFilteredPosts(newPosts);
         notifyDataSetChanged();
@@ -128,7 +95,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public int getItemCount() {
-        return (postList != null) ? postList.size() : 0;
+        return postList != null ? postList.size() : 0;
     }
 
     private void setDividerTopMargin(View divider, int dp) {
@@ -175,3 +142,4 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 }
+
