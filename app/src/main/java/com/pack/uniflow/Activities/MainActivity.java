@@ -49,6 +49,8 @@ import com.pack.uniflow.Models.Uni;
 import com.pack.uniflow.R;
 import com.pack.uniflow.Activities.LoginActivity.LoginType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -358,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 menuIdToCheck = R.id.nav_scores;
                 break;
             default:
-                fragmentToLoad = HomeFragment.newInstance(loginType, currentUniversityId);
+                fragmentToLoad = HomeFragment.newInstance(loginType, currentUniversityId,new ArrayList<>(getCurrentUserTags()));
                 menuIdToCheck = R.id.nav_home;
                 break;
         }
@@ -400,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment = null;
 
         if (id == R.id.nav_home) {
-            fragment = HomeFragment.newInstance(loginType, currentUniversityId);
+            fragment = HomeFragment.newInstance(loginType, currentUniversityId,new ArrayList<>(getCurrentUserTags()));
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
         } else if (id == R.id.nav_logout) {
@@ -502,5 +504,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Clear all fragments in the back stack
         getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
+    private List<String> getCurrentUserTags() {
+        if (loginType == LoginType.UNIVERSITY_ADMIN && currentUniversity != null) {
+            return currentUniversity.getTags() != null ? currentUniversity.getTags() : new ArrayList<>();
+        }
+        else if (currentStudent != null) {
+            return currentStudent.getTags() != null ? currentStudent.getTags() : new ArrayList<>();
+        }
+        return new ArrayList<>();
+    }
+
 
 }
