@@ -499,5 +499,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return new ArrayList<>();
     }
+
+    public Student getCurrentStudent() {
+        return currentStudent;
+    }
+    public Uni getCurrentUniversity() {
+        return currentUniversity;
+    }
 }
 
