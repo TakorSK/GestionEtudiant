@@ -8,9 +8,11 @@ TODO:
     - Add Scores display section                                                  [High]
     - Add Settings: profile info edit (e.g. name, email)                          [Optional]
     - Add Upload/Sign-in loading animations and disable button during process     [Medium]
-    - Add a "tag" field to posts to know who can look and who can't (for admin, it's tag uniAdmins, students and clubs. for uni it's this.uni means members of the uni, so students. or all, wich would just be a public post for all unis and students and clubs. for club it would be same thing, this.club or all (when we start doing clubs seriously))               [Low]"
+    - Add a "tag" field to posts to know who can look and who can't (for debug admin and admin, it's tag uniAdmins, students and clubs or all. for uni it's this.uni means members of the uni, so students. or all, wich would just be a public post for all unis and students and clubs. for club it would be same thing, this.club or all (when we start doing clubs seriously))               [Low]"
     - Fix drawer display for each account type                                    [High]
     - Fix Lifecycle problem in profile fragment                                           [High]
+    - Add a Uni Panel where the uni admin can look at the students list and maybe edit them. [Medium]
+    - Add an edit option for each thing in the admin panel.                            [Medium]
 
 DONE:
      - Add "Add a Student" layout, DB, and logic

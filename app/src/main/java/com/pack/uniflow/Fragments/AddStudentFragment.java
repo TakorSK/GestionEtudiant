@@ -22,13 +22,12 @@ import com.pack.uniflow.R;
 import com.pack.uniflow.Models.Student;
 import com.pack.uniflow.Models.Uni;
 
-import java.util.   ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddStudentFragment extends DialogFragment {
 
     private TextInputEditText etFullName, etEmail, etPassword, etAge, etTelephone, etUniversityId, etCIN;
-    private MaterialButton btnSubmitStudent;
 
     private final DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
     private final DatabaseReference unisRef = FirebaseDatabase.getInstance().getReference("universities");
@@ -52,7 +51,7 @@ public class AddStudentFragment extends DialogFragment {
         etUniversityId = view.findViewById(R.id.etUniversityId);
         etCIN          = view.findViewById(R.id.etCIN); // NEW FIELD for CIN as ID
 
-        btnSubmitStudent = view.findViewById(R.id.btnSubmitStudent);
+        MaterialButton btnSubmitStudent = view.findViewById(R.id.btnSubmitStudent);
 
         btnSubmitStudent.setOnClickListener(v -> handleSubmit());
 
@@ -99,19 +98,26 @@ public class AddStudentFragment extends DialogFragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
                     Toast.makeText(getContext(), "University ID not found!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Uni uni = snapshot.getValue(Uni.class);
-                    if (uni == null || uni.getName() == null) {
-                        Toast.makeText(getContext(), "Invalid university data", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // ✅ Create tags list with the university name
-                    List<String> tags = new ArrayList<>();
-                    tags.add(uni.getName());
-
-                    insertStudentIntoFirebase(cin, fullName, email, password, age, telephone, uniId, tags);
+                    return;
                 }
+
+                Uni uni = snapshot.getValue(Uni.class);
+                if (uni == null || uni.getName() == null) {
+                    Toast.makeText(getContext(), "Invalid university data", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // ✅ Check if CIN is in associatedStudentIds
+                if (uni.getAssociatedStudentIds() == null || !uni.getAssociatedStudentIds().contains(cin)) {
+                    Toast.makeText(getContext(), "This student is not authorized for this university!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // ✅ Create tags list with the university name
+                List<String> tags = new ArrayList<>();
+                tags.add(uni.getName());
+
+                insertStudentIntoFirebase(cin, fullName, email, password, age, telephone, uniId, tags);
             }
 
             @Override
