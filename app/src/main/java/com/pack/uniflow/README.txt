@@ -6,7 +6,6 @@ TODO:
     - Fix drawer display for each account type                                    [High]
     - Fix Lifecycle problem in profile fragment                                   [High]
     - Add Upload/Sign-in loading animations and disable button during process     [Medium]
-    - Add a "target" list in CreatePost fragment (e.g. all, unis, admins)         [Medium]
     - Add an edit option for each thing in the admin panel.                       [Medium]
     - Add a Uni Panel where the uni admin can look at the students list and maybe edit them. [Medium]
     - Add Settings: profile info edit (e.g. name, email)                          [Low]
@@ -14,52 +13,54 @@ TODO:
     - Add Scores display section                                                  [Low]
 
 DONE:
-     - Add "Add a Student" layout, DB, and logic
-     - Add Admin Board fragment
-     - Add Clubs display logic
-     - Add Clubs Search Tag and Student adding functionality in the admin panel
-     - Add Corresponding DB fields to admin panel buttons
-     - Add Dark Mode / Light Mode + settings persistence
-     - Add Drawer navigation
-     - Add Drop Shadows
-     - Add error messages to input fields (e.g. red text under invalid fields)
-     - Add No Internet Popup dialog
-     - Add Post Author and Date
-     - Add Post Sorting by Date
-     - Add Posts layout and DB logic
-     - Add Profile Activity (with all functionalities)
-     - Add Search hint text to include instructions for 'club:' prefix
-     - Add Search Functionality UI
-     - Add Settings: Bio support
-     - Add a "tag" field to posts to determine visibility
-     - Add Settings: Profile picture upload
-     - Add Settings: Theme toggle (light/dark)
-     - Add UI Fragments (all)
-     - Add University Management fragment (posts)
+    - Add "Add a Student" layout, DB, and logic
+    - Add Tags list in CreatePost fragment (e.g. all, unis, admins)
+    - Add Admin Board fragment     - Add Clubs display logic
+    - Add Clubs Search Tag and Student adding functionality in the admin panel
+    - Add Corresponding DB fields to admin panel buttons
+    - Add Dark Mode / Light Mode + settings persistence
+    - Add Drawer navigation
+    - Add Drop Shadows
+    - Add error messages to input fields (e.g. red text under invalid fields)
+    - Add No Internet Popup dialog
+    - Add Post Author and Date
+    - Add Post Sorting by Date
+    - Add Posts layout and DB logic
+    - Add Profile Activity (with all functionalities)
+    - Add Search hint text to include instructions for 'club:' prefix
+    - Add Search Functionality UI
+    - Add Settings: Bio support
+    - Add a "tag" field to posts to determine visibility
+    - Add Settings: Profile picture upload
+    - Add Settings: Theme toggle (light/dark)
+    - Add UI Fragments (all)
+    - Add University Management fragment (posts)
 
-     - Refactor search filtering logic to support clubs in addition to students and universities
+    - Refactor search filtering logic to support clubs in addition to students and universities
 
-     - Fix Admin Panel shadow clipping
-     - Fix Admin Panel UI drop shadows clipping/styling
-     - Fix Add Student, Clubs & University layouts
-     - Fix Club field optional, University required in Signup
-     - Fix ColorPrimary mismatch
-     - Fix Dark Mode on input fields
-     - Fix Drawer navigation selection color
-     - Fix Fields color mismatch & darkness
-     - Fix Input fields to single line
-     - Fix Keyboard 'Next' action on text inputs
-     - Fix Light/Dark mode toggle + persistence
-     - Fix Login functionality
-     - Fix Posts layout (poster section more defined)
-     - Fix Profile fragment
-     - Fix Settings profile image mask
-     - Fix Signup activity (updated XML)
-     - Fix Signup fields logic + layout
-     - Fix UI text colors
+    - Fix Admin Panel shadow clipping
+    - Fix Admin Panel UI drop shadows clipping/styling
+    - Fix Add Student, Clubs & University layouts
+    - Fix Club field optional, University required in Signup
+    - Fix ColorPrimary mismatch
+    - Fix Dark Mode on input fields
+    - Fix Drawer navigation selection color
+    - Fix Fields color mismatch & darkness
+    - Fix Input fields to single line
+    - Fix Keyboard 'Next' action on text inputs
+    - Fix Light/Dark mode toggle + persistence
+    - Fix Login functionality
+    - Fix Posts layout (poster section more defined)
+    - Fix Profile fragment
+    - Fix Settings profile image mask
+    - Fix Signup activity (updated XML)
+    - Fix Signup fields logic + layout
+    - Fix UI text colors
+    - Fix posting post-firebase changes
+    - Fix Post Tag visibility
 
-     - Update UI layouts to include club-related views and buttons
-     - Update UI layouts to include ID field upon clicking the student item on the search bar
+    - Update UI layouts to include club-related views and buttons
+    - Update UI layouts to include ID field upon clicking the student item on the search bar
 
 
 =======================================================================================
@@ -73,10 +74,7 @@ TODO
     - Make the connexion last even after closing the app, it doesn't disconnect you
     - Fix the settings
     - Link the DB to the search on Admin Pannel (its using mock data rn in adminpannelfragment.java i think)
-    - Fix posting post-firebase changes
     - make a tag system: universities can only post either for their default tag, or all. clubs can only post to their members, or all. and admins can post for admins only, universities only, students from a certain university tag or all.
-    - Fix Posts: currently posting according to tags in TagsConstants works. please fix the filtering because i do not understand what exactly are we trying to do.
-
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done

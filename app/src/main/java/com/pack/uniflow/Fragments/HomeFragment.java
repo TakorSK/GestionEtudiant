@@ -120,50 +120,33 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
     private boolean isVisibleToUser(Post post, Map<String, Student> studentsMap) {
-        String authorId = post.getAuthorId();
-        if (authorId == null) return false;
-
         List<String> postTags = post.getTags();
         if (postTags == null || postTags.isEmpty()) {
-            // No tags → no visibility
-            return false;
+            return false; // Posts with no tags are hidden from everyone
         }
 
-        boolean isAdminPost = authorId.startsWith("admin_");
+        switch (currentUserType) {
+            case DEBUG_ADMIN:
+                return postTags.contains(TagConstants.GlobalAnnouncement) ||
+                        postTags.contains(TagConstants.DEBUG_ADMINS);
 
-        if (currentUserType == LoginType.DEBUG_ADMIN) {
-            // Debug admins see only admin posts tagged globalannouncement
-            return isAdminPost && postTags.contains(TagConstants.GlobalAnnouncement);
+            case UNIVERSITY_ADMIN:
+            case STUDENT_ADMIN:
+                return postTags.contains(TagConstants.THIS_UNI) ||
+                        postTags.contains(TagConstants.GlobalAnnouncement);
+
+            case REGULAR_STUDENT:
+                return postTags.contains(TagConstants.THIS_UNI) ||
+                        postTags.contains(TagConstants.THIS_CLUB) ||
+                        postTags.contains(TagConstants.GlobalAnnouncement);
+
+            default:
+                return false;
         }
-
-        if (isAdminPost) {
-            // University admins see admin posts only if authorId matches their uni admin and tagged globalannouncement
-            return authorId.equals("admin_" + currentUniversityId) && postTags.contains(TagConstants.GlobalAnnouncement);
-        }
-
-        Student author = studentsMap.get(authorId);
-        if (author == null) return false;
-
-        if (!currentUniversityId.equals(author.getUniId())) {
-            // Post not from user's university
-            return false;
-        }
-
-        if (currentUserType == LoginType.REGULAR_STUDENT) {
-            // Students see posts tagged globalannouncement or any tag matching their own tags
-            for (String tag : postTags) {
-                if (TagConstants.GlobalAnnouncement.equals(tag) || userTags.contains(tag)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Other admins (student_admin, uni_admin) see posts tagged globalannouncement
-        return postTags.contains(TagConstants.GlobalAnnouncement);
     }
+
+
 
     private List<Post> filterPostsForUser(List<Post> allPosts, Map<String, Student> studentsMap) {
         List<Post> filtered = new ArrayList<>();
