@@ -3,16 +3,15 @@ MAKE SURE THAT WHENEVER YOU PUSH YOUR WORK IT DOES NOT CONTAIN ANY ERRORS THAT I
 
 ======================================== ADAM ========================================
 TODO:
-    - Add a "target" list in CreatePost fragment (e.g. all, unis, admins)         [Medium]
-    - Add Schedule display and interaction logic                                  [High]
-    - Add Scores display section                                                  [High]
-    - Add Settings: profile info edit (e.g. name, email)                          [Optional]
-    - Add Upload/Sign-in loading animations and disable button during process     [Medium]
-    - Add a "tag" field to posts to know who can look and who can't (for debug admin and admin, it's tag uniAdmins, students and clubs or all. for uni it's this.uni means members of the uni, so students. or all, wich would just be a public post for all unis and students and clubs. for club it would be same thing, this.club or all (when we start doing clubs seriously))               [Low]"
     - Fix drawer display for each account type                                    [High]
-    - Fix Lifecycle problem in profile fragment                                           [High]
+    - Fix Lifecycle problem in profile fragment                                   [High]
+    - Add Upload/Sign-in loading animations and disable button during process     [Medium]
+    - Add a "target" list in CreatePost fragment (e.g. all, unis, admins)         [Medium]
+    - Add an edit option for each thing in the admin panel.                       [Medium]
     - Add a Uni Panel where the uni admin can look at the students list and maybe edit them. [Medium]
-    - Add an edit option for each thing in the admin panel.                            [Medium]
+    - Add Settings: profile info edit (e.g. name, email)                          [Low]
+    - Add Schedule display and interaction logic                                  [Low]
+    - Add Scores display section                                                  [Low]
 
 DONE:
      - Add "Add a Student" layout, DB, and logic
@@ -32,6 +31,7 @@ DONE:
      - Add Search hint text to include instructions for 'club:' prefix
      - Add Search Functionality UI
      - Add Settings: Bio support
+     - Add a "tag" field to posts to determine visibility
      - Add Settings: Profile picture upload
      - Add Settings: Theme toggle (light/dark)
      - Add UI Fragments (all)
@@ -75,6 +75,8 @@ TODO
     - Link the DB to the search on Admin Pannel (its using mock data rn in adminpannelfragment.java i think)
     - Fix posting post-firebase changes
     - make a tag system: universities can only post either for their default tag, or all. clubs can only post to their members, or all. and admins can post for admins only, universities only, students from a certain university tag or all.
+    - Fix Posts: currently posting according to tags in TagsConstants works. please fix the filtering because i do not understand what exactly are we trying to do.
+
 
 DONE:
     - edited MainActivity.java and SignupActivity.java for the room database usage -Done

@@ -50,6 +50,15 @@
         android:inputType="textMultiLine|textCapSentences"
         android:background="@android:color/transparent" />
 
+    <!-- Display selected tags -->
+    <TextView
+        android:id="@+id/textSelectedTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tags: None"
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/colorOnSurface"/>
+
     <!-- Image Button  -->
     <Button
         android:id="@+id/buttonAddImage"
@@ -67,6 +76,16 @@
         android:visibility="gone"
         android:layout_marginBottom="16dp"
         android:scaleType="centerCrop" />
+
+
+
+    <Button
+        android:id="@+id/buttonSelectTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Tags"
+        android:layout_marginBottom="16dp"
+        android:textColor="?attr/colorOnSurface" />
 
     <!-- Button to submit the post -->
     <Button

@@ -26,38 +26,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private final Context context;
     private List<Post> postList;
-    private final List<String> userTags; // ✅ Logged-in user's tags
 
-    public PostAdapter(Context context, List<Post> postList, List<String> userTags) {
+    public PostAdapter(Context context, List<Post> postList, List<String> unusedUserTags) {
         this.context = context;
-        this.userTags = userTags != null ? userTags : new ArrayList<>();
-        setFilteredPosts(postList);
+        // We don't filter here, just assign all posts given
+        this.postList = postList != null ? postList : new ArrayList<>();
     }
 
-    // ✅ Only keep posts where user has at least one matching tag
-    private void setFilteredPosts(List<Post> allPosts) {
-        if (allPosts == null) {
-            this.postList = new ArrayList<>();
-            return;
-        }
-
-        List<Post> filtered = new ArrayList<>();
-        for (Post post : allPosts) {
-            if (post.getTags() != null) {
-                for (String tag : post.getTags()) {
-                    if (userTags.contains(tag)) {
-                        filtered.add(post);
-                        break; // found a matching tag → no need to check further
-                    }
-                }
-            }
-        }
-        this.postList = filtered;
-    }
-
-    // ✅ Update posts with filtering
     public void updatePosts(List<Post> newPosts) {
-        setFilteredPosts(newPosts);
+        this.postList = newPosts != null ? newPosts : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -74,7 +51,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.title.setText(post.getTitle());
         holder.description.setText(post.getDescription());
         holder.authorName.setText("By " + post.getAuthorName());
-
         holder.postDate.setText(formatDate(post.getCreatedAt()));
 
         String imageUri = post.getImageUri();
@@ -142,4 +118,3 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 }
-

@@ -46,6 +46,17 @@
             android:scaleType="centerCrop"
             android:src="@drawable/placeholder" />
 
+        <TextView
+            android:id="@+id/postTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tags: debugAdmin, uniAdmins"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="?attr/colorSecondary"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+
         <!-- Divider line -->
         <View
             android:id="@+id/postDivider"
